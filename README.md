@@ -1,5 +1,16 @@
 # Telhan Sathi 🌾
 
+![Flask](https://img.shields.io/badge/Backend-Flask-000000?logo=flask&logoColor=white)
+![SIH 2025](https://img.shields.io/badge/SIH-2025-0A7E3B)
+![Status](https://img.shields.io/badge/Status-Active-success)
+
+> **JUDGE-FIRST PITCH**
+> **Problem:** Oilseed farmers often lose value due to fragmented market access and weak price visibility.
+> **Solution:** Telhan Sathi unifies auctions, smart planning, and monitoring into one farmer-first platform.
+> - **Real-time auctions:** Transparent live bidding that connects farmers directly with buyers.
+> - **AI-based decision support:** Data-backed crop and profitability guidance for better planning.
+> - **IoT monitoring:** Field-level signals and alerts for faster, informed actions.
+
 ### Making Oilseed Farming Smarter, Safer, and More Profitable
 
 **SIH 2025 | Problem Statement 1604 | Agriculture, FoodTech & Rural Development**
@@ -70,62 +81,30 @@ It helps farmers move from uncertainty to better pricing outcomes with a practic
 ### Farmer Interface
 
 **Home Dashboard**
-Farmer landing page with quick actions and module access.
+Farmer landing page with quick actions and key module shortcuts.
 ![Home Page](documents/screenshots/home%20page.jpeg)
 
 **Auction Dashboard**
-Manage live auctions, bids, and outcomes in one view.
+Live overview of auctions, incoming bids, and status updates.
 ![Bidding Dashboard Farmer](documents/screenshots/bidding%20dashboard%20farmer.jpeg)
 
-**Auction Details**
-Track reserve price, bid timeline, and buyer activity.
-![Auction Details Modal](documents/screenshots/bid%20details%20page%20farmer.jpeg)
-
-**Winning Bid Summary**
-Clear closure details after successful auction completion.
-![Winning Bid Details](documents/screenshots/winning%20bid%20details%20page%20farmer.jpeg)
-
 **Profit Simulator**
-Compare projected outcomes for oilseed vs alternative crops.
+Compare projected profitability across crop choices in seconds.
 ![Profit Simulator](documents/screenshots/profit%20simulator%20page%20farmer.jpeg)
 
 **Crop Economics**
-Analyze crop-level cost, demand, and profitability trends.
+Analyze crop-level cost, demand, and expected return patterns.
 ![Crop Economics](documents/screenshots/crop%20economics%20page%20farmer.jpeg)
-
-**12-Month Trend View**
-Long-range crop economics perspective for planning decisions.
-![Crop Economics Trends](documents/screenshots/detailed%20crop%20economics%20page%20with%2012%20months%20trend%20farmer.jpeg)
-
-**Subsidies & Schemes**
-Explore relevant government support opportunities.
-![Subsidies Page](documents/screenshots/schemes%20and%20subsides%20page%20farmer.jpeg)
-
-**Redemption Store**
-Redeem earned coins for useful products and services.
-![Redemption Store](documents/screenshots/redeemption%20store%20page%20farmer.jpeg)
-
-**Farmer Chat**
-Real-time communication for faster negotiation and trust.
-![Chat with Farmer](documents/screenshots/chat%20with%20farmer%20page%20buyer.jpeg)
 
 ### Buyer Interface
 
 **Buyer Dashboard**
-Centralized bidding activity and purchase overview.
+Centralized view of active bids, wins, and purchase activity.
 ![Buyer Dashboard](documents/screenshots/bidding%20dashboard%20buyer.jpeg)
 
-**Auction Exploration**
-Review listing details before placing bids.
+**Bidding Flow**
+Review listing details and place bids through a clear modal flow.
 ![View Auction Details](documents/screenshots/view%20auction%20details%20modal%20buyer.jpeg)
-
-**My Bids**
-Track bid status, negotiation updates, and outcomes.
-![My Bids Page](documents/screenshots/mybids%20page%20buyer.jpeg)
-
-**Buyer-Farmer Chat**
-Direct messaging streamlines discussion and conversion.
-![Chat with Farmer Buyer](documents/screenshots/chat%20with%20farmer%20page%20buyer.jpeg)
 
 ---
 
