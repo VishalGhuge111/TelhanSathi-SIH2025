@@ -1,0 +1,858 @@
+{% extends "base.html" %}
+
+{% block title %}लाभ सिमुलेटर - तेलहन साथी{% endblock %}
+
+{% block content %}
+
+        <!-- Loader Overlay -->
+        <div id="loaderOverlay" class="loader-overlay">
+            <div class="spinner"></div>
+            <div class="loader-text">पूर्वानुमान की गणना जारी है...</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Summary Card -->
+            <div class="card">
+                <h2 class="card-title">🌾 तिलहन लाभ कैलकुलेटर</h2>
+                <div id="summary-line" class="summary-text">आपका खेत का डेटा लोड हो रहा है…</div>
+                
+                <!-- Error Message -->
+                <div id="errorMessage" class="error-message">
+                    <div class="error-title" id="errorTitle">त्रुटि</div>
+                    <div class="error-details" id="errorDetails"></div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="card">
+                <h3 class="card-subtitle">तिलहन फसल और पैरामीटर चुनें</h3>
+                
+                <!-- Market and Commodity Selection -->
+                <div class="row">
+                    <div class="col">
+                        <label>बाजार (मंडी)</label>
+                        <select id="marketSelect" class="input-field" onchange="updateCommodities()"></select>
+                    </div>
+                    <div class="col">
+                        <label>तिलहन फसल</label>
+                        <select id="commoditySelect" class="input-field"></select>
+                    </div>
+                </div>
+                
+                <!-- Area, Cost, and Harvest Month -->
+                <div class="row">
+                    <div class="col">
+                        <label>क्षेत्र (एकड़)</label>
+                        <input id="areaAcres" class="input-field" type="number" min="0.1" max="100" step="0.1" value="1">
+                    </div>
+                    <div class="col">
+                        <label>लागत प्रति एकड़ (₹)</label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input id="costPerAcre" class="input-field" type="number" min="1000" max="100000" step="100" value="20000">
+                            <span id="costHint" class="cost-hint" style="font-size: 11px; color: #666; white-space: nowrap;">मानक मूल्य</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>कटाई का महीना</label>
+                        <select id="harvestMonth" class="input-field"></select>
+                    </div>
+                    <div class="col" style="display: flex; align-items: flex-end;">
+                        <button class="btn btn-simulate" id="simulateBtn" onclick="simulate()">
+                            📊 गणना करें
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="card">
+                <h3 class="card-subtitle">📊 लाभ का अनुमान</h3>
+                <div class="result-grid">
+                    <div class="result-box price-box">
+                        <div class="result-value" id="currentPriceVal">-</div>
+                        <div class="result-label">वर्तमान मूल्य (₹/क्विंटल)</div>
+                    </div>
+                    <div class="result-box price-box">
+                        <div class="result-value" id="forecastPriceVal">-</div>
+                        <div class="result-label">अनुमानित मूल्य (₹/क्विंटल)</div>
+                    </div>
+                    <div class="result-box income-box">
+                        <div class="result-value" id="totalRevenueVal">-</div>
+                        <div class="result-label">कुल आय (₹)</div>
+                    </div>
+                    <div class="result-box cost-box">
+                        <div class="result-value" id="totalCostVal">-</div>
+                        <div class="result-label">कुल लागत (₹)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit Breakdown Chart -->
+            <div class="card">
+                <h3 class="card-subtitle">📈 आय और लागत विश्लेषण</h3>
+                <div class="chart-container">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Profit Analysis Metrics -->
+            <div class="card">
+                <h3 class="card-subtitle">💹 लाभ का विश्लेषण</h3>
+                <div class="profit-metrics">
+                    <div class="metric-item roi-metric">
+                        <div class="metric-label">ROI (रिटर्न)</div>
+                        <div class="metric-value" id="roiVal">-</div>
+                    </div>
+                    <div class="metric-item margin-metric">
+                        <div class="metric-label">लाभ मार्जिन</div>
+                        <div class="metric-value" id="marginVal">-</div>
+                    </div>
+                    <div class="metric-item trend-metric">
+                        <div class="metric-label">मूल्य प्रवृत्ति</div>
+                        <div class="metric-value" id="trendVal">-</div>
+                    </div>
+                    <div class="metric-item breakeven-metric">
+                        <div class="metric-label">ब्रेकईवन दिन</div>
+                        <div class="metric-value" id="breakEvenVal">-</div>
+                    </div>
+                </div>
+                <div class="profit-summary">
+                    <div class="net-profit-display" id="netProfitDisplay">₹ -</div>
+                    <div class="net-profit-label">शुद्ध लाभ (30 दिन)</div>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="card">
+                <div class="button-group">
+                    <button class="btn btn-primary" id="applySubsidy">सब्सिडी के लिए आवेदन करें</button>
+                    <button class="btn btn-secondary" id="findBuyer">खरीदार खोजें</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+    
+
+
+            .icon-button {
+                width: 24px;
+                height: 24px;
+                fill: white;
+                cursor: pointer;
+            }
+
+            .main-content {
+                flex-grow: 1;
+                overflow-y: auto;
+                padding: 8px;
+                padding-bottom: 80px;
+            }
+
+            .card {
+                background: #fff;
+                padding: 16px;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 15px;
+            }
+
+            .card-title {
+                margin: 0 0 8px 0;
+                font-size: 18px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .card-subtitle {
+                margin: 0 0 12px 0;
+                font-size: 15px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .summary-text {
+                font-size: 13px;
+                color: #666;
+                line-height: 1.6;
+            }
+
+            .row {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 12px;
+                align-items: flex-end;
+            }
+
+            .col {
+                flex: 1;
+            }
+
+            label {
+                font-size: 12px;
+                color: #666;
+                display: block;
+                margin-bottom: 4px;
+                font-weight: 500;
+            }
+
+            .input-field {
+                width: 100%;
+                padding: 10px;
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                font-size: 13px;
+                transition: border-color 0.2s;
+                background-color: #fff;
+                color: #333;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+            .input-field:focus {
+                outline: none;
+                border-color: #388e3c;
+                box-shadow: 0 0 0 2px rgba(56, 142, 60, 0.1);
+            }
+            
+            select.input-field {
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/csvg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 18px;
+                padding-right: 32px;
+            }
+
+            .result-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .profit-metrics {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .metric-item {
+                background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+                padding: 12px;
+                border-radius: 8px;
+                text-align: center;
+                border-left: 3px solid #388e3c;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .metric-item.roi-metric { border-left-color: #2196f3; }
+            .metric-item.margin-metric { border-left-color: #388e3c; }
+            .metric-item.trend-metric { border-left-color: #ff9800; }
+            .metric-item.breakeven-metric { border-left-color: #f44336; }
+
+            .metric-label {
+                font-size: 10px;
+                color: #999;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .metric-value {
+                font-size: 16px;
+                font-weight: bold;
+                color: #333;
+                margin-top: 4px;
+            }
+
+            .result-box {
+                background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+                padding: 14px;
+                border-radius: 8px;
+                text-align: center;
+                border-left: 4px solid #388e3c;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .result-box.yield-box {
+                border-left-color: #ffc107;
+            }
+
+            .result-box.price-box {
+                border-left-color: #ff9800;
+            }
+
+            .result-box.cost-box {
+                border-left-color: #f44336;
+            }
+
+            .result-box.income-box {
+                border-left-color: #2196f3;
+            }
+
+            .result-value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #388e3c;
+            }
+
+            .result-label {
+                font-size: 11px;
+                color: #666;
+                margin-top: 4px;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 300px;
+                margin: 16px 0 8px 0;
+                padding: 12px;
+                background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+                border-radius: 8px;
+                border: 1px solid #e8eef2;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            }
+
+            .profit-summary {
+                text-align: center;
+                margin-top: 12px;
+                padding: 12px;
+                background: #f0f7f0;
+                border-radius: 8px;
+            }
+
+            .net-profit-display {
+                font-size: 24px;
+                font-weight: bold;
+                color: #2e7d32;
+            }
+
+            .net-profit-label {
+                font-size: 12px;
+                color: #666;
+                margin-top: 4px;
+            }
+
+            .button-group {
+                display: flex;
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 14px;
+                flex: 1;
+                transition: all 0.3s ease;
+            }
+
+            .btn-simulate {
+                padding: 10px 20px;
+                background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+                color: #fff;
+                flex: 0.8;
+                min-width: 120px;
+                box-shadow: 0 2px 8px rgba(56, 142, 60, 0.3);
+                font-size: 13px;
+            }
+
+            .btn-simulate:hover {
+                background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(56, 142, 60, 0.4);
+            }
+
+            .btn-simulate:active {
+                transform: translateY(0);
+            }
+
+            .btn-primary {
+                background: #388e3c;
+                color: #fff;
+            }
+
+            .btn-primary:hover {
+                background: #2e7d32;
+                box-shadow: 0 2px 8px rgba(56, 142, 60, 0.3);
+            }
+
+            .btn-secondary {
+                background: #fff;
+                border: 2px solid #388e3c;
+                color: #388e3c;
+            }
+
+            .btn-secondary:hover {
+                background: #f0f7f0;
+                border-color: #2e7d32;
+                color: #2e7d32;
+            }
+
+            @media (max-width: 420px) {
+                .row {
+                    flex-direction: column;
+                }
+
+                .col {
+                    width: 100%;
+                }
+            }
+
+            /* Spinner and Loader Styles */
+            .loader-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.4);
+                display: none;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            .loader-overlay.active {
+                display: flex;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+
+            .loader-text {
+                color: #fff;
+                font-size: 16px;
+                margin-top: 20px;
+                text-align: center;
+                font-weight: 500;
+            }
+
+            .error-message {
+                background: #ffebee;
+                border-left: 4px solid #f44336;
+                color: #c62828;
+                padding: 12px;
+                border-radius: 4px;
+                margin: 10px 0;
+                font-size: 13px;
+                display: none;
+            }
+
+            .error-message.show {
+                display: block;
+            }
+
+            .error-title {
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+
+            .error-details {
+                font-size: 12px;
+                color: #d32f2f;
+            }
+        </style>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        let farmer = null;
+        let availableMarkets = [];
+        let availableCommodities = [];
+        let harvestMonths = [];
+        let mlAvailable = false;
+        let profitChart = null;  // Chart.js instance
+
+        // Standard costs per acre for each commodity (in INR)
+        const standardCosts = {
+            'Groundnut': 25000,
+            'Linseed (Flaxseed)': 17000,
+            'Mustard': 18000,
+            'Sesame': 19000,
+            'Soybean': 20000
+        };
+
+        const hindiMonths = {
+            'January': 'जनवरी', 'February': 'फरवरी', 'March': 'मार्च', 'April': 'अप्रैल',
+            'May': 'मई', 'June': 'जून', 'July': 'जुलाई', 'August': 'अगस्त',
+            'September': 'सितंबर', 'October': 'अक्टूबर', 'November': 'नवंबर', 'December': 'दिसंबर'
+        };
+
+        const hindiCommodities = {
+            'Groundnut': 'मूंगफली',
+            'Linseed (Flaxseed)': 'अलसी',
+            'Mustard': 'सरसों',
+            'Sesame': 'तिल',
+            'Soybean': 'सोयाबीन'
+        };
+
+        const trendEmojis = {
+            'Uptrend': '📈 ऊपर की ओर',
+            'Downtrend': '📉 नीचे की ओर',
+            'Stable': '➡️ स्थिर'
+        };
+
+        function updateCommodities() {
+            const marketSelect = document.getElementById('marketSelect');
+            const commoditySelect = document.getElementById('commoditySelect');
+            const costPerAcreField = document.getElementById('costPerAcre');
+            const costHint = document.getElementById('costHint');
+            const selectedMarket = marketSelect.value;
+
+            // Get commodities for this market from the available commodities
+            // In this case, all markets have same commodities, but we keep the function for future flexibility
+            
+            // Clear existing options
+            commoditySelect.innerHTML = '';
+
+            const commodities = availableCommodities || ['Soybean'];
+            
+            commodities.forEach(commodity => {
+                const opt = document.createElement('option');
+                opt.value = commodity;
+                opt.textContent = hindiCommodities[commodity] || commodity;
+                commoditySelect.appendChild(opt);
+            });
+
+            // Select first commodity
+            if (commodities.length > 0) {
+                commoditySelect.value = commodities[0];
+                updateCostField(commodities[0]);
+            }
+        }
+
+        function updateCostField(commodity) {
+            const costPerAcreField = document.getElementById('costPerAcre');
+            const costHint = document.getElementById('costHint');
+            
+            const standardCost = standardCosts[commodity] || 20000;
+            costPerAcreField.value = standardCost;
+            costHint.textContent = 'मानक मूल्य (Standard)';
+            
+            // Change hint color when user edits the cost
+            costPerAcreField.addEventListener('change', () => {
+                const currentValue = parseFloat(costPerAcreField.value);
+                if (currentValue !== standardCost) {
+                    costHint.textContent = 'कस्टम (Custom)';
+                    costHint.style.color = '#ff9800';
+                } else {
+                    costHint.textContent = 'मानक मूल्य (Standard)';
+                    costHint.style.color = '#666';
+                }
+            }, {once: true});
+        }
+
+        async function init() {
+            try {
+                const res = await fetch('/profit/api/init', {credentials: 'same-origin'});
+                const data = await res.json();
+                if (data.error) { 
+                    document.getElementById('summary-line').textContent = 'त्रुटि: ' + data.error; 
+                    return; 
+                }
+                
+                farmer = data.farmer;
+                availableMarkets = data.available_markets || [];
+                availableCommodities = data.available_commodities || [];
+                harvestMonths = data.harvest_months || [];
+                mlAvailable = data.ml_available || false;
+
+                // Update summary with Hindi
+                document.getElementById('summary-line').textContent = 
+                    `खेत: ${farmer.name} | मंडी: ${farmer.market} | मिट्टी: ${farmer.soil_type || 'N/A'} | जल: ${farmer.water_type || 'N/A'}`;
+
+                // Populate market dropdown
+                const marketSel = document.getElementById('marketSelect');
+                availableMarkets.forEach(market => {
+                    const opt = document.createElement('option');
+                    opt.value = market;
+                    opt.textContent = market;
+                    marketSel.appendChild(opt);
+                });
+                marketSel.value = farmer.market || (availableMarkets[0] || 'Delhi');
+
+                // Populate commodity dropdown (dependent on market)
+                updateCommodities();
+                const commoditySel = document.getElementById('commoditySelect');
+                commoditySel.value = farmer.current_crop || (availableCommodities[0] || 'Soybean');
+                
+                // Update cost field when commodity changes
+                commoditySel.addEventListener('change', () => {
+                    updateCostField(commoditySel.value);
+                });
+                
+                // Set initial cost based on selected commodity
+                updateCostField(commoditySel.value);
+
+                // Populate harvest month dropdown with Hindi names
+                const harvestSel = document.getElementById('harvestMonth');
+                harvestMonths.forEach(month => {
+                    const opt = document.createElement('option');
+                    opt.value = month;
+                    opt.textContent = hindiMonths[month] || month;
+                    harvestSel.appendChild(opt);
+                });
+                
+                // Set the harvest month value with proper validation
+                const selectedMonth = farmer.harvest_month || 'October';
+                if (harvestMonths.includes(selectedMonth)) {
+                    harvestSel.value = selectedMonth;
+                } else {
+                    harvestSel.value = harvestMonths[0] || 'October';
+                }
+                
+                // Ensure the selection is displayed correctly by triggering change
+                harvestSel.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Add event listener to harvest month dropdown for better UI feedback
+                harvestSel.addEventListener('change', () => {
+                    const selectedMonth = harvestSel.value;
+                    const selectedMonthHindi = hindiMonths[selectedMonth] || selectedMonth;
+                    console.log('Harvest month selected:', selectedMonth, '(' + selectedMonthHindi + ')');
+                });
+
+                // Set area from farmer data
+                document.getElementById('areaAcres').value = farmer.area_in_acres || 1;
+
+                // Event listeners
+                document.getElementById('applySubsidy').addEventListener('click', () => {
+                    window.location.href = '/subsidies/list';
+                });
+                document.getElementById('findBuyer').addEventListener('click', () => {
+                    alert('Marketplace has been removed. Please use the Bidding System to sell your crops.');
+                });
+
+                // Show initial message in Hindi
+                document.getElementById('summary-line').textContent =
+                    `${farmer.name} • ${farmer.market} • ${hindiMonths[farmer.harvest_month] || farmer.harvest_month} • गणना करने के लिए सिमुलेट बटन पर क्लिक करें`;
+            } catch (e) {
+                document.getElementById('summary-line').textContent = 'खेत का डेटा लोड करने में त्रुटि: ' + e.message;
+            }
+        }
+
+        async function simulate() {
+            try {
+                // Clear previous error
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.classList.remove('show');
+
+                const market = document.getElementById('marketSelect').value;
+                const commodity = document.getElementById('commoditySelect').value;
+                const areaAcres = parseFloat(document.getElementById('areaAcres').value || 1);
+                const harvestMonth = document.getElementById('harvestMonth').value;
+                const harvestMonthHindi = hindiMonths[harvestMonth] || harvestMonth;
+                const costPerAcre = parseFloat(document.getElementById('costPerAcre').value || 20000);
+
+                if (!market || !commodity) {
+                    showError('आवश्यक क्षेत्र भरें', 'कृपया बाजार और फसल दोनों चुनें');
+                    return;
+                }
+
+                // Show loader
+                document.getElementById('loaderOverlay').classList.add('active');
+
+                const payload = {
+                    market: market,
+                    commodity: commodity,
+                    area_in_acres: areaAcres,
+                    harvest_month: harvestMonth,
+                    custom_cost_per_acre: costPerAcre
+                };
+
+                const res = await fetch('/profit/api/simulate', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+
+                // Hide loader
+                document.getElementById('loaderOverlay').classList.remove('active');
+
+                const out = await res.json();
+                
+                // Check for API error
+                if (out.error) {
+                    console.error('API error:', out);
+                    showError(out.error, out.details || '');
+                    return;
+                }
+
+                // Check for HTTP error
+                if (!res.ok) {
+                    showError('सर्वर त्रुटि', `त्रुटि कोड: ${res.status}`);
+                    return;
+                }
+
+                const pred = out.prediction;
+                const hindiCommodityName = hindiCommodities[commodity] || commodity;
+
+                // Update result boxes
+                document.getElementById('currentPriceVal').textContent = '₹ ' + Math.round(pred.price_current || 0).toLocaleString('en-IN');
+                document.getElementById('forecastPriceVal').textContent = '₹ ' + Math.round(pred.forecast_price || 0).toLocaleString('en-IN');
+                document.getElementById('totalRevenueVal').textContent = '₹ ' + Math.round(pred.gross_revenue || 0).toLocaleString('en-IN');
+                document.getElementById('totalCostVal').textContent = '₹ ' + Math.round(pred.total_cost || 0).toLocaleString('en-IN');
+
+                // Update metrics
+                document.getElementById('roiVal').textContent = pred.roi || '0%';
+                document.getElementById('marginVal').textContent = pred.profit_margin || '0%';
+                document.getElementById('trendVal').textContent = trendEmojis[pred.price_trend] || pred.price_trend || '?';
+                document.getElementById('breakEvenVal').textContent = (pred.breakeven_months || 0) + ' दिन';
+
+                // Update profit display
+                document.getElementById('netProfitDisplay').textContent = '₹ ' + Math.round(pred.net_profit || 0).toLocaleString('en-IN');
+
+                // Update summary line with AI indicator
+                document.getElementById('summary-line').textContent = 
+                    `${hindiCommodityName} • ${market} • ${harvestMonthHindi} को कटाई • लाभ: ₹${Math.round(pred.net_profit || 0).toLocaleString('en-IN')} • AI: ✅`;
+
+                // Update chart with profit breakdown
+                updateChart(pred, hindiCommodityName);
+
+            } catch (e) {
+                console.error('Simulate error:', e);
+                document.getElementById('loaderOverlay').classList.remove('active');
+                showError('अप्रत्याशित त्रुटि', e.message);
+            }
+        }
+
+        function showError(title, details) {
+            const errorMsg = document.getElementById('errorMessage');
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorDetails').textContent = details;
+            errorMsg.classList.add('show');
+        }
+
+        function updateChart(prediction, commodity) {
+            const ctx = document.getElementById('profitChart');
+            if (!ctx) return;  // Chart element not available
+            
+            const revenue = prediction.gross_revenue || 0;
+            const cost = prediction.total_cost || 0;
+            const profit = prediction.net_profit || 0;
+            
+            // Destroy previous chart if it exists
+            if (profitChart) {
+                profitChart.destroy();
+            }
+            
+            // Create new chart with improved styling
+            profitChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['आय (Revenue)', 'लागत (Cost)', 'लाभ (Profit)'],
+                    datasets: [{
+                        label: commodity,
+                        data: [revenue, cost, profit],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.85)',    // Vibrant green for revenue
+                            'rgba(244, 67, 54, 0.85)',    // Vibrant red for cost
+                            'rgba(33, 150, 243, 0.85)'    // Vibrant blue for profit
+                        ],
+                        borderColor: [
+                            'rgba(56, 142, 60, 1)',       // Darker green
+                            'rgba(211, 47, 47, 1)',       // Darker red
+                            'rgba(21, 101, 192, 1)'       // Darker blue
+                        ],
+                        borderWidth: 2.5,
+                        borderRadius: 6,
+                        hoverBackgroundColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(244, 67, 54, 1)',
+                            'rgba(33, 150, 243, 1)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'x',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {size: 13, weight: 600},
+                                padding: 16,
+                                color: '#333',
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            padding: 12,
+                            titleFont: {size: 13, weight: 'bold'},
+                            bodyFont: {size: 12},
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            borderWidth: 1,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = Math.round(context.parsed.y);
+                                    return '₹ ' + value.toLocaleString('en-IN');
+                                },
+                                afterLabel: function(context) {
+                                    const total = revenue + cost;
+                                    const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+                                    return percentage + '% of total';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹ ' + (value / 1000).toFixed(0) + 'k';
+                                },
+                                font: {size: 11, weight: 500},
+                                color: '#666',
+                                padding: 8
+                            },
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.15)',
+                                drawBorder: false,
+                                lineWidth: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {size: 12, weight: 600},
+                                color: '#333',
+                                padding: 8
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+{% endblock %}

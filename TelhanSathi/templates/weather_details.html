@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Telhan Sathi{% endblock %}
+
+{% block content %}
+<div class="details-wrapper">
+    <!-- Header -->
+    <div class="details-header">
+        <a href="/weather/" class="back-button">← पीछे जाएं</a>
+        <h1>{{ title }}</h1>
+        <span class="farmer-name">{{ farmer_name }}</span>
+    </div>
+
+    <!-- Content -->
+    {% if error %}
+        <div class="error-message">
+            <p>{{ error }}</p>
+            <a href="/weather/" class="btn btn-primary">सिफारिशों पर वापस जाएं</a>
+        </div>
+    {% elif detail_data %}
+                {% if detail_type == 'irrigation' %}
+                    <div class="info-section">
+                        <h2>सिंचाई आवश्यकता</h2>
+                        <p><strong>आवश्यक:</strong> 
+                            {% if detail_data.needed %}हाँ{% else %}नहीं{% endif %}
+                        </p>
+                        {% if detail_data.timing %}
+                            <p><strong>समय:</strong> {{ detail_data.timing }}</p>
+                        {% endif %}
+                        {% if detail_data.quantity_mm %}
+                            <p><strong>मात्रा:</strong> {{ detail_data.quantity_mm }} मिमी</p>
+                        {% endif %}
+                    </div>
+                    {% if detail_data.details %}
+                        <div class="info-section">
+                            <h3>विस्तृत जानकारी</h3>
+                            <p>{{ detail_data.details }}</p>
+                        </div>
+                    {% endif %}
+                    {% if detail_data.reason %}
+                        <div class="info-section">
+                            <h3>कारण</h3>
+                            <p>{{ detail_data.reason }}</p>
+                        </div>
+                    {% endif %}
+
+                {% elif detail_type == 'pest' %}
+                    {% if detail_data is mapping %}
+                        <div class="info-section">
+                            <h2>कीट की जानकारी</h2>
+                            <p><strong>कीट:</strong> {{ detail_data.pest or 'कीट' }}</p>
+                            {% if detail_data.risk_level %}
+                                <p><strong>जोखिम स्तर:</strong> 
+                                    <span class="risk-badge {{ detail_data.risk_level }}">{{ detail_data.risk_level.upper() }}</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                        {% if detail_data.details %}
+                            <div class="info-section">
+                                <h3>विस्तृत जानकारी</h3>
+                                <p>{{ detail_data.details }}</p>
+                            </div>
+                        {% endif %}
+                        {% if detail_data.prevention %}
+                            <div class="info-section">
+                                <h3>रोकथाम के उपाय</h3>
+                                <p>{{ detail_data.prevention }}</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p>कीट की जानकारी उपलब्ध नहीं है।</p>
+                    {% endif %}
+
+                {% elif detail_type == 'fertilizer' %}
+                    <div class="info-section">
+                        <h2>खाद की जानकारी</h2>
+                        {% if detail_data.type %}
+                            <p><strong>प्रकार:</strong> {{ detail_data.type }}</p>
+                        {% endif %}
+                        {% if detail_data.next_application_day %}
+                            <p><strong>अगली बार लगाएं:</strong> दिन {{ detail_data.next_application_day }}</p>
+                        {% endif %}
+                        {% if detail_data.quantity_kg_per_hectare %}
+                            <p><strong>मात्रा:</strong> {{ detail_data.quantity_kg_per_hectare }} किग्रा/हेक्टेयर</p>
+                        {% endif %}
+                    </div>
+                    {% if detail_data.details %}
+                        <div class="info-section">
+                            <h3>विस्तृत जानकारी</h3>
+                            <p>{{ detail_data.details }}</p>
+                        </div>
+                    {% endif %}
+                    {% if detail_data.precautions %}
+                        <div class="info-section">
+                            <h3>सावधानियां</h3>
+                            <p>{{ detail_data.precautions }}</p>
+                        </div>
+                    {% endif %}
+
+                {% elif detail_type == 'weather' %}
+                    {% if detail_data is mapping %}
+                        <div class="info-section">
+                            <h2>मौसम चेतावनी</h2>
+                            {% if detail_data.condition %}
+                                <p><strong>स्थिति:</strong> {{ detail_data.condition }}</p>
+                            {% endif %}
+                            {% if detail_data.timing %}
+                                <p><strong>समय:</strong> {{ detail_data.timing }}</p>
+                            {% endif %}
+                        </div>
+                        {% if detail_data.details %}
+                            <div class="info-section">
+                                <h3>विस्तृत जानकारी</h3>
+                                <p>{{ detail_data.details }}</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p>मौसम की जानकारी उपलब्ध नहीं है।</p>
+                    {% endif %}
+
+                {% elif detail_type == 'seasonal' %}
+                    <div class="info-section">
+                        <h2>मौसमी सुझाव</h2>
+                        {% if detail_data.summary %}
+                            <p><strong>सारांश:</strong> {{ detail_data.summary }}</p>
+                        {% endif %}
+                        {% if detail_data.planting_window %}
+                            <p><strong>बुवाई का समय:</strong> {{ detail_data.planting_window }}</p>
+                        {% endif %}
+                        {% if detail_data.harvest_timeline %}
+                            <p><strong>कटाई का समय:</strong> {{ detail_data.harvest_timeline }}</p>
+                        {% endif %}
+                    </div>
+                    {% if detail_data.details %}
+                        <div class="info-section">
+                            <h3>विस्तृत जानकारी</h3>
+                            <p>{{ detail_data.details }}</p>
+                        </div>
+                    {% endif %}
+
+                {% elif detail_type == 'alerts' %}
+                    {% if detail_data is iterable and detail_data is not string %}
+                        {% for alert in detail_data %}
+                            <div class="info-section alert-section">
+                                {% if alert.type %}
+                                    <h3>{{ alert.type }}</h3>
+                                {% else %}
+                                    <h3>चेतावनी</h3>
+                                {% endif %}
+                                {% if alert.severity %}
+                                    <p><span class="severity-badge {{ alert.severity }}">{{ alert.severity.upper() }}</span></p>
+                                {% endif %}
+                                {% if alert.summary %}
+                                    <p><strong>सारांश:</strong> {{ alert.summary }}</p>
+                                {% endif %}
+                                {% if alert.details %}
+                                    <p><strong>विवरण:</strong> {{ alert.details }}</p>
+                                {% endif %}
+                                {% if alert.action %}
+                                    <div class="action-box">
+                                        <strong>⚡ करने योग्य कदम:</strong>
+                                        <p>{{ alert.action }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>चेतावनी की जानकारी उपलब्ध नहीं है।</p>
+                    {% endif %}
+
+                {% else %}
+                    <p>जानकारी उपलब्ध नहीं है।</p>
+                {% endif %}
+    {% else %}
+        <div class="no-data">
+            <p>{{ title }} के लिए कोई जानकारी उपलब्ध नहीं है।</p>
+            <a href="/weather/" class="btn btn-primary">सिफारिशों पर वापस जाएं</a>
+        </div>
+    {% endif %}
+</div>
+<br><br><br><br>
+
+<style>
+    .details-wrapper {
+        background: white;
+        margin: 16px;
+        margin-top: 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .details-header {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .back-button {
+        display: inline-block;
+        color: #388e3c;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 12px;
+        padding: 8px 0;
+        transition: all 0.2s ease;
+    }
+
+    .back-button:hover {
+        color: #2e7d32;
+    }
+
+    .details-header h1 {
+        margin: 10px 0 8px 0;
+        font-size: 26px;
+        color: #333;
+    }
+
+    .farmer-name {
+        color: #888;
+        font-size: 13px;
+    }
+
+    .info-section {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-section:last-child {
+        border-bottom: none;
+    }
+
+    .info-section h2 {
+        margin: 0 0 12px 0;
+        font-size: 17px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .info-section h3 {
+        margin: 12px 0 8px 0;
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .info-section p {
+        margin: 6px 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    .risk-badge, .severity-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        margin-left: 8px;
+    }
+
+    .risk-badge.high, .severity-badge.high { 
+        background-color: #ffcdd2; 
+        color: #c62828; 
+    }
+
+    .risk-badge.medium, .severity-badge.medium { 
+        background-color: #ffe0b2; 
+        color: #e65100; 
+    }
+
+    .risk-badge.low, .severity-badge.low { 
+        background-color: #e1f5fe; 
+        color: #0277bd; 
+    }
+
+    .alert-section {
+        background-color: #fff3e0;
+        padding: 16px;
+        border-left: 4px solid #f57c00;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .alert-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .action-box {
+        background-color: #e8f5e9;
+        border-left: 4px solid #388e3c;
+        padding: 12px;
+        margin-top: 12px;
+        border-radius: 4px;
+    }
+
+    .action-box strong {
+        color: #2e7d32;
+    }
+
+    .action-box p {
+        margin: 6px 0 0 0;
+        color: #2e7d32;
+    }
+
+    .error-message, .no-data {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+    }
+
+    .error-message p, .no-data p {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #388e3c;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2e7d32;
+    }
+
+    @media (max-width: 768px) {
+        .details-wrapper {
+            margin: 12px;
+            border-radius: 8px;
+        }
+
+        .details-header {
+            padding: 16px;
+        }
+
+        .details-header h1 {
+            font-size: 20px;
+        }
+
+        .info-section {
+            padding: 16px;
+        }
+
+        .info-section h2 {
+            font-size: 15px;
+        }
+    }
+</style>
+
+{% endblock %}

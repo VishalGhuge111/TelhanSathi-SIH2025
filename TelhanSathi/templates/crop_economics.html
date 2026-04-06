@@ -1,0 +1,1338 @@
+{% extends "base.html" %}
+
+{% block title %}फसल अर्थशास्त्र - तेलहान साथी{% endblock %}
+
+{% block content %}
+<style>
+    .ce-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding-bottom: 100px;
+    }
+
+    /* Section */
+    .section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #388e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 16px;
+            height: 16px;
+            fill: #388e3c;
+        }
+
+        /* Price Cards Grid */
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .price-card {
+            background: #fff;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .price-card:hover {
+            border-color: #388e3c;
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .price-card.no-data {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .price-card.no-data:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #e5e7eb;
+        }
+
+        .crop-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .crop-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .crop-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #388e3c;
+            margin-bottom: 4px;
+        }
+
+        .crop-unit {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .crop-count {
+            font-size: 10px;
+            color: #666;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .trend-badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-top: 6px;
+        }
+
+        .trend-badge.up {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .trend-badge.down {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .trend-badge.stable {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            height: 300px;
+            margin-bottom: 16px;
+        }
+
+        .chart-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Comparison Chart */
+        .comparison-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-crop-icon {
+            font-size: 20px;
+        }
+
+        .comparison-crop-name {
+            flex: 1;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .comparison-crop-price {
+            font-weight: 700;
+            color: #388e3c;
+            font-size: 14px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #388e3c;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn-back-home {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-back-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(60, 142, 60, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+            align-items: flex-end;
+        }
+
+        .modal-panel {
+            background: #fff;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            border-radius: 16px 16px 0 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-overlay.active .modal-panel {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d5735 0%, #388e3c 100%);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title-icon {
+            font-size: 24px;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #388e3c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .modal-stat-item {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-stat-label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .modal-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a24;
+        }
+
+        .modal-price-range {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #388e3c;
+            margin-bottom: 16px;
+        }
+
+        .price-range-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .price-range-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .price-range-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .price-range-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #388e3c;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: #fff;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(60, 142, 60, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: #f9fafb;
+            color: #666;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #f0f0f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Market Selection Modal Styles */
+        .market-selection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .market-selection-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .market-selection-modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .market-selection-overlay.active .market-selection-modal {
+            transform: scale(1);
+        }
+
+        .market-selection-header {
+            background: linear-gradient(135deg, #2d5735 0%, #388e3c 100%);
+            color: #fff;
+            padding: 24px 20px;
+            border-radius: 16px 16px 0 0;
+            text-align: center;
+        }
+
+        .market-selection-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .market-selection-title-icon {
+            font-size: 28px;
+        }
+
+        .market-selection-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .market-selection-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .market-selection-description {
+            background: #f0f8f0;
+            border-left: 4px solid #388e3c;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .market-selection-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #388e3c;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .market-selection-dropdown {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23388e3c' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        .market-selection-dropdown:hover {
+            border-color: #388e3c;
+            box-shadow: 0 2px 8px rgba(56, 142, 60, 0.1);
+        }
+
+        .market-selection-dropdown:focus {
+            outline: none;
+            border-color: #388e3c;
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+        }
+
+        .market-selection-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .market-selection-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .market-selection-btn-primary {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: #fff;
+        }
+
+        .market-selection-btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(60, 142, 60, 0.4);
+        }
+
+        .market-selection-btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .market-selection-btn-secondary {
+            background: #f9fafb;
+            color: #666;
+            border: 1px solid #e5e7eb;
+        }
+
+        .market-selection-btn-secondary:hover {
+            background: #f0f0f0;
+        }
+    
+    </style>
+
+    <div class="ce-content" id="main-content">
+        <!-- Market Selection Modal -->
+        <div class="market-selection-overlay" id="marketSelectionOverlay">
+            <div class="market-selection-modal">
+                <div class="market-selection-header">
+                    <div class="market-selection-title">
+                        <span class="market-selection-title-icon">🏪</span>
+                        <span>अपना बाजार चुनें</span>
+                    </div>
+                    <p class="market-selection-subtitle">रियल-टाइम मंडी की कीमतें देखने के लिए</p>
+                </div>
+                <div class="market-selection-content">
+                    <div class="market-selection-description">
+                        अपने बाजार में तिलहन की नवीनतम मंडी की कीमतें देखने के लिए अपना बाजार चुनें। कीमतें सरकारी मंडी डेटा से रियल-टाइम में अपडेट की जाती हैं।
+                    </div>
+                    <label class="market-selection-label">बाजार</label>
+                    <select class="market-selection-dropdown" id="marketDropdown">
+                        <option value="">-- बाजार चुनें --</option>
+                    </select>
+                </div>
+                <div class="market-selection-footer">
+                    <button class="market-selection-btn market-selection-btn-secondary" onclick="skipMarketSelection()">छोड़ें</button>
+                    <button class="market-selection-btn market-selection-btn-primary" id="proceedBtn" onclick="proceedWithMarket()" disabled>कीमतें देखें</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Prices Section -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+                </svg>
+                लाइव तिलहन की कीमतें
+            </div>
+            <div class="price-grid" id="price-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    कीमतों को लोड हो रहा है...
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Comparison Chart -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c0 .83-.67 1.5-1.5 1.5S11 13.33 11 12.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5z"/>
+                </svg>
+                कीमत तुलना
+            </div>
+            <div class="chart-container">
+                <div class="loading" id="comparisonChartLoader">
+                    <div class="spinner"></div>
+                    कीमतों को लोड हो रहा है...
+                </div>
+                <canvas id="comparisonChart" class="chart-canvas" style="display: none;"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Crops by Listings -->
+        <div class="section">
+            <div class="section-title">
+                <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                शीर्ष तिलहन सूचनाएं
+            </div>
+            <div class="comparison-section" id="top-crops-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Details Modal -->
+    <div class="modal-overlay" id="cropModal" onclick="closeCropModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span class="modal-title-icon" id="modalCropIcon">🫘</span>
+                <span id="modalCropName">Crop Name</span>
+            </div>
+            <button class="modal-close" onclick="closeCropModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-content">
+            <!-- Loading Spinner -->
+            <div id="modalLoadingSpinner" class="modal-section" style="text-align: center; padding: 40px 20px;">
+                <div class="spinner" style="width: 40px; height: 40px; border: 4px solid #f0f0f0; border-top: 4px solid #388e3c; margin: 0 auto 12px;"></div>
+                <p style="color: #999; font-size: 14px; margin: 0;" id="loadingText">लोड हो रहा है...</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="modal-section" style="display: none;" id="statsSection">
+                <div class="modal-section-title">बाजार अवलोकन</div>
+                <div class="modal-stats">
+                    <div class="modal-stat-item">
+                        <div class="modal-stat-label">औसत कीमत</div>
+                        <div class="modal-stat-value" id="modalAvgPrice">₹0</div>
+                    </div>
+                    <div class="modal-stat-item">
+                        <div class="modal-stat-label">सक्रिय सूचनाएं</div>
+                        <div class="modal-stat-value" id="modalListings">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="modal-section" style="display: none;" id="priceRangeSection">
+                <div class="modal-section-title">कीमत सीमा</div>
+                <div class="modal-price-range">
+                    <div class="price-range-item">
+                        <span class="price-range-label">सर्वोच्च कीमत</span>
+                        <span class="price-range-value" id="modalMaxPrice">₹0</span>
+                    </div>
+                    <div class="price-range-item">
+                        <span class="price-range-label">न्यूनतम कीमत</span>
+                        <span class="price-range-value" id="modalMinPrice">₹0</span>
+                    </div>
+                    <div class="price-range-item">
+                        <span class="price-range-label">कीमत अंतर</span>
+                        <span class="price-range-value" id="modalPriceDiff">₹0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Trend -->
+            <div class="modal-section" style="display: none;" id="trendSection">
+                <div class="modal-section-title">बाजार अंतर्दृष्टि</div>
+                <div class="modal-stats">
+                    <div class="modal-stat-item">
+                        <div class="modal-stat-label">इकाई</div>
+                        <div class="modal-stat-value" id="modalUnit" style="font-size: 12px;">प्रति क्विंटल</div>
+                    </div>
+                    <div class="modal-stat-item">
+                        <div class="modal-stat-label">प्रवृत्ति</div>
+                        <div class="modal-stat-value" id="modalTrend" style="font-size: 12px; color: #388e3c;">स्थिर</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="modal-section" style="display: none;" id="infoSection">
+                <div class="modal-section-title">जानकारी</div>
+                <div style="background: #f9fafb; padding: 12px; border-radius: 8px; border-left: 3px solid #2196F3;">
+                    <p style="font-size: 12px; color: #666; line-height: 1.5; margin: 0;">
+                        यह बाजार में सभी सक्रिय विक्रेता सूचनाओं से गणना की गई औसत कीमत है। कीमतें गुणवत्ता, स्थान और वर्तमान बाजार मांग के आधार पर भिन्न होती हैं।
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeCropModal()">बंद करें</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+let comparisonChart = null;
+let selectedMarket = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('Loading crop economics data...');
+        
+        // Load and display market selection modal
+        await loadMarketSelectionModal();
+        
+        // Show the modal
+        document.getElementById('marketSelectionOverlay').classList.add('active');
+        
+        // Load prices with initial market (or all if no market selected)
+        const initialMarket = sessionStorage.getItem('selectedMarket') || '';
+        if (initialMarket) {
+            selectedMarket = initialMarket;
+            console.log('Loaded selected market from session:', selectedMarket);
+        }
+        
+    } catch (err) {
+        console.error('Error loading crop economics:', err);
+        document.getElementById('main-content').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <h3>Error Loading Data</h3>
+                <p>${err.message}</p>
+            </div>
+        `;
+    }
+});
+
+async function loadMarketSelectionModal() {
+    try {
+        // Use hardcoded markets list or fetch from API
+        const markets = ['Chennai', 'Delhi', 'Indore', 'Mumbai', 'Surat'];
+        
+        const marketDropdown = document.getElementById('marketDropdown');
+        const proceedBtn = document.getElementById('proceedBtn');
+        
+        // Populate dropdown
+        markets.forEach(market => {
+            const option = document.createElement('option');
+            option.value = market;
+            option.textContent = market;
+            marketDropdown.appendChild(option);
+        });
+        
+        // Check if there's a saved market
+        const savedMarket = sessionStorage.getItem('selectedMarket');
+        if (savedMarket && markets.includes(savedMarket)) {
+            marketDropdown.value = savedMarket;
+            proceedBtn.disabled = false;
+        }
+        
+        // Enable/disable proceed button based on selection
+        marketDropdown.addEventListener('change', (e) => {
+            proceedBtn.disabled = !e.target.value;
+        });
+    } catch (err) {
+        console.error('Error loading markets:', err);
+    }
+}
+
+function skipMarketSelection() {
+    sessionStorage.removeItem('selectedMarket');
+    selectedMarket = null;
+    closeMarketSelectionModal();
+    loadPricesData();
+}
+
+function proceedWithMarket() {
+    const selectedOption = document.getElementById('marketDropdown').value;
+    if (selectedOption) {
+        selectedMarket = selectedOption;
+        sessionStorage.setItem('selectedMarket', selectedOption);
+        console.log('Proceeding with market:', selectedMarket);
+        closeMarketSelectionModal();
+        loadPricesData();
+    }
+}
+
+function closeMarketSelectionModal() {
+    document.getElementById('marketSelectionOverlay').classList.remove('active');
+}
+
+async function loadPricesData() {
+    try {
+        console.log('Loading prices for market:', selectedMarket || 'All Markets');
+        await loadPrices();
+        await loadComparisonChart();
+        await loadTopCrops();
+
+        // Refresh prices every 30 seconds
+        setInterval(async () => {
+            console.log('Refreshing prices...');
+            await loadPrices();
+            await loadComparisonChart();
+        }, 30000);
+    } catch (err) {
+        console.error('Error loading prices data:', err);
+        document.getElementById('main-content').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <h3>Error Loading Data</h3>
+                <p>${err.message}</p>
+            </div>
+        `;
+    }
+}
+
+async function loadPrices() {
+    try {
+        let url = '/crop-economics/api/prices';
+        if (selectedMarket) {
+            url += `?market=${encodeURIComponent(selectedMarket)}`;
+        }
+        
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (resp.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        if (!resp.ok) {
+            throw new Error(`Failed to load prices: ${resp.status}`);
+        }
+
+        const prices = await resp.json();
+        console.log('Prices loaded:', prices);
+
+        let html = '';
+        for (const [crop_key, data] of Object.entries(prices)) {
+            const hasData = data.count > 0;
+            const trendClass = data.average > data.min ? 'up' : data.average < data.max ? 'down' : 'stable';
+            
+            html += `
+                <div class="price-card ${!hasData ? 'no-data' : ''}" 
+                     ${hasData ? `onclick="showCropDetails('${crop_key}')"` : ''}>
+                    <div class="crop-icon">${data.icon}</div>
+                    <div class="crop-name">${data.crop_name}</div>
+                    ${hasData ? `
+                        <div class="crop-price">₹${data.average}</div>
+                        <div class="crop-unit">${data.unit}</div>
+                        <div class="crop-count">${data.count} ${selectedMarket ? 'in ' + selectedMarket : 'markets'}</div>
+                        <div class="trend-badge ${trendClass}">
+                            ${data.average > data.min ? '↑ Rising' : data.average < data.max ? '↓ Falling' : '→ Stable'}
+                        </div>
+                    ` : `
+                        <div class="crop-price">N/A</div>
+                        <div class="crop-unit">No data</div>
+                    `}
+                </div>
+            `;
+        }
+
+        document.getElementById('price-grid').innerHTML = html;
+    } catch (err) {
+        console.error('Error loading prices:', err);
+        document.getElementById('price-grid').innerHTML = `<div class="empty-state"><p>Failed to load prices</p></div>`;
+    }
+}
+
+async function loadComparisonChart() {
+    try {
+        let url = '/crop-economics/api/comparison';
+        if (selectedMarket) {
+            url += `?market=${encodeURIComponent(selectedMarket)}`;
+        }
+        
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (!resp.ok) throw new Error('Failed to load comparison data');
+
+        const comparison = await resp.json();
+        console.log('Comparison data:', comparison);
+
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+        if (comparisonChart) {
+            comparisonChart.destroy();
+        }
+
+        // Filter only crops with price > 0
+        const validData = comparison.filter(item => item.price > 0);
+
+        if (validData.length === 0) {
+            document.getElementById('comparisonChart').style.display = 'none';
+            document.getElementById('comparisonChartLoader').style.display = 'none';
+            document.querySelector('.chart-container').innerHTML = '<div class="empty-state"><p>अभी कोई कीमत डेटा उपलब्ध नहीं है</p></div>';
+            return;
+        }
+
+        comparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: validData.map(item => item.crop),
+                datasets: [{
+                    label: 'Average Price (₹)',
+                    data: validData.map(item => item.price),
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#81C784',
+                        '#66BB6A',
+                        '#2E7D32',
+                        '#388E3C',
+                        '#43A047',
+                        '#558B2F'
+                    ],
+                    borderColor: '#2d5735',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'x',
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: { size: 12 },
+                            color: '#666'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10,
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 11 },
+                        callbacks: {
+                            label: function (context) {
+                                return '₹' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            callback: function(value) { 
+                                return '₹' + value; 
+                            },
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: { font: { size: 11 } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('comparisonChartLoader').style.display = 'none';
+        document.getElementById('comparisonChart').style.display = 'block';
+    } catch (err) {
+        console.error('Error loading comparison chart:', err);
+        document.getElementById('comparisonChartLoader').style.display = 'none';
+        document.querySelector('.chart-container').innerHTML = '<div class="empty-state"><p>कीमत डेटा लोड करने में त्रुटि</p></div>';
+    }
+}
+
+async function loadTopCrops() {
+    try {
+        let url = '/crop-economics/api/top-crops';
+        if (selectedMarket) {
+            url += `?market=${encodeURIComponent(selectedMarket)}`;
+        }
+        
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        if (!resp.ok) throw new Error('Failed to load top crops');
+
+        const topCrops = await resp.json();
+        console.log('Top crops:', topCrops);
+
+        if (topCrops.length === 0) {
+            document.getElementById('top-crops-container').innerHTML = '<div class="empty-state"><p>No crop data available</p></div>';
+            return;
+        }
+
+        let html = '';
+        for (const crop of topCrops) {
+            html += `
+                <div class="comparison-item">
+                    <div class="comparison-crop-icon">${crop.icon}</div>
+                    <div class="comparison-crop-name">${crop.name}</div>
+                    <div class="comparison-crop-price">₹${crop.price}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById('top-crops-container').innerHTML = html;
+    } catch (err) {
+        console.error('Error loading top crops:', err);
+        document.getElementById('top-crops-container').innerHTML = `<div class="empty-state"><p>Error loading data</p></div>`;
+    }
+}
+
+// Store current crop key
+let currentCropKey = null;
+
+function showCropDetails(cropKey) {
+    console.log('Showing details for:', cropKey);
+    currentCropKey = cropKey;
+
+    // Open modal with loading state
+    document.getElementById('cropModal').classList.add('active');
+    
+    // Show loading spinner, hide content sections
+    document.getElementById('modalLoadingSpinner').style.display = 'block';
+    document.getElementById('statsSection').style.display = 'none';
+    document.getElementById('priceRangeSection').style.display = 'none';
+    document.getElementById('trendSection').style.display = 'none';
+    document.getElementById('infoSection').style.display = 'none';
+
+    // Fetch prices to get crop data
+    fetch('/crop-economics/api/prices', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(prices => {
+            const cropData = prices[cropKey];
+            if (!cropData) {
+                console.error('Crop data not found');
+                return;
+            }
+
+            // Populate modal
+            document.getElementById('modalCropIcon').textContent = cropData.icon;
+            document.getElementById('modalCropName').textContent = cropData.crop_name;
+            document.getElementById('modalAvgPrice').textContent = `₹${cropData.average}`;
+            document.getElementById('modalListings').textContent = cropData.count;
+            document.getElementById('modalMaxPrice').textContent = `₹${cropData.max}`;
+            document.getElementById('modalMinPrice').textContent = `₹${cropData.min}`;
+            document.getElementById('modalPriceDiff').textContent = `₹${cropData.max - cropData.min}`;
+            document.getElementById('modalUnit').textContent = cropData.unit;
+            
+            // Set trend
+            let trendText = '';
+            if (cropData.average > cropData.min) {
+                trendText = '↑ Rising';
+            } else if (cropData.average < cropData.max) {
+                trendText = '↓ Falling';
+            } else {
+                trendText = '→ Stable';
+            }
+            document.getElementById('modalTrend').textContent = trendText;
+            
+            // Load price history chart
+            loadPriceHistoryChart(cropKey);
+        })
+        .catch(err => {
+            console.error('Error loading crop details:', err);
+            document.getElementById('modalLoadingSpinner').innerHTML = '<p style="color: #d32f2f; font-size: 14px;">डेटा लोड करने में त्रुटि</p>';
+        });
+}
+
+async function loadPriceHistoryChart(cropKey) {
+    try {
+        const resp = await fetch(`/crop-economics/api/price-history/${cropKey}`, { credentials: 'same-origin' });
+        console.log('Price history response:', resp.status);
+        
+        if (!resp.ok) {
+            console.error('Failed to load price history:', resp.status);
+            showChartError('Failed to load price history');
+            return;
+        }
+
+        const historyData = await resp.json();
+        console.log('Price history data:', historyData);
+
+        // Get the modal content
+        const modalContent = document.querySelector('.modal-content');
+        if (!modalContent) {
+            console.error('Modal content not found');
+            return;
+        }
+
+        // Check if chart container already exists
+        let chartContainer = document.getElementById('priceHistoryChartContainer');
+        if (chartContainer) {
+            chartContainer.remove();
+        }
+
+        // Create chart container
+        chartContainer = document.createElement('div');
+        chartContainer.id = 'priceHistoryChartContainer';
+        chartContainer.className = 'modal-section';
+        chartContainer.style.cssText = `
+            margin-top: 16px;
+            margin-bottom: 16px;
+        `;
+        
+        const chartTitle = document.createElement('div');
+        chartTitle.className = 'modal-section-title';
+        chartTitle.textContent = '6-Month Price Trend';
+        chartContainer.appendChild(chartTitle);
+        
+        const chartWrapper = document.createElement('div');
+        chartWrapper.style.cssText = `
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            height: 280px;
+        `;
+        chartWrapper.innerHTML = '<canvas id="priceHistoryChart"></canvas>';
+        chartContainer.appendChild(chartWrapper);
+        
+        // Insert chart after the last modal-section
+        const lastSection = modalContent.querySelector('.modal-section:last-of-type');
+        if (lastSection) {
+            lastSection.after(chartContainer);
+        } else {
+            modalContent.appendChild(chartContainer);
+        }
+
+        // Get canvas context
+        const ctx = document.getElementById('priceHistoryChart');
+        if (!ctx) {
+            console.error('Chart canvas not found');
+            showChartError('Could not create chart');
+            return;
+        }
+
+        // Destroy existing chart if any
+        try {
+            if (window.priceHistoryChart && typeof window.priceHistoryChart.destroy === 'function') {
+                window.priceHistoryChart.destroy();
+            }
+        } catch (e) {
+            console.log('Could not destroy previous chart:', e);
+        }
+        window.priceHistoryChart = null;
+
+        // Prepare data
+        const history = historyData.history || [];
+        console.log('History records:', history.length);
+        
+        if (history.length === 0) {
+            chartWrapper.innerHTML = '<p style="text-align: center; color: #999; padding: 40px 20px;">No price history available</p>';
+            return;
+        }
+
+        // Create bar chart with monthly data
+        const ctx2d = ctx.getContext('2d');
+        window.priceHistoryChart = new Chart(ctx2d, {
+            type: 'bar',
+            data: {
+                labels: history.map(h => h.month || h.date),
+                datasets: [{
+                    label: 'Average Price (₹)',
+                    data: history.map(h => h.price),
+                    backgroundColor: '#4CAF50',
+                    borderColor: '#2E7D32',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    hoverBackgroundColor: '#2E7D32',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'x',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 12, weight: 'bold' },
+                            padding: 12,
+                            color: '#333'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Last 12 Months Price Trend',
+                        font: { size: 14, weight: 'bold' },
+                        color: '#388e3c',
+                        padding: 12
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + Math.round(value);
+                            },
+                            font: { size: 11 },
+                            color: '#666'
+                        },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#666'
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Hide loading spinner and show content sections
+        document.getElementById('modalLoadingSpinner').style.display = 'none';
+        document.getElementById('statsSection').style.display = 'block';
+        document.getElementById('priceRangeSection').style.display = 'block';
+        document.getElementById('trendSection').style.display = 'block';
+        document.getElementById('infoSection').style.display = 'block';
+
+    } catch (error) {
+        console.error('Error loading price history chart:', error);
+        showChartError('Failed to load price history: ' + error.message);
+        // Hide loading spinner even on error
+        document.getElementById('modalLoadingSpinner').style.display = 'none';
+        document.getElementById('statsSection').style.display = 'block';
+        document.getElementById('priceRangeSection').style.display = 'block';
+        document.getElementById('trendSection').style.display = 'block';
+        document.getElementById('infoSection').style.display = 'block';
+    }
+}
+
+function showChartError(message) {
+    let chartContainer = document.getElementById('priceHistoryChartContainer');
+    if (chartContainer) {
+        chartContainer.innerHTML = `<p style="text-align: center; color: #d32f2f; padding: 40px 20px; font-size: 14px;">${message}</p>`;
+    }
+}
+
+function closeCropModal(event) {
+    // Close if clicking overlay background
+    if (event && event.target.id !== 'cropModal') return;
+    
+    const modal = document.getElementById('cropModal');
+    modal.classList.remove('active');
+    currentCropKey = null;
+}
+
+
+</script>
+{% endblock %}

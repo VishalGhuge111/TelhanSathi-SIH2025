@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>खरीदार पंजीकरण - तेलहान साथी</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+            --bg-light: #f9fafb;
+            --text-dark: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            padding: 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 35px 25px;
+            text-align: center;
+        }
+
+        .register-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .register-header p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+        .register-body {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .alert {
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Header -->
+        <div class="register-header">
+            <h1>📝 Create Buyer Account</h1>
+            <p>Join Telhan Sathi Marketplace</p>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="register-body">
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('buyer_auth.buyer_register_post') }}">
+                <div class="form-group">
+                    <label for="buyer_name">👤 Full Name</label>
+                    <input type="text" id="buyer_name" name="buyer_name" placeholder="Your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">📧 Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">🔐 Password</label>
+                        <input type="password" id="password" name="password" placeholder="Min 6 characters" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">✓ Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">📱 Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number">
+                </div>
+
+                <div class="form-group">
+                    <label for="company_name">🏢 Company Name (Optional)</label>
+                    <input type="text" id="company_name" name="company_name" placeholder="Your company name">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">🏠 Address</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your full address" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="district">📍 District</label>
+                        <input type="text" id="district" name="district" placeholder="District">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">🗺️ State</label>
+                        <select id="state" name="state">
+                            <option value="Maharashtra" selected>Maharashtra</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-button">
+                    ✅ Create Account
+                </button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="{{ url_for('buyer_auth.buyer_login') }}">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long');
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

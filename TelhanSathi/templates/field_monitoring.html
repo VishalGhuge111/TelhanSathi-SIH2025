@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Garden Dashboard{% endblock %}
+
+{% block style %}
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .main-content {
+        background: #0f172a;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        padding: 12px;
+        padding-bottom: 100px;
+        overflow-y: auto;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .sensor-card {
+        transition: all 0.3s ease;
+    }
+    
+    .sensor-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+    }
+    
+    /* Override frame max-width for garden dashboard */
+    .frame {
+        max-width: 100%;
+        background-color: #0f172a;
+    }
+    
+    .header-title {
+        font-size: 18px;
+        font-weight: bold;
+        flex-grow: 1;
+        text-align: center;
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 8px;
+            padding-bottom: 100px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 24px !important;
+        }
+        
+        .dashboard-header p {
+            font-size: 12px !important;
+        }
+        
+        .status-container {
+            font-size: 12px;
+        }
+        
+        .status-container #statusIndicator {
+            font-size: 12px !important;
+        }
+        
+        #lastUpdate {
+            font-size: 10px !important;
+        }
+        
+        .sensor-card {
+            padding: 12px !important;
+        }
+        
+        .sensor-card h2 {
+            font-size: 11px !important;
+        }
+        
+        .sensor-card p {
+            font-size: 20px !important;
+        }
+        
+        .sensor-card .text-4xl {
+            font-size: 28px !important;
+        }
+        
+        .info-card {
+            padding: 12px !important;
+        }
+        
+        .info-card h3 {
+            font-size: 11px !important;
+        }
+        
+        .info-card p {
+            font-size: 16px !important;
+        }
+        
+        .chart-container {
+            padding: 12px !important;
+        }
+        
+        .chart-container h2 {
+            font-size: 13px !important;
+            margin-bottom: 8px !important;
+        }
+        
+        canvas {
+            max-height: 200px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .main-content {
+            padding: 6px;
+            padding-bottom: 100px;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 12px !important;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 20px !important;
+        }
+        
+        .dashboard-header p {
+            display: none;
+        }
+        
+        .status-container {
+            gap: 4px;
+        }
+        
+        .status-container #statusIndicator {
+            font-size: 11px !important;
+        }
+        
+        #lastUpdate {
+            font-size: 9px !important;
+        }
+        
+        .sensor-grid {
+            gap: 6px !important;
+        }
+        
+        .sensor-card {
+            padding: 10px !important;
+        }
+        
+        .sensor-card h2 {
+            font-size: 10px !important;
+        }
+        
+        .sensor-card p {
+            font-size: 18px !important;
+        }
+        
+        .sensor-card .text-4xl {
+            font-size: 24px !important;
+        }
+        
+        .info-row {
+            gap: 6px !important;
+        }
+        
+        .info-card {
+            padding: 10px !important;
+        }
+        
+        .info-card h3 {
+            font-size: 10px !important;
+        }
+        
+        .info-card p {
+            font-size: 14px !important;
+        }
+        
+        .charts-grid {
+            gap: 6px !important;
+        }
+        
+        .chart-container {
+            padding: 10px !important;
+        }
+        
+        .chart-container h2 {
+            font-size: 12px !important;
+            margin-bottom: 6px !important;
+        }
+        
+        canvas {
+            max-height: 150px !important;
+        }
+    }
+    
+    /* Ensure charts are responsive */
+    .chart-wrapper {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-header flex justify-between items-start mb-4 lg:mb-6 md:mb-5">
+    <div class="flex-1">
+        <h1 class="text-2xl lg:text-4xl md:text-3xl font-bold text-green-400">🌱 Smart Garden</h1>
+        <p class="text-xs lg:text-sm md:text-xs text-gray-400 mt-1 lg:mt-2">Live Sensor Monitoring Dashboard</p>
+    </div>
+    <div class="status-container text-right ml-2">
+        <p id="statusIndicator" class="text-xs lg:text-lg md:text-sm font-bold text-green-400 pulse">● LIVE</p>
+        <p id="lastUpdate" class="text-xs lg:text-sm text-gray-500">Updating...</p>
+    </div>
+</div>
+
+<!-- Sensor Cards Grid -->
+<div class="sensor-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 lg:gap-4 md:gap-3 mb-4 lg:mb-8 md:mb-6">
+        
+        <!-- Air Temperature -->
+        <div class="sensor-card p-3 lg:p-5 md:p-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h2 class="text-xs lg:text-sm md:text-xs text-gray-400">Air Temp</h2>
+                    <p id="airTemp" class="text-lg lg:text-3xl md:text-2xl font-bold text-red-400">--°C</p>
+                </div>
+                <div class="text-3xl lg:text-4xl md:text-3xl">🌡️</div>
+            </div>
+        </div>
+
+        <!-- Air Humidity -->
+        <div class="sensor-card p-3 lg:p-5 md:p-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h2 class="text-xs lg:text-sm md:text-xs text-gray-400">Humidity</h2>
+                    <p id="airHum" class="text-lg lg:text-3xl md:text-2xl font-bold text-blue-400">--%</p>
+                </div>
+                <div class="text-3xl lg:text-4xl md:text-3xl">💧</div>
+            </div>
+        </div>
+
+        <!-- Heat Index -->
+        <div class="sensor-card p-3 lg:p-5 md:p-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h2 class="text-xs lg:text-sm md:text-xs text-gray-400">Heat Index</h2>
+                    <p id="heatIndex" class="text-lg lg:text-3xl md:text-2xl font-bold text-orange-400">--°C</p>
+                </div>
+                <div class="text-3xl lg:text-4xl md:text-3xl">🔥</div>
+            </div>
+        </div>
+
+        <!-- Soil Moisture -->
+        <div class="sensor-card p-3 lg:p-5 md:p-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h2 class="text-xs lg:text-sm md:text-xs text-gray-400">Soil Moist</h2>
+                    <p id="soilMoist" class="text-lg lg:text-3xl md:text-2xl font-bold text-yellow-400">--%</p>
+                </div>
+                <div class="text-3xl lg:text-4xl md:text-3xl">🌱</div>
+            </div>
+        </div>
+
+        <!-- Light Level -->
+        <div class="sensor-card p-3 lg:p-5 md:p-4 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h2 class="text-xs lg:text-sm md:text-xs text-gray-400">Light</h2>
+                    <p id="light" class="text-lg lg:text-3xl md:text-2xl font-bold text-purple-400">-- lux</p>
+                </div>
+                <div class="text-3xl lg:text-4xl md:text-3xl">☀️</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Secondary Info Row -->
+    <div class="info-row grid grid-cols-2 sm:grid-cols-3 gap-2 lg:gap-4 md:gap-3 mb-4 lg:mb-8 md:mb-6">
+        
+        <!-- Soil Temperature -->
+        <div class="info-card p-2 lg:p-4 md:p-3 bg-slate-800 rounded-lg border border-slate-700">
+            <h3 class="text-xs lg:text-sm md:text-xs text-gray-400 mb-1 lg:mb-2">Soil Temp</h3>
+            <p id="soilTemp" class="text-base lg:text-2xl md:text-xl font-bold text-cyan-400">--°C</p>
+        </div>
+
+        <!-- WiFi Signal -->
+        <div class="info-card p-2 lg:p-4 md:p-3 bg-slate-800 rounded-lg border border-slate-700">
+            <h3 class="text-xs lg:text-sm md:text-xs text-gray-400 mb-1 lg:mb-2">WiFi (RSSI)</h3>
+            <p id="rssi" class="text-base lg:text-2xl md:text-xl font-bold text-green-400">-- dBm</p>
+        </div>
+
+        <!-- Device Uptime -->
+        <div class="info-card p-2 lg:p-4 md:p-3 bg-slate-800 rounded-lg border border-slate-700">
+            <h3 class="text-xs lg:text-sm md:text-xs text-gray-400 mb-1 lg:mb-2">Uptime</h3>
+            <p id="uptime" class="text-base lg:text-2xl md:text-xl font-bold text-indigo-400">-- s</p>
+        </div>
+
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-6 md:gap-4 mb-6">
+
+        <div class="chart-container bg-slate-900 p-2 lg:p-5 md:p-4 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <h2 class="text-xs lg:text-lg md:text-sm font-bold mb-2 lg:mb-4 text-green-400">Temperature Trend</h2>
+            <div class="chart-wrapper" style="height: 150px; width: 100%;">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container bg-slate-900 p-2 lg:p-5 md:p-4 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <h2 class="text-xs lg:text-lg md:text-sm font-bold mb-2 lg:mb-4 text-yellow-400">Soil Moisture Trend</h2>
+            <div class="chart-wrapper" style="height: 150px; width: 100%;">
+                <canvas id="moistChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container bg-slate-900 p-2 lg:p-5 md:p-4 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <h2 class="text-xs lg:text-lg md:text-sm font-bold mb-2 lg:mb-4 text-blue-400">Humidity Trend</h2>
+            <div class="chart-wrapper" style="height: 150px; width: 100%;">
+                <canvas id="humidityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container bg-slate-900 p-2 lg:p-5 md:p-4 rounded-lg lg:rounded-xl shadow-lg border border-slate-700">
+            <h2 class="text-xs lg:text-lg md:text-sm font-bold mb-2 lg:mb-4 text-purple-400">Light Intensity Trend</h2>
+            <div class="chart-wrapper" style="height: 150px; width: 100%;">
+                <canvas id="lightChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connectionAlert" class="hidden p-3 lg:p-4 md:p-3 bg-red-900 border border-red-700 rounded-lg text-xs lg:text-sm text-red-200 mb-4">
+        ⚠️ Lost connection to ESP32. Attempting to reconnect...
+    </div>
+
+    <script>
+    let tempChart, moistChart, humidityChart, lightChart;
+    let chartData = {
+        labels: [],
+        temps: [],
+        moisture: [],
+        humidity: [],
+        light: []
+    };
+    const MAX_POINTS = 60; // Keep last 60 data points
+
+    // Initialize Charts with responsive options
+    function initCharts() {
+        const isMobile = window.innerWidth < 768;
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { 
+                    display: !isMobile,
+                    labels: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        font: { size: isMobile ? 10 : 12 }
+                    } 
+                } 
+            },
+            scales: {
+                y: { 
+                    grid: { color: 'rgba(255,255,255,0.1)' }, 
+                    ticks: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        font: { size: isMobile ? 9 : 11 }
+                    } 
+                },
+                x: { 
+                    grid: { color: 'rgba(255,255,255,0.1)' }, 
+                    ticks: { 
+                        color: 'rgba(255,255,255,0.7)',
+                        font: { size: isMobile ? 8 : 10 },
+                        maxTicksLimit: isMobile ? 4 : 8
+                    } 
+                }
+            }
+        };
+
+        tempChart = new Chart(document.getElementById('tempChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    { label: "Air Temp", data: chartData.temps, borderColor: "#f87171", backgroundColor: "rgba(248, 113, 113, 0.1)", tension: 0.4, borderWidth: 2 },
+                    { label: "Soil Temp", data: [], borderColor: "#94a3b8", backgroundColor: "rgba(148, 163, 184, 0.1)", tension: 0.4, borderWidth: 2 }
+                ]
+            },
+            options: chartOptions
+        });
+
+        moistChart = new Chart(document.getElementById('moistChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{ label: "Soil Moisture %", data: chartData.moisture, borderColor: "#facc15", backgroundColor: "rgba(250, 204, 21, 0.1)", tension: 0.4, borderWidth: 2 }]
+            },
+            options: chartOptions
+        });
+
+        humidityChart = new Chart(document.getElementById('humidityChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{ label: "Humidity %", data: chartData.humidity, borderColor: "#60a5fa", backgroundColor: "rgba(96, 165, 250, 0.1)", tension: 0.4, borderWidth: 2 }]
+            },
+            options: chartOptions
+        });
+
+        lightChart = new Chart(document.getElementById('lightChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{ label: "Light (Lux)", data: chartData.light, borderColor: "#a78bfa", backgroundColor: "rgba(167, 139, 250, 0.1)", tension: 0.4, borderWidth: 2 }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // Update UI with latest data
+    function updateUI(data) {
+        if (!data.current) return;
+
+        const current = data.current;
+        
+        // Update sensor cards
+        document.getElementById("airTemp").innerHTML = current.airTemp?.toFixed(1) + "°C" || "--°C";
+        document.getElementById("airHum").innerHTML = current.airHum?.toFixed(1) + "%" || "--%";
+        document.getElementById("heatIndex").innerHTML = current.heatIndex?.toFixed(1) + "°C" || "--°C";
+        document.getElementById("soilMoist").innerHTML = current.soilMoist + "%" || "--%";
+        document.getElementById("light").innerHTML = current.light?.toFixed(0) + " lux" || "-- lux";
+        document.getElementById("soilTemp").innerHTML = current.soilTemp?.toFixed(1) + "°C" || "--°C";
+        document.getElementById("rssi").innerHTML = current.rssi + " dBm" || "-- dBm";
+        document.getElementById("uptime").innerHTML = (current.uptime / 60).toFixed(1) + " min" || "-- s";
+        document.getElementById("lastUpdate").innerHTML = "Last: " + (current.timestamp || "--:--:--");
+
+        // Update charts with history
+        if (data.history && data.history.length > 0) {
+            chartData.labels = data.history.map(x => x.timestamp).slice(-MAX_POINTS);
+            chartData.temps = data.history.map(x => x.airTemp).slice(-MAX_POINTS);
+            chartData.moisture = data.history.map(x => x.soilMoist).slice(-MAX_POINTS);
+            chartData.humidity = data.history.map(x => x.airHum).slice(-MAX_POINTS);
+            chartData.light = data.history.map(x => x.light).slice(-MAX_POINTS);
+
+            // Add soil temps to first chart
+            tempChart.data.datasets[1].data = data.history.map(x => x.soilTemp).slice(-MAX_POINTS);
+            tempChart.data.labels = chartData.labels;
+            tempChart.data.datasets[0].data = chartData.temps;
+            tempChart.update('none');
+
+            moistChart.data.labels = chartData.labels;
+            moistChart.data.datasets[0].data = chartData.moisture;
+            moistChart.update('none');
+
+            humidityChart.data.labels = chartData.labels;
+            humidityChart.data.datasets[0].data = chartData.humidity;
+            humidityChart.update('none');
+
+            lightChart.data.labels = chartData.labels;
+            lightChart.data.datasets[0].data = chartData.light;
+            lightChart.update('none');
+        }
+    }
+
+    // Real-time SSE connection
+    function connectSSE() {
+        const eventSource = new EventSource("/field-monitoring/api/stream");
+        
+        eventSource.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                updateUI({ current: data, history: chartData.temps.length > 0 ? [data] : [] });
+                document.getElementById("statusIndicator").textContent = "● LIVE";
+                document.getElementById("connectionAlert").classList.add("hidden");
+            } catch (err) {
+                console.log("SSE Parse error:", err);
+            }
+        };
+
+        eventSource.onerror = function() {
+            document.getElementById("statusIndicator").textContent = "● OFFLINE";
+            document.getElementById("connectionAlert").classList.remove("hidden");
+            eventSource.close();
+            setTimeout(connectSSE, 5000); // Reconnect after 5s
+        };
+    }
+
+    // Fetch full data initially
+    async function loadData() {
+        try {
+            let res = await fetch("/field-monitoring/api/data");
+            let data = await res.json();
+            updateUI(data);
+        } catch (err) {
+            console.log("Error fetching data:", err);
+        }
+    }
+
+    // Handle window resize for responsive charts
+    window.addEventListener('resize', function() {
+        if (tempChart) tempChart.resize();
+        if (moistChart) moistChart.resize();
+        if (humidityChart) humidityChart.resize();
+        if (lightChart) lightChart.resize();
+    });
+
+    // Init
+    initCharts();
+    loadData();
+    connectSSE();
+    </script>
+
+{% endblock %}

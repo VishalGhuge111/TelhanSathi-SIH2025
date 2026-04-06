@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Management - TelhanSathi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-brand:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .farmers-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filters-header h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .filter-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            background: #764ba2;
+        }
+
+        .farmers-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .farmers-table thead {
+            background: #f9f9f9;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .farmers-table th {
+            padding: 15px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .farmers-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .farmers-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .farmer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-verified {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-unverified {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-active {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge-inactive {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #1976d2;
+        }
+
+        .btn-verify {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-verify:hover {
+            background: #388e3c;
+        }
+
+        .btn-unverify {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-unverify:hover {
+            background: #e68900;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            margin: 20px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .farmer-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-group {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-close-modal {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-close-modal:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-verify-modal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-verify-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .coins-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .coins-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .coin-stat {
+            text-align: center;
+        }
+
+        .coin-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .coin-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-brand" onclick="window.location.href='/admin/dashboard'">TelhanSathi Admin</div>
+        <div class="navbar-right">
+            <a href="/admin/dashboard" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>👨‍🌾 Farmer Management</h1>
+        </div>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Farmers</div>
+                <div class="stat-value">{{ stats.total_farmers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Verified Farmers</div>
+                <div class="stat-value">{{ stats.verified_farmers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Farmers</div>
+                <div class="stat-value">{{ stats.active_farmers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Coins Spent by Farmers</div>
+                <div class="stat-value">₹{{ stats.total_coins_spent }}</div>
+            </div>
+        </div>
+
+        <!-- Farmers Section -->
+        <div class="farmers-section">
+            <div class="filters-header">
+                <h2>Farmers</h2>
+                <div class="filter-group">
+                    <input type="text" id="searchInput" class="filter-input" placeholder="Search by name, phone, or Farmer ID...">
+                    <select id="districtFilter" class="filter-select">
+                        <option value="">All Districts</option>
+                    </select>
+                    <select id="verificationFilter" class="filter-select">
+                        <option value="">All Farmers</option>
+                        <option value="true">Verified</option>
+                        <option value="false">Unverified</option>
+                    </select>
+                    <button class="filter-btn" onclick="applyFilters()">🔍 Filter</button>
+                </div>
+            </div>
+
+            <div id="tableContainer">
+                {% if farmers %}
+                <table class="farmers-table">
+                    <thead>
+                        <tr>
+                            <th>Farmer ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>District</th>
+                            <th>Status</th>
+                            <th>Coins Earned</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for farmer in farmers %}
+                        <tr>
+                            <td>{{ farmer.farmer_id }}</td>
+                            <td class="farmer-name">{{ farmer.name }}</td>
+                            <td>{{ farmer.phone_number }}</td>
+                            <td>{{ farmer.district or 'N/A' }}</td>
+                            <td>
+                                {% if farmer.is_verified %}
+                                <span class="badge badge-verified">✓ Verified</span>
+                                {% else %}
+                                <span class="badge badge-unverified">✗ Unverified</span>
+                                {% endif %}
+                                {% if farmer.onboarding_completed %}
+                                <span class="badge badge-active">Active</span>
+                                {% else %}
+                                <span class="badge badge-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>₹{{ farmer.coins_earned }}</strong></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view" onclick="viewFarmerDetails('{{ farmer.id }}')">👁️ View</button>
+                                    {% if farmer.is_verified %}
+                                    <button class="btn-small btn-unverify" onclick="toggleVerification('{{ farmer.id }}', false)">✗ Unverify</button>
+                                    {% else %}
+                                    <button class="btn-small btn-verify" onclick="toggleVerification('{{ farmer.id }}', true)">✓ Verify</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="no-data">
+                    <p>No farmers found</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Farmer Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Farmer Details</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody" class="loading">
+                <div class="spinner"></div>
+                <p>Loading farmer details...</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-close-modal" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load districts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDistricts();
+        });
+
+        function loadDistricts() {
+            fetch('/admin/api/farmers/districts')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Districts Response:', data);
+                    
+                    if (data && data.success && Array.isArray(data.districts)) {
+                        const select = document.getElementById('districtFilter');
+                        data.districts.forEach(district => {
+                            const option = document.createElement('option');
+                            option.value = district;
+                            option.textContent = district;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        console.warn('Invalid districts response:', data);
+                    }
+                })
+                .catch(error => console.error('Error loading districts:', error));
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value;
+            const district = document.getElementById('districtFilter').value;
+            const verified = document.getElementById('verificationFilter').value;
+
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (district) params.append('district', district);
+            if (verified) params.append('verified', verified);
+
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching farmers...</p></div>';
+
+            const url = `/admin/api/farmers?${params.toString()}`;
+            console.log('Fetching URL:', url);
+            
+            fetch(url)
+                .then(response => {
+                    console.log('Response Status:', response.status);
+                    console.log('Response OK:', response.ok);
+                    console.log('Content-Type:', response.headers.get('content-type'));
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            console.warn('Response is not JSON, attempting to parse:', text.substring(0, 200));
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                throw new Error('Response is not valid JSON: ' + text.substring(0, 100));
+                            }
+                        });
+                    }
+                })
+                .then(data => {
+                    console.log('=== API Response Debug ===');
+                    console.log('Full Response:', data);
+                    console.log('Response Type:', typeof data);
+                    console.log('Is Object:', data !== null && typeof data === 'object');
+                    console.log('Success Value:', data && data.success);
+                    console.log('Success Type:', typeof (data && data.success));
+                    console.log('Farmers:', data && data.farmers);
+                    console.log('Farmers Type:', Array.isArray(data && data.farmers) ? 'Array' : typeof (data && data.farmers));
+                    console.log('Farmers Length:', (data && data.farmers) ? data.farmers.length : 'N/A');
+                    console.log('========================');
+                    
+                    if (!data) {
+                        throw new Error('No data received from server');
+                    }
+                    
+                    if (typeof data !== 'object') {
+                        throw new Error('Response is not a JSON object: ' + typeof data);
+                    }
+                    
+                    if (data.success === false) {
+                        const errorMsg = data.error || 'Unknown error occurred';
+                        tableContainer.innerHTML = `<div class="error">Error: ${errorMsg}</div>`;
+                        return;
+                    }
+                    
+                    if (data.success !== true) {
+                        throw new Error('Success value is not true: ' + JSON.stringify(data).substring(0, 200));
+                    }
+                    
+                    if (!data.farmers) {
+                        throw new Error('No farmers property in response');
+                    }
+                    
+                    if (!Array.isArray(data.farmers)) {
+                        throw new Error('Farmers is not an array: ' + typeof data.farmers);
+                    }
+                    
+                    if (data.farmers.length === 0) {
+                        tableContainer.innerHTML = '<div class="no-data"><p>No farmers found matching your criteria</p></div>';
+                        return;
+                    }
+
+                    let html = `<table class="farmers-table">
+                        <thead>
+                            <tr>
+                                <th>Farmer ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>District</th>
+                                <th>Status</th>
+                                <th>Coins Earned</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                    data.farmers.forEach(farmer => {
+                        const verificationBadge = farmer.is_verified
+                            ? '<span class="badge badge-verified">✓ Verified</span>'
+                            : '<span class="badge badge-unverified">✗ Unverified</span>';
+
+                        const activeBadge = farmer.onboarding_completed
+                            ? '<span class="badge badge-active">Active</span>'
+                            : '<span class="badge badge-inactive">Inactive</span>';
+
+                        const actionBtn = farmer.is_verified
+                            ? `<button class="btn-small btn-unverify" onclick="toggleVerification('${farmer.id}', false)">✗ Unverify</button>`
+                            : `<button class="btn-small btn-verify" onclick="toggleVerification('${farmer.id}', true)">✓ Verify</button>`;
+
+                        html += `<tr>
+                            <td>${farmer.farmer_id || 'N/A'}</td>
+                            <td class="farmer-name">${farmer.name || 'N/A'}</td>
+                            <td>${farmer.phone_number || 'N/A'}</td>
+                            <td>${farmer.district || 'N/A'}</td>
+                            <td>${verificationBadge}${activeBadge}</td>
+                            <td><strong>₹${farmer.coins_earned || 0}</strong></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view" onclick="viewFarmerDetails('${farmer.id}')">👁️ View</button>
+                                    ${actionBtn}
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+
+                    html += `</tbody></table>`;
+                    tableContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Filter Error Details:', error);
+                    console.error('Error Stack:', error.stack);
+                    tableContainer.innerHTML = `<div class="error">Error loading farmers: ${error.message}</div>`;
+                });
+        }
+
+        function viewFarmerDetails(farmerId) {
+            const modal = document.getElementById('detailsModal');
+            const modalBody = document.getElementById('modalBody');
+
+            modal.classList.add('active');
+            modalBody.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading farmer details...</p></div>';
+
+            fetch(`/admin/api/farmers/${farmerId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Farmer Details Response:', data);
+                    
+                    if (!data || !data.success) {
+                        const errorMsg = data && data.error ? data.error : 'Failed to load farmer details';
+                        modalBody.innerHTML = `<div class="error">Error: ${errorMsg}</div>`;
+                        return;
+                    }
+                    
+                    if (!data.farmer) {
+                        throw new Error('Invalid farmer data received');
+                    }
+                    
+                    const f = data.farmer;
+                    let html = `
+                        <div class="farmer-info-grid">
+                            <div class="info-group">
+                                <div class="info-label">Farmer ID (Kisan Pehchan Patra)</div>
+                                <div class="info-value">${f.farmer_id || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value">${f.name || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value">${f.phone_number || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Gender</div>
+                                <div class="info-value">${f.gender || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">District</div>
+                                <div class="info-value">${f.district || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Taluka</div>
+                                <div class="info-value">${f.taluka || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Village</div>
+                                <div class="info-value">${f.village || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Pincode</div>
+                                <div class="info-value">${f.pincode || 'N/A'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Total Land Area</div>
+                                <div class="info-value">${f.total_land_area_hectares || 0} ${f.land_unit || 'hectares'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Current Crops</div>
+                                <div class="info-value">${f.current_crops || 'Not specified'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Soil Type</div>
+                                <div class="info-value">${f.soil_type || 'Not specified'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Water Type</div>
+                                <div class="info-value">${f.water_type || 'Not specified'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Oilseed Farmer</div>
+                                <div class="info-value">${f.is_oilseed_farmer ? '✓ Yes' : '✗ No'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">PM-KISAN Beneficiary</div>
+                                <div class="info-value">${f.is_pm_kisan_beneficiary ? '✓ Yes' : '✗ No'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Verification Status</div>
+                                <div class="info-value">${f.is_verified ? '✓ Verified' : '✗ Unverified'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Onboarding Status</div>
+                                <div class="info-value">${f.onboarding_completed ? '✓ Completed' : '✗ Pending'}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Subsidy Applications</div>
+                                <div class="info-value">${f.subsidy_applications_count || 0}</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Date Joined</div>
+                                <div class="info-value">${new Date(f.created_at).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="coins-info">
+                            <div class="info-label" style="margin-bottom: 10px;">Gamification & Coins</div>
+                            <div class="coins-grid">
+                                <div class="coin-stat">
+                                    <div class="coin-label">Total Coins Earned</div>
+                                    <div class="coin-value">${f.coins_earned || 0}</div>
+                                </div>
+                                ${f.coin_balance ? `
+                                <div class="coin-stat">
+                                    <div class="coin-label">Available Coins</div>
+                                    <div class="coin-value">${f.coin_balance.available_coins || 0}</div>
+                                </div>
+                                <div class="coin-stat">
+                                    <div class="coin-label">Redeemed Coins</div>
+                                    <div class="coin-value">${f.coin_balance.redeemed_coins || 0}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    modalBody.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Farmer Details Error:', error);
+                    modalBody.innerHTML = `<div class="error">Error loading farmer details: ${error.message}</div>`;
+                });
+        }
+
+        function toggleVerification(farmerId, shouldVerify) {
+            const confirmMsg = shouldVerify
+                ? 'Are you sure you want to verify this farmer?'
+                : 'Are you sure you want to unverify this farmer?';
+
+            if (!confirm(confirmMsg)) return;
+
+            fetch(`/admin/api/farmers/${farmerId}/toggle-verify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Verification Response:', data);
+                
+                if (!data) {
+                    throw new Error('No response from server');
+                }
+                
+                if (data.success === false) {
+                    const errorMsg = data.error || 'Unknown error occurred';
+                    alert('Error: ' + errorMsg);
+                    return;
+                }
+                
+                if (data.success) {
+                    alert(data.message || 'Farmer verification status updated successfully');
+                    // Refresh the table to show updated status
+                    applyFilters();
+                } else {
+                    alert('Error: Failed to update farmer verification status');
+                }
+            })
+            .catch(error => {
+                console.error('Verification Error:', error);
+                alert('Error updating farmer verification status: ' + error.message);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detailsModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

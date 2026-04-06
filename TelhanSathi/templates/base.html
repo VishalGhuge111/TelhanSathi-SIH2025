@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Telhan Sathi{% endblock %}</title>
+    <style>
+        /* BASE & BACKGROUND STYLES */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Prevent ALL scrolling on the body */
+            color: #1e3a24;
+            background-color: #1e3a24;
+            background-image: linear-gradient(180deg, #2d5735 0%, #1e3a24 100%);
+            position: relative;
+        }
+
+        /* Background Message */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border-radius: 50%;
+            filter: blur(40px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '📱 Mobile Preview\A\AOpen this on your mobile device\Ato experience the exact app feel.';
+            white-space: pre;
+            position: fixed;
+            top: 40px;
+            right: 30px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: right;
+            line-height: 1.5;
+            pointer-events: none;
+            z-index: 1;
+            font-weight: 500;
+            animation: fadeInMessage 1s ease-out 0.5s both;
+            backdrop-filter: blur(10px);
+            padding: 14px 18px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        body:hover::after {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: rgba(76, 175, 80, 0.4);
+            color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Add decorative left-side elements */
+        .frame::before {
+            content: '';
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 200px;
+            background: linear-gradient(180deg, transparent 0%, rgba(76, 175, 80, 0.5) 50%, transparent 100%);
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 0;
+            animation: fadeInMessage 1.2s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInMessage {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+
+        @media (max-width: 1000px) {
+            body::after {
+                bottom: 15px;
+                right: 15px;
+                font-size: 12px;
+            }
+
+            .frame::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body::before {
+                display: none;
+            }
+
+            body::after {
+                display: none;
+            }
+
+            .frame::before {
+                display: none;
+            }
+        }
+
+        /* FRAME (Main App Container) */
+        .frame {
+            width: 100%;
+            max-width: 420px; /* Standard mobile width */
+            height: 100%;
+            background-color: #f7f9f7; /* Very light background for the content area */
+            border-radius: 8px;
+            box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 1. FIXED TOP HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 15px;
+            background-color: #388e3c; /* Dark Green Header */
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, opacity 0.2s;
+        }
+
+        .header-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            opacity: 0.9;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .icon-button {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        /* Coins Display */
+        .header-coins {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .header-coins:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .coins-icon {
+            font-size: 16px;
+        }
+
+        /* Profile slider styles */
+        .profile-slider-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            z-index: 9999;
+            transition: opacity 0.25s ease;
+        }
+
+        .profile-slider {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: left 0.28s cubic-bezier(.2,.8,.2,1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-slider.open {
+            left: 0;
+        }
+
+        .profile-slider .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-slider .profile-pic {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#d8e6f1,#fff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #388e3c;
+        }
+
+        .profile-slider .profile-name {
+            font-weight: 700;
+            color: #222;
+            font-size: 16px;
+        }
+
+        .profile-slider .profile-sub {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .profile-slider .btn {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-view-profile {
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            color: #fff;
+            width: 100%;
+        }
+
+        .btn-logout {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            color: #dc3545;
+            width: 100%;
+        }
+        
+        /* SCROLLABLE MAIN CONTENT AREA (The block where content goes) */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto; /* Allow scrolling inside the content */
+            padding-bottom: 80px; /* Space for Sahayak button and footer navigation */
+        }
+        
+   
+
+        /* FIXED BOTTOM FOOTER NAVIGATION */
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px; /* Match frame max-width */
+            height: 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 99;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 11px;
+            gap: 4px;
+            flex: 1;
+            height: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .footer-nav a:hover,
+        .footer-nav a.active {
+            color: #388e3c;
+            background-color: #f0f0f0;
+        }
+
+        .footer-nav a.active svg {
+            fill: #388e3c;
+            color: #388e3c;
+        }
+
+        .footer-nav svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            transition: fill 0.2s ease, color 0.2s ease;
+        }
+
+        .footer-nav-label {
+            font-weight: 500;
+        }
+        
+        /* Ensure that custom alerts are styled */
+        #custom-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        
+        #custom-modal > div {
+            background: #1e3a24; padding: 25px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); max-width: 300px;
+            text-align: center; border: 1px solid #4caf50;
+        }
+        #custom-modal p {
+            color: #fff; margin-bottom: 20px;
+        }
+        #custom-modal button {
+            padding: 10px 20px; background-color: #4caf50; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            transition: background-color 0.2s;
+        }
+    </style>
+    {% block style %}{% endblock %}
+</head>
+<body>
+
+    <div class="frame">
+        <header class="header">
+            <div class="header-item" id="profile-toggle">
+                <svg class="icon-button" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.93 0 3.5 1.57 3.5 3.5S13.93 12 12 12 8.5 10.43 8.5 8.5 10.07 5 12 5zm0 14.3c-2.43 0-4.71-.77-6.5-2.06.03-1.63 3.33-2.58 6.5-2.58 3.17 0 6.47.95 6.5 2.58-1.79 1.29-4.07 2.06-6.5 2.06z"/>
+                </svg>
+            </div>
+            <div class="header-title">तेलहान साथी</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="header-item" title="Language: English" style="position: relative;">
+                    <span style="font-size: 16px;">🌐</span>
+                </div>
+                <div class="header-coins" onclick="window.location.href='/redemption/store'" title="Go to Redemption Store">
+                    <span class="coins-icon">🪙</span>
+                    <span id="header-coins-count">0</span>
+                </div>
+                <div class="header-item" onclick="window.location.href='/notifications/list'">
+                    <svg class="icon-button" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content" id="main-scroll-content">
+            {% block content %}{% endblock %}
+            
+        </div>
+        
+    
+
+        <nav class="footer-nav">
+            <a href="/dashboard" class="{% if request.path == '/dashboard' or request.path == '/' %}active{% endif %}" title="Home">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="footer-nav-label">घर</span>
+            </a>
+            <a href="{{ url_for('weather.dashboard') }}" class="{% if 'weather' in request.path %}active{% endif %}" title="Weather">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                </svg>
+                <span class="footer-nav-label">मौसम</span>
+            </a>
+            <a href="/chats" class="{% if 'chats' in request.path %}active{% endif %}" title="Chats">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                </svg>
+                <span class="footer-nav-label">चैट</span>
+            </a>
+            <a href="/field-monitoring/device-guide" class="{% if 'device-guide' in request.path or 'device-control' in request.path %}active{% endif %}" title="IoT Devices">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5zm5 4.5H4V5h14v11.5z"/>
+                </svg>
+                <span class="footer-nav-label">डिवाइस</span>
+            </a>
+        </nav>
+    </div>
+
+    <div id="custom-modal">
+        <div>
+            <p id="modal-text"></p>
+            <button onclick="document.getElementById('custom-modal').style.opacity = 0; setTimeout(() => document.getElementById('custom-modal').style.display = 'none', 300);">ठीक है</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Custom Alert Box (for consistency) ---
+        function alertBox(message) {
+            let modal = document.getElementById('custom-modal');
+            if (modal) {
+                 document.getElementById('modal-text').textContent = message;
+                 modal.style.display = 'flex';
+                 setTimeout(() => modal.style.opacity = 1, 10);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const scrollContainer = document.getElementById('main-scroll-content');
+            const sahayakButton = document.getElementById('sahayak-button');
+
+            // --- 7. Sahayak Scrolling Animation Logic ---
+            let scrollTimeout;
+            
+            scrollContainer.addEventListener('scroll', () => {
+                // If scrolling starts, collapse the button text
+                sahayakButton.classList.add('scrolling');
+
+                // Clear any existing timeout
+                clearTimeout(scrollTimeout);
+
+                // Set a new timeout to detect when scrolling stops
+                scrollTimeout = setTimeout(() => {
+                    // If scrolling has stopped for 150ms, expand the button text
+                    sahayakButton.classList.remove('scrolling');
+                }, 150); 
+            });
+
+
+            // --- Footer Navigation Active Link Logic (Client-side fallback) ---
+            // NOTE: The server-side logic (using Flask/Jinja `request.path`) is preferred and included above. 
+            // This client-side code is a fallback/supplement.
+            const path = window.location.pathname;
+            const links = document.querySelectorAll('.footer-nav a');
+            links.forEach(link => {
+                // Simple logic for the client-side, mainly for development testing
+                if (link.href === window.location.href || link.href.includes(path) || (path === '/' && link.getAttribute('href') === '/dashboard')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Profile slider: create DOM elements and wire interactions
+            (function(){
+                const profileButton = document.getElementById('profile-toggle');
+                if (!profileButton) return;
+
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'profile-slider-overlay';
+                document.body.appendChild(overlay);
+
+                // Create slider panel
+                const slider = document.createElement('div');
+                slider.className = 'profile-slider';
+                // Placeholder for dynamic content
+                slider.innerHTML = `
+                    <div class="profile-top">
+                        <div class="profile-pic" id="profile-pic">👤</div>
+                        <div style="flex:1;">
+                            <div class="profile-name" id="profile-name">अतिथि उपयोगकर्ता</div>
+                            <div class="profile-sub" id="profile-sub">लॉग इन करने के लिए टैप करें</div>
+                        </div>
+                    </div>
+                    <div id="profile-more" style="margin-top:8px; font-size:13px; color:#444;">&nbsp;</div>
+                    <div style="margin-top:12px;">
+                        <button class="btn btn-view-profile" id="btn-view-profile">प्रोफाइल देखें</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-logout" id="btn-logout">लॉग आउट</button>
+                    </div>
+                `;
+                document.body.appendChild(slider);
+
+                const nameEl = slider.querySelector('#profile-name');
+                const subEl = slider.querySelector('#profile-sub');
+                const picEl = slider.querySelector('#profile-pic');
+                const moreEl = slider.querySelector('#profile-more');
+                const btnView = slider.querySelector('#btn-view-profile');
+                const btnLogout = slider.querySelector('#btn-logout');
+
+                function openSlider() {
+                    overlay.style.display = 'block';
+                    setTimeout(() => overlay.style.opacity = '1', 10);
+                    slider.classList.add('open');
+                    fetchProfile();
+                }
+
+                function closeSlider() {
+                    overlay.style.opacity = '0';
+                    slider.classList.remove('open');
+                    setTimeout(() => overlay.style.display = 'none', 250);
+                }
+
+                overlay.addEventListener('click', closeSlider);
+                profileButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (slider.classList.contains('open')) closeSlider(); else openSlider();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && slider.classList.contains('open')) closeSlider();
+                });
+
+                btnView.addEventListener('click', () => { window.location.href = '/profile'; });
+                btnLogout.addEventListener('click', () => { window.location.href = '/logout'; });
+
+                // Mock/Actual profile fetch function
+                async function fetchProfile() {
+                    try {
+                        // This assumes a /api/me endpoint exists and returns a JSON object with user details
+                        const resp = await fetch('/api/me', { credentials: 'same-origin' });
+                        if (resp.status === 401) {
+                            nameEl.textContent = 'Guest User';
+                            subEl.textContent = 'Tap to log in';
+                            picEl.textContent = '👤';
+                            btnView.textContent = 'लॉगिन / रजिस्टर';
+                            btnView.onclick = () => { window.location.href = '/login'; };
+                            btnLogout.style.display = 'none';
+                            moreEl.textContent = '';
+                            return;
+                        }
+                        if (!resp.ok) {
+                            throw new Error('Server error');
+                        }
+                        const data = await resp.json();
+                        const farmer = data.farmer || data;
+                        
+                        const displayName = farmer.name || `${farmer.first_name || ''} ${farmer.last_name || ''}`.trim() || 'Farmer';
+                        nameEl.textContent = displayName;
+                        subEl.textContent = farmer.phone || farmer.email || 'Verified User';
+                        moreEl.textContent = farmer.village ? `${farmer.village} • ${farmer.district || ''}` : '';
+
+                        // Set button actions back to default
+                        btnView.textContent = 'प्रोफाइल देखें';
+                        btnView.onclick = () => { window.location.href = '/profile'; };
+                        btnLogout.style.display = 'block';
+
+                        // Profile picture logic
+                        if (farmer.photo_url) {
+                            const img = document.createElement('img');
+                            img.src = farmer.photo_url;
+                            img.alt = displayName;
+                            img.style.cssText = 'width: 64px; height: 64px; border-radius: 50%; object-fit: cover;';
+                            picEl.innerHTML = '';
+                            picEl.appendChild(img);
+                        } else {
+                            const initials = (displayName.split(' ').map(s => s[0]).slice(0,2).join('') || 'F').toUpperCase();
+                            picEl.innerHTML = initials;
+                        }
+                    } catch (err) {
+                        console.error('Error fetching /api/me', err);
+                        nameEl.textContent = 'लोडिंग त्रुटि';
+                        subEl.textContent = 'कृपया फिर से प्रयास करें';
+                        picEl.textContent = '⚠️';
+                        btnView.textContent = 'फिर से प्रयास करें';
+                        btnView.onclick = () => { fetchProfile(); };
+                        btnLogout.style.display = 'block';
+                        moreEl.textContent = '';
+                    }
+                }
+                
+                // Pre-fetch/check login status when page loads, but don't open slider
+                // Note: The /api/me fetch is only triggered when the slider is explicitly opened.
+            })();
+
+            // Load coin balance for header
+            async function loadHeaderCoins() {
+                try {
+                    const resp = await fetch('/redemption/api/balance', { credentials: 'same-origin' });
+                    
+                    // 401 means user is not logged in - hide coins
+                    if (resp.status === 401) {
+                        document.getElementById('header-coins-count').textContent = '0';
+                        return;
+                    }
+                    
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        document.getElementById('header-coins-count').textContent = data.available_coins;
+                    }
+                } catch (err) {
+                    console.error('Error loading coins:', err);
+                    document.getElementById('header-coins-count').textContent = '0';
+                }
+            }
+
+            // Load coins on page load
+            loadHeaderCoins();
+            
+            // Refresh coins every 30 seconds
+            setInterval(loadHeaderCoins, 30000);
+        });
+    </script>
+
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    
+    <!-- Custom Socket.IO Bidding Module -->
+    <script src="{{ url_for('serve_static', filename='js/socket_bidding.js') }}"></script>
+
+    {% block script %}{% endblock %}
+</body>
+</html>

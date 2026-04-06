@@ -1,0 +1,488 @@
+{% extends "base.html" %}
+
+{% block title %}नीलामी संशोधक - तेलहान साथी{% endblock %}
+
+{% block content %}
+<style>
+    /* Mobile-first responsive design */
+    .form-container {
+        max-width: 100%;
+        padding: 15px !important;
+    }
+
+    .form-header {
+        position: relative;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .form-header h1 {
+        font-size: 24px;
+        margin: 10px 0 5px 0;
+    }
+
+    .form-header p {
+        font-size: 14px;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    .back-btn {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 8px 12px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .form-section {
+        margin-bottom: 20px;
+    }
+
+    .form-section legend {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e3a24;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #4caf50;
+        width: 100%;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+    }
+
+    .form-group small {
+        font-size: 12px;
+        color: #999;
+        margin-top: 4px;
+    }
+
+    .photos-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .photo-upload-item {
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 6px;
+        background: #fafafa;
+    }
+
+    .photo-upload-item label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .photo-upload-item input[type="file"] {
+        width: 100%;
+        padding: 8px;
+        border: 2px dashed #ddd;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .photo-preview {
+        margin-bottom: 8px;
+    }
+
+    .photo-preview img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .new-photo-preview img {
+        width: 100% !important;
+        height: 100px !important;
+        object-fit: cover !important;
+        border-radius: 4px !important;
+        border: 2px solid #4caf50 !important;
+    }
+
+    .form-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: #4caf50;
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #45a049;
+    }
+
+    .btn-primary:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    #message {
+        margin-top: 15px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    /* Tablet and above */
+    @media (min-width: 600px) {
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 25px !important;
+        }
+
+        .form-header {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            font-size: 28px;
+            margin: 0 0 8px 40px;
+        }
+
+        .form-header p {
+            font-size: 15px;
+            margin: 0 0 0 40px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .photos-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-actions {
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+    }
+
+    /* Large screens */
+    @media (min-width: 768px) {
+        .form-container {
+            max-width: 700px;
+        }
+
+        .form-header h1 {
+            font-size: 32px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            font-size: 15px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <button class="back-btn" onclick="goBack()">← बैक</button>
+            <h1>✏️ ऑक्शन एडिट करें</h1>
+            <p>अपनी ऑयलसीड फसल ऑक्शन की डिटेल्स अपडेट करें</p>
+        </div>
+
+        <form id="editAuctionForm" class="auction-form">
+            <!-- Crop Information Section -->
+            <fieldset class="form-section">
+                <legend>क्रॉप जानकारी</legend>
+                
+                <div class="form-group">
+                    <label for="cropName">क्रॉप टाइप *</label>
+                    <select id="cropName" name="crop_name" required>
+                        <option value="">क्रॉप सिलेक्ट करें</option>
+                        <option value="Mustard" {% if auction.crop_name == 'Mustard' %}selected{% endif %}>Mustard (सरसों)</option>
+                        <option value="Groundnut" {% if auction.crop_name == 'Groundnut' %}selected{% endif %}>Groundnut (मूंगफली)</option>
+                        <option value="Sunflower" {% if auction.crop_name == 'Sunflower' %}selected{% endif %}>Sunflower (सूरजमुखी)</option>
+                        <option value="Soybean" {% if auction.crop_name == 'Soybean' %}selected{% endif %}>Soybean (सोयाबीन)</option>
+                        <option value="Sesame" {% if auction.crop_name == 'Sesame' %}selected{% endif %}>Sesame (तिल)</option>
+                        <option value="Safflower" {% if auction.crop_name == 'Safflower' %}selected{% endif %}>Safflower (कुसुम)</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">क्वांटिटी (क्विंटल) *</label>
+                        <input type="number" id="quantity" name="quantity_quintals" min="1" step="0.1" value="{{ auction.quantity_quintals }}" required>
+                        <small>1 क्विंटल = 100 किलो</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quality">क्वालिटी ग्रेड</label>
+                        <select id="quality" name="quality_grade">
+                            <option value="Standard" {% if auction.quality_grade == 'Standard' %}selected{% endif %}>स्टैंडर्ड</option>
+                            <option value="A" {% if auction.quality_grade == 'A' %}selected{% endif %}>ग्रेड ए - प्रीमियम</option>
+                            <option value="B" {% if auction.quality_grade == 'B' %}selected{% endif %}>ग्रेड बी - गुड</option>
+                            <option value="C" {% if auction.quality_grade == 'C' %}selected{% endif %}>ग्रेड सी - नॉर्मल</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">विवरण (ऑप्शनल)</label>
+                    <textarea id="description" name="description" rows="4" placeholder="अपनी फसल के बारे में जानकारी लिखें...">{{ auction.description or '' }}</textarea>
+                </div>
+            </fieldset>
+
+            <!-- Pricing Section -->
+            <fieldset class="form-section">
+                <legend>प्राइसिंग</legend>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="basePrice">बेस प्राइस (₹/क्विंटल) *</label>
+                        <input type="number" id="basePrice" name="base_price_per_quintal" min="0" step="0.01" value="{{ auction.base_price_per_quintal }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minIncrement">मिनिमम बिड इंक्रीमेंट (₹/क्विंटल)</label>
+                        <input type="number" id="minIncrement" name="minimum_bid_increment" min="0" step="0.01" value="{{ auction.minimum_bid_increment }}">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Location Section -->
+            <fieldset class="form-section">
+                <legend>लोकेशन & डिटेल्स</legend>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">लोकेशन *</label>
+                        <input type="text" id="location" name="location" value="{{ auction.location }}" placeholder="शहर/गांव का नाम" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="district">डिस्ट्रिक्ट *</label>
+                        <input type="text" id="district" name="district" value="{{ auction.district }}" placeholder="डिस्ट्रिक्ट का नाम" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="state">स्टेट</label>
+                        <input type="text" id="state" name="state" value="{{ auction.state or 'Maharashtra' }}" placeholder="स्टेट">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storageLocation">स्टोरेज लोकेशन</label>
+                        <input type="text" id="storageLocation" name="storage_location" value="{{ auction.storage_location or '' }}" placeholder="फसल कहाँ रखी है">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="harvestDate">हार्वेस्ट डेट</label>
+                    <input type="date" id="harvestDate" name="harvest_date" value="{{ auction.harvest_date if auction.harvest_date else '' }}">
+                </div>
+            </fieldset>
+
+            <!-- Photos Section -->
+            <fieldset class="form-section">
+                <legend>📸 हार्वेस्ट फोटो</legend>
+                <p style="color: #666; margin-bottom: 15px; font-size: 13px;">आप अपनी ऑक्शन की फोटो अपडेट कर सकते हैं</p>
+
+                <div class="photos-grid">
+                    <div class="photo-upload-item">
+                        <label>📷 फोटो 1</label>
+                        <p style="font-size: 12px; color: #999; margin: 0 0 8px 0;">मुख्य फसल</p>
+                        {% if auction.photo1_path %}
+                            <div class="photo-preview">
+                                <img src="{{ auction.photo1_path }}" alt="Photo 1">
+                                <p style="font-size: 11px; color: #999; margin-top: 4px;">Current</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="photo1" accept="image/*">
+                    </div>
+
+                    <div class="photo-upload-item">
+                        <label>📷 फोटो 2</label>
+                        <p style="font-size: 12px; color: #999; margin: 0 0 8px 0;">डिटेल व्यू</p>
+                        {% if auction.photo2_path %}
+                            <div class="photo-preview">
+                                <img src="{{ auction.photo2_path }}" alt="Photo 2">
+                                <p style="font-size: 11px; color: #999; margin-top: 4px;">Current</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="photo2" accept="image/*">
+                    </div>
+
+                    <div class="photo-upload-item">
+                        <label>📷 फोटो 3</label>
+                        <p style="font-size: 12px; color: #999; margin: 0 0 8px 0;">क्वालिटी/ग्रेड</p>
+                        {% if auction.photo3_path %}
+                            <div class="photo-preview">
+                                <img src="{{ auction.photo3_path }}" alt="Photo 3">
+                                <p style="font-size: 11px; color: #999; margin-top: 4px;">Current</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="photo3" accept="image/*">
+                    </div>
+
+                    <div class="photo-upload-item">
+                        <label>📷 फोटो 4</label>
+                        <p style="font-size: 12px; color: #999; margin: 0 0 8px 0;">स्टोरेज/पैकेजिंग</p>
+                        {% if auction.photo4_path %}
+                            <div class="photo-preview">
+                                <img src="{{ auction.photo4_path }}" alt="Photo 4">
+                                <p style="font-size: 11px; color: #999; margin-top: 4px;">Current</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="photo4" accept="image/*">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" onclick="submitForm()">💾 सेव चेंजेस</button>
+                <button type="button" class="btn btn-secondary" onclick="goBack()">← कैंसल</button>
+            </div>
+            <br><br><br>
+        </form>
+
+        <div id="message" style="margin-top: 20px;"></div>
+    </div>
+</div>
+
+<script>
+    // Handle photo preview when user selects a new photo
+    for (let i = 1; i <= 4; i++) {
+        const fileInput = document.querySelector(`input[name="photo${i}"]`);
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        // Find or create preview element
+                        let preview = this.parentElement.querySelector('.new-photo-preview');
+                        if (!preview) {
+                            preview = document.createElement('div');
+                            preview.className = 'new-photo-preview';
+                            preview.style.marginTop = '8px';
+                            preview.style.marginBottom = '8px';
+                            this.parentElement.insertBefore(preview, fileInput);
+                        }
+                        preview.innerHTML = `
+                            <img src="${event.target.result}" alt="Preview" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; border: 2px solid #4caf50;">
+                            <p style="font-size: 12px; color: #4caf50; margin-top: 5px; margin-bottom: 0;"><strong>✓ New photo selected (will replace current)</strong></p>
+                        `;
+                    }.bind(this);
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }
+
+    async function submitForm() {
+        const formElement = document.getElementById('editAuctionForm');
+        const formData = new FormData(formElement);
+        const messageDiv = document.getElementById('message');
+        const submitBtn = event.target;
+        
+        try {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Saving...';
+            
+            const response = await fetch(`/bidding/farmer/auction/{{ auction.id }}/edit`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                messageDiv.innerHTML = `<div style="background: #d4edda; color: #155724; padding: 12px; border-radius: 6px;">✅ ${data.message || 'ऑक्शन सफलतापूर्वक अपडेट हो गया!'}</div>`;
+                setTimeout(() => {
+                    // Redirect to auction details page
+                    window.location.href = `/bidding/farmer/auction/{{ auction.id }}/details`;
+                }, 1500);
+            } else {
+                messageDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px;">❌ ${data.error || 'ऑक्शन अपडेट करने में समस्या'}</div>`;
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💾 Save Changes';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            messageDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px;">❌ ऑक्शन अपडेट करने में एरर: ${error.message}</div>`;
+            submitBtn.disabled = false;
+            submitBtn.textContent = '💾 Save Changes';
+        }
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
+{% endblock %}

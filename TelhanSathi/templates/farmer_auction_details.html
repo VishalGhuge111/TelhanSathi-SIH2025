@@ -1,0 +1,1452 @@
+{% extends "base.html" %}
+
+{% block title %}नीलामी विस्तर - तेलहान साथी{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <button class="back-btn" onclick="goBack()">← वापस</button>
+        <h1>🎯 नीलामी विस्तर</h1>
+    </div>
+
+    <!-- Auction Details Card -->
+    <div class="details-section">
+        <div class="details-card">
+            <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                    <h2 id="cropName" style="margin: 0;">{{ auction.crop_name }}</h2>
+                    <div class="status-badge" id="statusBadge" style="background: {% if auction.status == 'completed' %}#4caf50{% elif auction.status == 'active' %}#ff9800{% else %}#f44336{% endif %}; color: white;">
+                        {{ auction.status.upper() }}
+                    </div>
+                </div>
+                <button id="editBtn" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; display: none; white-space: nowrap;" onclick="editAuction('{{ auction.id }}')">✏️ एडिट</button>
+            </div>
+
+            <!-- Won Auction View (Completed) -->
+            {% if auction.status == 'completed' and buyer_details %}
+            <div class="won-auction-content">
+                <div class="winning-section">
+                    <h3 style="color: #4caf50; margin-top: 0;">🏆 ऑक्शन जीत गए!</h3>
+                    <p style="color: #666; margin-bottom: 25px;">आपकी ऑक्शन सफलतापूर्वक पूरी हो गई है।</p>
+
+                    <!-- Winning Price -->
+                    <div class="winning-price-box">
+                        <div class="price-label">फाइनल विनिंग प्राइस</div>
+                        <div class="price-value">₹{{ "{:,.2f}".format(buyer_details.winning_price) }}/क्विंटल</div>
+                        <div class="price-total">कुल: ₹{{ "{:,.2f}".format(buyer_details.winning_price * auction.quantity_quintals) }}</div>
+                    </div>
+
+                    <!-- Buyer Information -->
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #333;">👤 विनिंग बायर डिटेल्स</h3>
+                    
+                    <div class="buyer-details-grid">
+                        <div class="buyer-detail-item">
+                            <label>कंपनी नाम</label>
+                            <value style="color: #388e3c;">{{ buyer_details.company_name }}</value>
+                        </div>
+                        
+                        <div class="buyer-detail-item">
+                            <label>कॉन्टैक्ट पर्सन</label>
+                            <value>{{ buyer_details.buyer_name }}</value>
+                        </div>
+                        
+                        <div class="buyer-detail-item">
+                            <label>ईमेल</label>
+                            <value style="word-break: break-all;">{{ buyer_details.email }}</value>
+                        </div>
+                        
+                        <div class="buyer-detail-item">
+                            <label>फोन</label>
+                            <value style="color: #388e3c; font-weight: 700;">{{ buyer_details.phone }}</value>
+                        </div>
+                        
+                        <div class="buyer-detail-item">
+                            <label>पता</label>
+                            <value>{{ buyer_details.address }}</value>
+                        </div>
+                        
+                        <div class="buyer-detail-item">
+                            <label>डिस्ट्रिक्ट</label>
+                            <value>{{ buyer_details.district }}</value>
+                        </div>
+
+                        <div class="buyer-detail-item">
+                            <label>स्टेट</label>
+                            <value>{{ buyer_details.state }}</value>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active/Other Status View -->
+            {% else %}
+            <div class="details-grid">
+                <!-- Left Column -->
+                <div class="details-column">
+                    <div class="detail-item">
+                        <label>📦 क्वांटिटी</label>
+                        <value>{{ auction.quantity_quintals }} क्विंटल</value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>💰 बेस प्राइस</label>
+                        <value>₹{{ "{:,.2f}".format(auction.base_price_per_quintal) }}/क्विंटल</value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>🏢 क्वालिटी ग्रेड</label>
+                        <value>{{ auction.quality_grade or 'N/A' }}</value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>📍 लोकेशन</label>
+                        <value>{{ auction.location or 'स्पेसिफाइड नहीं' }}</value>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="details-column">
+                    <div class="detail-item">
+                        <label>📊 करंट हाईएस्ट बिड</label>
+                        <value style="color: #388e3c; font-weight: 700;">
+                            {% if auction.current_highest_bid %}
+                                ₹{{ "{:,.2f}".format(auction.current_highest_bid) }}/क्विंटल
+                            {% else %}
+                                अभी तक कोई बिड नहीं
+                            {% endif %}
+                        </value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>👥 टोटल बिड्स रिसीव्ड</label>
+                        <value>{{ auction.bids|length }} बिड्स</value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>⏰ स्टार्ट टाइम</label>
+                        <value>{{ auction.created_at.strftime('%d %b %Y, %H:%M') if auction.created_at else 'N/A' }}</value>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>⏱️ एंड टाइम</label>
+                        <value>{{ auction.end_time.strftime('%d %b %Y, %H:%M') if auction.end_time else 'N/A' }}</value>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Photos Section -->
+            {% if auction.photo1_path or auction.photo2_path or auction.photo3_path or auction.photo4_path %}
+            <div class="photos-section">
+                <h3>📸 ऑयलसीड हार्वेस्ट फोटो</h3>
+                <div class="photos-grid">
+                    {% if auction.photo1_path %}
+                    <div class="photo-item">
+                        <img src="{{ auction.photo1_path }}" alt="Photo 1" class="auction-photo">
+                        <p class="photo-label">मुख्य फसल</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if auction.photo2_path %}
+                    <div class="photo-item">
+                        <img src="{{ auction.photo2_path }}" alt="Photo 2" class="auction-photo">
+                        <p class="photo-label">डिटेल व्यू</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if auction.photo3_path %}
+                    <div class="photo-item">
+                        <img src="{{ auction.photo3_path }}" alt="Photo 3" class="auction-photo">
+                        <p class="photo-label">क्वालिटी/ग्रेड</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if auction.photo4_path %}
+                    <div class="photo-item">
+                        <img src="{{ auction.photo4_path }}" alt="Photo 4" class="auction-photo">
+                        <p class="photo-label">स्टोरेज/पैकेजिंग</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Description Section -->
+            {% if auction.description %}
+            <div class="description-section">
+                <h3>📝 विवरण</h3>
+                <p>{{ auction.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                {% if auction.status == 'completed' %}
+                    <button class="btn btn-primary" onclick="window.location.href='/bidding/farmer/auction/{{ auction.id }}/bids'">
+                        📊 बिड्स देखें
+                    </button>
+                {% else %}
+                    <button class="btn btn-primary" onclick="window.location.href='/bidding/farmer/auction/{{ auction.id }}/bids'">
+                        📊 सभी बिड्स देखें
+                    </button>
+                    {% if auction.status == 'active' %}
+                        <button class="btn btn-secondary" onclick="manageAuction('{{ auction.id }}', {{ auction.bids|length }})">
+                            ⚙️ ऑक्शन मैनेज करें
+                        </button>
+                    {% endif %}
+                {% endif %}
+                <button class="btn btn-outline" onclick="goBack()">
+                    ← वापस जाएं
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Counter Offers Section -->
+    <div class="counter-offers-section" style="background: #f5f5f5; padding: 25px; margin-top: 30px; border-radius: 8px;">
+        <h3 style="margin-top: 0; color: #1e3a24;">💬 काउंटर ऑफर भेजे गए</h3>
+        
+        <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="filterCounterOffers('all')" class="filter-btn" style="background: #4caf50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">सभी</button>
+            <button onclick="filterCounterOffers('pending')" class="filter-btn" style="background: #fff; color: #ff9800; padding: 8px 16px; border: 2px solid #ff9800; border-radius: 4px; cursor: pointer; font-weight: 600;">पेंडिंग</button>
+            <button onclick="filterCounterOffers('accepted')" class="filter-btn" style="background: #fff; color: #4caf50; padding: 8px 16px; border: 2px solid #4caf50; border-radius: 4px; cursor: pointer; font-weight: 600;">एक्सेप्टेड</button>
+            <button onclick="filterCounterOffers('rejected')" class="filter-btn" style="background: #fff; color: #f44336; padding: 8px 16px; border: 2px solid #f44336; border-radius: 4px; cursor: pointer; font-weight: 600;">रिजेक्टेड</button>
+        </div>
+        
+        <div id="counterOffersContainer" style="display: grid; gap: 12px;">
+            <!-- Counter offers will be populated here -->
+        </div>
+        
+        <div id="noCounterOffers" style="text-align: center; color: #999; padding: 30px 20px;">
+            <p style="font-size: 16px; margin: 0;">अभी तक कोई काउंटर ऑफर नहीं भेजा गया है</p>
+        </div>
+    </div>
+    <br><br><br>
+
+    <!-- Manage Modal -->
+    <div id="manageModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ऑक्शन मैनेज करें</h3>
+                <button class="close-btn" onclick="closeManageModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="manage-options">
+                    <button class="manage-btn accept-btn" onclick="acceptBid()">
+                        <span>✅</span>
+                        <div>
+                            <div class="btn-title">एक्सेप्ट बिड</div>
+                            <div class="btn-desc">हाईएस्ट बिड एक्सेप्ट करें</div>
+                        </div>
+                    </button>
+                    <button id="counterOfferBtn" class="manage-btn counter-btn" onclick="sendCounterOffer()" style="display: none;">
+                        <span>💬</span>
+                        <div>
+                            <div class="btn-title">काउंटर ऑफर</div>
+                            <div class="btn-desc">काउंटर प्राइस ऑफर भेजें</div>
+                        </div>
+                    </button>
+                    <button class="manage-btn extend-btn" onclick="extendAuction()">
+                        <span>⏱️</span>
+                        <div>
+                            <div class="btn-title">ड्यूरेशन बढ़ाएं</div>
+                            <div class="btn-desc">ऑक्शन का टाइम बढ़ाएं</div>
+                        </div>
+                    </button>
+                    <button class="manage-btn update-btn" onclick="updateMinimumPrice()">
+                        <span>💰</span>
+                        <div>
+                            <div class="btn-title">अपडेट प्राइस</div>
+                            <div class="btn-desc">मिनिमम प्राइस बदलें</div>
+                        </div>
+                    </button>
+                    <button class="manage-btn cancel-btn" onclick="cancelAuction()">
+                        <span>❌</span>
+                        <div>
+                            <div class="btn-title">कैंसल ऑक्शन</div>
+                            <div class="btn-desc">इस ऑक्शन को कैंसल करें</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Counter Offer Modal -->
+<div id="counterOfferModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3>💬 काउंटर ऑफर भेजें</h3>
+            <button class="close-btn" onclick="closeCounterOfferModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 8px;">बायर बिड सिलेक्ट करें:</label>
+                <div id="bidsList" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; background: #fafafa;">
+                    <!-- Bids will be populated here -->
+                </div>
+            </div>
+            
+            <div id="counterOfferForm" style="display: none;">
+                <div style="background: #e8f5e9; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                    <div style="font-weight: 600; color: #1b5e20; margin-bottom: 4px;">Selected Buyer:</div>
+                    <div id="selectedBuyerInfo" style="font-size: 14px; color: #333;"></div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="counterPrice" style="font-weight: 600; display: block; margin-bottom: 8px;">काउंटर ऑफर प्राइस (₹/क्विंटल):</label>
+                    <input type="number" id="counterPrice" placeholder="काउंटर प्राइस डालें" min="0" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="submitCounterOffer()" style="flex: 1; background: #4caf50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">काउंटर ऑफर भेजें</button>
+                    <button onclick="closeCounterOfferModal()" style="flex: 1; background: #f0f0f0; color: #333; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">कैंसल</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, #388e3c 0%, #1b5e20 100%);
+    color: white;
+    border-radius: 12px;
+    position: relative;
+    text-align: center;
+}
+
+.back-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.details-section {
+    margin-bottom: 30px;
+}
+
+.details-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    border-top: 4px solid #388e3c;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #333;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9em;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.details-column {
+    display: grid;
+    gap: 20px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-item label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-item value {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: 500;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 3px solid #388e3c;
+}
+
+/* Won Auction Styles */
+.won-auction-content {
+    background: linear-gradient(135deg, #f0f9f7 0%, #e8f5f0 100%);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.winning-section {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.winning-price-box {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    border-left: 5px solid #4caf50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+}
+
+.price-label {
+    font-size: 0.95em;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.price-value {
+    font-size: 2.5em;
+    color: #4caf50;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.price-total {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: 600;
+}
+
+.buyer-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.buyer-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #388e3c;
+}
+
+.buyer-detail-item label {
+    font-size: 0.85em;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.buyer-detail-item value {
+    font-size: 1em;
+    color: #333;
+    font-weight: 500;
+}
+
+.photos-section {
+    margin-bottom: 30px;
+}
+
+.photos-section h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.photo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.photo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.auction-photo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: #f0f0f0;
+}
+
+.photo-label {
+    padding: 10px 12px;
+    background: #f8f9fa;
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.description-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-left: 4px solid #388e3c;
+}
+
+.description-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.description-section p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.manage-options {
+    display: grid;
+    gap: 10px;
+}
+
+.manage-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.manage-btn:hover {
+    background: #f0f0f0;
+    border-color: #ccc;
+    transform: translateX(5px);
+}
+
+.manage-btn span {
+    font-size: 1.8em;
+    min-width: 40px;
+    text-align: center;
+}
+
+.manage-btn .btn-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.manage-btn .btn-desc {
+    font-size: 0.85em;
+    color: #999;
+}
+
+.accept-btn:hover {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+
+.counter-btn:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.extend-btn:hover {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+
+.update-btn:hover {
+    background: #f3e5f5;
+    border-color: #9c27b0;
+}
+
+.cancel-btn:hover {
+    background: #ffebee;
+    border-color: #f44336;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: #388e3c;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2e7d34;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+}
+
+.btn-secondary {
+    background: #ff9800;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #f57c00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #388e3c;
+    border: 2px solid #388e3c;
+}
+
+.btn-outline:hover {
+    background: #f0f0f0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .page-header {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 1.5em;
+    }
+
+    .back-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    .details-card {
+        padding: 20px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .card-header h2 {
+        font-size: 1.5em;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .detail-item value {
+        font-size: 1em;
+    }
+
+    .buyer-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .winning-price-box {
+        padding: 20px;
+    }
+
+    .price-value {
+        font-size: 2em;
+    }
+
+    .action-buttons {
+        gap: 10px;
+    }
+
+    .photos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .auction-photo {
+        height: 150px;
+    }
+
+    .photo-label {
+        font-size: 0.8em;
+        padding: 8px 10px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.95em;
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .page-header {
+        padding: 12px;
+    }
+
+    .page-header h1 {
+        font-size: 1.3em;
+    }
+
+    .details-card {
+        padding: 15px;
+    }
+
+    .card-header h2 {
+        font-size: 1.3em;
+    }
+
+    .detail-item label {
+        font-size: 0.85em;
+    }
+
+    .detail-item value {
+        font-size: 0.95em;
+        padding: 10px;
+    }
+
+    .won-auction-content {
+        padding: 20px;
+    }
+
+    .winning-price-box {
+        padding: 15px;
+    }
+
+    .price-value {
+        font-size: 1.8em;
+    }
+
+    .buyer-details-grid {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .buyer-detail-item {
+        padding: 12px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
+</style>
+
+<script>
+let currentAuctionId = '{{ auction.id }}';
+let selectedBidId = null;
+let selectedBidData = null;
+
+// 🔔 HANDLE REAL-TIME COUNTER OFFER UPDATES (defined early to be available for socket events)
+window.handleCounterOfferUpdate = function(counterOfferData) {
+    console.log('🔔 [Real-time COUNTER OFFER] Farmer side update received:', counterOfferData);
+    
+    const auctionId = counterOfferData.auction_id;
+    const eventType = counterOfferData.event_type;
+    
+    console.log(`Received event type: ${eventType}, for auction: ${auctionId}, current auction: ${currentAuctionId}`);
+    
+    // Only update if it's for the current auction
+    if (auctionId !== currentAuctionId) {
+        console.log('❌ Event is for different auction, ignoring');
+        return;
+    }
+    
+    // Only handle counter_offer_response (acceptance/rejection), not counter_offer_sent
+    // because counter_offer_sent is for when buyers receive counter offers
+    if (eventType === 'counter_offer_response') {
+        console.log('✅ Counter offer response event - reloading counter offers');
+        
+        const status = counterOfferData.status;
+        const notificationTitle = status === 'accepted' 
+            ? '✅ Counter Offer Accepted!' 
+            : '❌ Counter Offer Rejected';
+        const notificationMsg = status === 'accepted'
+            ? `Buyer accepted counter offer at ₹${counterOfferData.counter_price.toLocaleString('en-IN')}/Q`
+            : 'Buyer rejected your counter offer';
+        
+        // Show notification
+        if (typeof showNotification === 'function') {
+            showNotification(notificationTitle, notificationMsg);
+        } else {
+            alert(notificationTitle + '\n' + notificationMsg);
+        }
+        
+        // Reload counter offers after a slight delay
+        setTimeout(() => {
+            console.log('🔄 Reloading counter offers after delay');
+            loadCounterOffers();
+        }, 500);
+    } else {
+        console.log('❌ Event type not handled:', eventType);
+    }
+};
+
+function goBack() {
+    window.history.back();
+}
+
+function manageAuction(auctionId, bidsCount) {
+    currentAuctionId = auctionId;
+    
+    // Show/hide accept bid button based on bids count
+    const acceptBtn = document.querySelector('.accept-btn');
+    if (bidsCount > 0) {
+        acceptBtn.style.display = 'flex';
+    } else {
+        acceptBtn.style.display = 'none';
+    }
+    
+    document.getElementById('manageModal').classList.remove('hidden');
+}
+
+function closeManageModal() {
+    document.getElementById('manageModal').classList.add('hidden');
+    // Note: Don't set currentAuctionId to null - it's needed for loadCounterOffers()
+}
+
+function acceptBid() {
+    if (!currentAuctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    // Fetch auction details to get the highest bid
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/api`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.auction || !data.auction.bids || data.auction.bids.length === 0) {
+                alert('No bids found to accept');
+                return;
+            }
+            
+            // Get the highest bid (first one since sorted by price desc)
+            const highestBid = data.auction.bids[0];
+            
+            // Send accept-bid request with bid_id
+            fetch(`/bidding/farmer/auction/${currentAuctionId}/accept-bid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ bid_id: highestBid.bid_id })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Bid accepted successfully!');
+                    closeManageModal();
+                    setTimeout(() => window.location.reload(), 500);
+                } else {
+                    alert('Error: ' + (result.error || result.message || 'Failed to accept bid'));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Error accepting bid');
+            });
+        })
+        .catch(err => {
+            console.error('Error fetching auction details:', err);
+            alert('Error fetching bid information');
+        });
+}
+
+function sendCounterOffer() {
+    if (!currentAuctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    // Fetch bids from API
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/api`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.auction || !data.auction.bids || data.auction.bids.length === 0) {
+                alert('No bids found for this auction');
+                return;
+            }
+            
+            // Clear previous selection
+            selectedBidId = null;
+            selectedBidData = null;
+            
+            // Hide form initially
+            document.getElementById('counterOfferForm').style.display = 'none';
+            
+            // Populate bids list
+            const bidsList = document.getElementById('bidsList');
+            bidsList.innerHTML = '';
+            
+            data.auction.bids.forEach(bid => {
+                const bidItem = document.createElement('div');
+                bidItem.style.cssText = 'padding: 12px; border-bottom: 1px solid #e0e0e0; cursor: pointer; transition: background 0.2s;';
+                bidItem.className = 'bid-item';
+                bidItem.setAttribute('data-bid-id', bid.bid_id);
+                bidItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #333;">🏢 ${bid.company_name}</div>
+                            <div style="font-size: 13px; color: #666;">Bid: ₹${parseFloat(bid.bid_price).toFixed(2)}/quintal</div>
+                        </div>
+                    </div>
+                `;
+                
+                bidItem.addEventListener('click', function() {
+                    // Remove previous selection styling
+                    document.querySelectorAll('.bid-item').forEach(item => {
+                        item.style.background = '#fafafa';
+                    });
+                    // Add selection styling
+                    bidItem.style.background = '#e8f5e9';
+                    selectedBidId = bid.bid_id;
+                    selectedBidData = bid;
+                    
+                    // Show form and update buyer info
+                    document.getElementById('selectedBuyerInfo').innerHTML = `
+                        <div>${bid.company_name}</div>
+                        <div style="font-size: 12px; color: #666;">Bid: ₹${parseFloat(bid.bid_price).toFixed(2)}/quintal</div>
+                    `;
+                    document.getElementById('counterOfferForm').style.display = 'block';
+                    document.getElementById('counterPrice').focus();
+                });
+                
+                bidsList.appendChild(bidItem);
+            });
+            
+            // Show modal
+            const modal = document.getElementById('counterOfferModal');
+            modal.classList.remove('hidden');
+        })
+        .catch(err => {
+            console.error('Error fetching auction details:', err);
+            alert('Error fetching bids list');
+        });
+}
+
+function submitCounterOffer() {
+    if (!selectedBidId) {
+        alert('Please select a buyer bid');
+        return;
+    }
+    
+    const counterPrice = parseFloat(document.getElementById('counterPrice').value);
+    if (isNaN(counterPrice) || counterPrice <= 0) {
+        alert('Please enter a valid counter price');
+        return;
+    }
+    
+    console.log('📤 Sending counter offer:', { bid_id: selectedBidId, counter_price: counterPrice });
+    
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/counter-offer`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            bid_id: selectedBidId,
+            counter_price: counterPrice
+        })
+    })
+    .then(res => {
+        console.log('📝 API Response status:', res.status);
+        return res.json();
+    })
+    .then(result => {
+        console.log('✅ Counter offer response:', result);
+        
+        if (result.success) {
+            console.log('🎉 Counter offer sent successfully with ID:', result.counter_offer_id);
+            
+            alert('Counter offer sent successfully!');
+            closeCounterOfferModal();
+            closeManageModal();
+            
+            // Wait a bit to ensure database commit, then reload counter offers list
+            console.log('⏳ Waiting 500ms before reloading counter offers...');
+            setTimeout(() => {
+                console.log('🔄 Now reloading counter offers');
+                loadCounterOffers();
+            }, 500);
+        } else {
+            console.error('❌ Server returned error:', result);
+            alert('Error: ' + (result.message || result.error || 'Failed to send counter offer'));
+        }
+    })
+    .catch(err => {
+        console.error('❌ Fetch error:', err);
+        alert('Error sending counter offer');
+    });
+}
+
+function closeCounterOfferModal() {
+    const modal = document.getElementById('counterOfferModal');
+    modal.classList.add('hidden');
+    document.getElementById('counterPrice').value = '';
+    document.getElementById('counterOfferForm').style.display = 'none';
+    selectedBidId = null;
+    selectedBidData = null;
+}
+
+function extendAuction() {
+    if (!currentAuctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    const hours = prompt('Enter number of hours to extend:');
+    if (hours === null || hours === '') return;
+    
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/extend`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ hours: parseInt(hours) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Auction extended successfully!');
+            closeManageModal();
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Error: ' + (data.message || 'Failed to extend auction'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Error extending auction');
+    });
+}
+
+function updateMinimumPrice() {
+    if (!currentAuctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    const price = prompt('Enter new minimum price per quintal:');
+    if (price === null || price === '') return;
+    
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/update-price`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ new_minimum_price: parseFloat(price) })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Minimum price updated successfully!');
+            closeManageModal();
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Error: ' + (data.message || 'Failed to update price'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Error updating price');
+    });
+}
+
+function cancelAuction() {
+    if (!currentAuctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to cancel this auction?')) return;
+    
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/cancel`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Auction cancelled successfully!');
+            closeManageModal();
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Error: ' + (data.message || 'Failed to cancel auction'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Error cancelling auction');
+    });
+}
+
+// Close modal when clicking outside
+let currentCounterOfferFilter = 'all';
+
+function loadCounterOffers() {
+    fetch(`/bidding/farmer/auction/${currentAuctionId}/api/counter-offers`)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('counterOffersContainer');
+            const noOffers = document.getElementById('noCounterOffers');
+            
+            console.log('Counter offers data received:', data);
+            
+            // Check for API errors
+            if (data.error) {
+                console.error('API Error:', data.error);
+                container.innerHTML = '';
+                noOffers.innerHTML = `<p style="color: #f44336; margin: 0;">Error: ${data.error}</p>`;
+                noOffers.style.display = 'block';
+                return;
+            }
+            
+            if (!data.counter_offers || data.counter_offers.length === 0) {
+                console.log('No counter offers found');
+                container.innerHTML = '';
+                noOffers.style.display = 'block';
+                return;
+            }
+            
+            console.log('Rendering', data.counter_offers.length, 'counter offers');
+            noOffers.style.display = 'none';
+            container.innerHTML = '';
+            
+            data.counter_offers.forEach(offer => {
+                const statusColor = offer.status === 'accepted' ? '#4caf50' : 
+                                   offer.status === 'rejected' ? '#f44336' : '#ff9800';
+                const statusBg = offer.status === 'accepted' ? '#e8f5e9' : 
+                                offer.status === 'rejected' ? '#ffebee' : '#fff3e0';
+                
+                const card = document.createElement('div');
+                card.className = 'counter-offer-card';
+                card.setAttribute('data-status', offer.status);
+                card.style.cssText = `
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    padding: 15px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    transition: box-shadow 0.2s;
+                `;
+                card.onmouseover = function() { this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)'; };
+                card.onmouseout = function() { this.style.boxShadow = 'none'; };
+                
+                card.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600; color: #333; margin-bottom: 4px;">🏢 ${offer.company_name}</div>
+                        <div style="font-size: 13px; color: #666; margin-bottom: 4px;">
+                            Original Bid: ₹${parseFloat(offer.original_bid).toFixed(2)}/quintal
+                        </div>
+                        <div style="font-size: 13px; color: #666;">
+                            Counter Offer: ₹${parseFloat(offer.counter_price).toFixed(2)}/quintal
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="background: ${statusBg}; color: ${statusColor}; padding: 8px 12px; border-radius: 4px; font-weight: 600; margin-bottom: 8px;">
+                            ${offer.status.toUpperCase()}
+                        </div>
+                        <div style="font-size: 12px; color: #999;">
+                            ${new Date(offer.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        })
+        .catch(err => {
+            console.error('Error fetching counter offers:', err);
+            const container = document.getElementById('counterOffersContainer');
+            const noOffers = document.getElementById('noCounterOffers');
+            container.innerHTML = '';
+            noOffers.innerHTML = '<p style="color: #f44336; margin: 0;">Error loading counter offers. Please refresh the page.</p>';
+            noOffers.style.display = 'block';
+        });
+}
+
+function filterCounterOffers(status) {
+    currentCounterOfferFilter = status;
+    
+    // Update button styling
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.style.background = '#fff';
+        btn.style.color = '#666';
+        btn.style.border = '1px solid #ddd';
+    });
+    
+    event.target.style.background = '#4caf50';
+    event.target.style.color = 'white';
+    event.target.style.border = 'none';
+    
+    const cards = document.querySelectorAll('.counter-offer-card');
+    cards.forEach(card => {
+        const cardStatus = card.getAttribute('data-status');
+        if (status === 'all' || cardStatus === status) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('manageModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeManageModal();
+            }
+        });
+    }
+
+    // Load counter offers
+    loadCounterOffers();
+
+    // Show edit button only for active auctions with 0 bids
+    const statusBadge = document.getElementById('statusBadge');
+    const editBtn = document.getElementById('editBtn');
+    
+    if (statusBadge && editBtn) {
+        const status = statusBadge.textContent.trim().toLowerCase();
+        const bidCount = {{ auction.bids|length }};
+        
+        // Show edit button only if auction is active AND has 0 bids
+        if (status === 'active' && bidCount === 0) {
+            editBtn.style.display = 'inline-block';
+        } else {
+            editBtn.style.display = 'none';
+        }
+    }
+
+    // Show counter offer button only when there are bids
+    const counterOfferBtn = document.getElementById('counterOfferBtn');
+    if (counterOfferBtn) {
+        const bidCount = {{ auction.bids|length }};
+        if (bidCount > 0) {
+            counterOfferBtn.style.display = 'flex';
+        } else {
+            counterOfferBtn.style.display = 'none';
+        }
+    }
+});
+
+// Fallback notification function if not available from base template
+if (typeof showNotification !== 'function') {
+    window.showNotification = function(title, message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            font-weight: 600;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        `;
+        notification.innerHTML = `
+            <div style="color: #333; margin-bottom: 4px;">${title}</div>
+            <div style="color: #666; font-size: 0.9em;">${message}</div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Add animation styles if not already present
+        if (!document.querySelector('style[data-notification-style]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-notification-style', 'true');
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    };
+}
+
+// Edit Auction Function
+function editAuction(auctionId) {
+    if (!auctionId) {
+        alert('Auction ID not found');
+        return;
+    }
+    
+    // Redirect to edit page
+    window.location.href = `/bidding/farmer/auction/${auctionId}/edit`;
+}
+</script>
+{% endblock %}

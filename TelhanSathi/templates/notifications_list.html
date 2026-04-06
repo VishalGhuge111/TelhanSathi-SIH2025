@@ -1,0 +1,763 @@
+{% extends "base.html" %}
+
+{% block title %}सूचनाएं - Telhan Sathi{% endblock %}
+
+{% block content %}
+        <!-- Header -->
+        <header class="notif-header">
+            <div class="header-item">
+                <div class="header-title">📢 सूचनाएं</div>
+            </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="tab-btn active" data-filter="all">सभी</button>
+            <button class="tab-btn" data-filter="scheme_update">योजनाएं</button>
+            <button class="tab-btn" data-filter="deal_alert">सौदे</button>
+            <button class="tab-btn" data-filter="price_alert">मूल्य</button>
+            <button class="tab-btn" data-filter="system_update">सिस्टम</button>
+        </div>
+
+        <!-- Control Bar -->
+        <div class="control-bar">
+            <button id="mark-all-read-btn">सभी को पढ़ा हुआ चिह्नित करें</button>
+            <span style="font-size: 12px; color: #999;" id="notification-count">लोड हो रहा है...</span>
+        </div>
+
+        <!-- Main Scrollable Content -->
+        <div class="main-content">
+            <!-- Notifications List -->
+            <div class="notifications-container" id="notifications-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>सूचनाएं लोड हो रही हैं...</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .notif-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                background-color: #8e3888ff;
+                color: white;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                flex-shrink: 0;
+            }
+
+            .header-item {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            .header-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+
+            .icon-button {
+                width: 24px;
+                height: 24px;
+                fill: white;
+                cursor: pointer;
+            }
+
+            /* Filter Tabs - Fixed at top */
+            .filter-tabs {
+                display: flex;
+                gap: 0;
+                border-bottom: 1px solid #e0e0e0;
+                background: #fafafa;
+                overflow-x: auto;
+                padding: 0 10px;
+                flex-shrink: 0;
+                z-index: 50;
+            }
+
+            .tab-btn {
+                flex: 1;
+                padding: 12px 10px;
+                border: none;
+                background: none;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                color: #666;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+                min-width: 70px;
+                transition: all 0.3s ease;
+            }
+
+            .tab-btn:hover {
+                color: #388e3c;
+                background: white;
+            }
+
+            .tab-btn.active {
+                color: #388e3c;
+                border-bottom-color: #388e3c;
+                background: white;
+            }
+
+            /* Control Bar - Fixed below tabs */
+            .control-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 15px;
+                border-bottom: 1px solid #e0e0e0;
+                background: white;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+
+            .control-bar button {
+                background: none;
+                border: 1px solid #e0e0e0;
+                padding: 6px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+                color: #666;
+                transition: all 0.3s ease;
+            }
+
+            .control-bar button:hover {
+                background: #f5f5f5;
+                color: #388e3c;
+                border-color: #388e3c;
+            }
+
+            /* Main scrollable content */
+            .main-content {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+            }
+
+            /* Notifications List */
+            .notifications-container {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .notification-item {
+                padding: 15px;
+                border-bottom: 1px solid #e0e0e0;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                gap: 12px;
+                position: relative;
+                background: white;
+                overflow: hidden;
+            }
+
+            .notification-item-content {
+                display: flex;
+                gap: 12px;
+                width: 100%;
+                transition: transform 0.3s ease;
+            }
+
+            .notification-item.swiping .notification-item-content {
+                transform: translateX(var(--swipe-offset));
+            }
+
+            .notification-item-delete-action {
+                position: absolute;
+                right: -60px;
+                top: 0;
+                width: 60px;
+                height: 100%;
+                background: #dc3545;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                transition: right 0.3s ease;
+            }
+
+            .notification-item.swiped .notification-item-delete-action {
+                right: 0;
+            }
+
+            .notification-item:hover {
+                background: #f9f9f9;
+            }
+
+            .notification-item.unread {
+                background: #f1f8f5;
+                border-left: 4px solid #388e3c;
+            }
+
+            .notification-item.important {
+                border-left: 4px solid #ff6b6b;
+            }
+
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .notification-icon.success {
+                background: #c8e6c9;
+                color: #2e7d32;
+            }
+
+            .notification-icon.warning {
+                background: #fff9c4;
+                color: #f57f17;
+            }
+
+            .notification-icon.info {
+                background: #b3e5fc;
+                color: #01579b;
+            }
+
+            .notification-icon.error {
+                background: #ffcdd2;
+                color: #c62828;
+            }
+
+            .notification-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .notification-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 6px;
+            }
+
+            .notification-title {
+                font-weight: 600;
+                color: #333;
+                font-size: 14px;
+                flex: 1;
+            }
+
+            .notification-time {
+                font-size: 12px;
+                color: #999;
+                flex-shrink: 0;
+                margin-left: 8px;
+            }
+
+            .notification-description {
+                font-size: 13px;
+                color: #666;
+                line-height: 1.4;
+                margin-bottom: 8px;
+            }
+
+            .notification-badge {
+                display: inline-block;
+                font-size: 11px;
+                padding: 2px 8px;
+                border-radius: 12px;
+                background: #e0e0e0;
+                color: #333;
+            }
+
+            .notification-badge.scheme {
+                background: #c8e6c9;
+                color: #2e7d32;
+            }
+
+            .notification-badge.deal {
+                background: #b3e5fc;
+                color: #01579b;
+            }
+
+            .notification-badge.price {
+                background: #fff9c4;
+                color: #f57f17;
+            }
+
+            /* Empty State */
+            .empty-state {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 300px;
+                text-align: center;
+            }
+
+            .empty-state-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+
+            .empty-state p {
+                font-size: 14px;
+                color: #999;
+            }
+
+            /* Loading */
+            .loading {
+                text-align: center;
+                padding: 40px 20px;
+                color: #999;
+            }
+
+            .spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #388e3c;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            @keyframes slideOut {
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+
+            /* Pagination - Fixed at bottom */
+            .pagination {
+                display: none;
+            }
+
+            .pagination button {
+                background: #f0f0f0;
+                border: 1px solid #ddd;
+                padding: 6px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                color: #333;
+                transition: all 0.2s;
+            }
+
+            .pagination button:hover:not(:disabled) {
+                background: #388e3c;
+                color: white;
+                border-color: #388e3c;
+            }
+
+            .pagination button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .pagination-info {
+                font-size: 12px;
+                color: #999;
+            }
+
+            /* Footer */
+            .notif-footer {
+                display: none;
+            }
+
+            .notif-footer button {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .btn-clear {
+                background: #fff;
+                color: #388e3c;
+                border: 1px solid #388e3c;
+            }
+
+            .btn-clear:hover {
+                background: #f1f8f5;
+                border-color: #2e7d32;
+                color: #2e7d32;
+            }
+        </style>
+    
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let totalPages = 1;
+        const perPage = 10;
+
+        // Get unread count
+        async function getUnreadCount() {
+            try {
+                const res = await fetch('/notifications/api/unread-count', { credentials: 'same-origin' });
+                if (!res.ok) {
+                    console.warn('Unread count fetch failed', res.status);
+                    return;
+                }
+                const data = await res.json();
+                document.getElementById('unread-count').textContent = data.unread_count;
+            } catch (err) {
+                console.error('Error fetching unread count:', err);
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications(page = 1) {
+            try {
+                const url = new URL('/notifications/api/list', window.location.origin);
+                url.searchParams.append('page', page);
+                url.searchParams.append('per_page', perPage);
+                if (currentFilter !== 'all') {
+                    url.searchParams.append('type', currentFilter);
+                }
+
+                const res = await fetch(url, { credentials: 'same-origin' });
+                console.debug('notifications api response status:', res.status);
+                if (res.status === 401) {
+                    console.warn('Not authenticated - redirecting to login');
+                    window.location.href = '/login';
+                    return;
+                }
+                if (!res.ok) {
+                    const body = await res.text();
+                    console.error('Notifications API returned error', res.status, body);
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const data = await res.json();
+
+                if (!data.notifications || data.notifications.length === 0) {
+                    document.getElementById('notifications-list').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>कोई सूचनाएं नहीं मिलीं</p>
+                        </div>
+                    `;
+                } else {
+                    displayNotifications(data.notifications);
+                }
+
+                // Update pagination
+                totalPages = data.pages || 1;
+                currentPage = page;
+                document.getElementById('notification-count').textContent = `${data.total || 0} total`;
+
+                getUnreadCount();
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+                document.getElementById('notifications-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <p>त्रुटि: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display notifications
+        function displayNotifications(notifications) {
+            let html = '';
+            notifications.forEach(notif => {
+                const timeAgo = getTimeAgo(notif.createdAt);
+                const typeColor = getNotificationColor(notif.type);
+                const unreadClass = notif.isRead ? '' : 'unread';
+                const importantClass = notif.isImportant ? 'important' : '';
+                const badge = getNotificationBadge(notif.relatedType);
+
+                html += `
+                    <div class="notification-item" id="notif-${notif.id}" data-notif-id="${notif.id}">
+                        <div class="notification-item-content" 
+                             onmousedown="startSwipe(event, '${notif.id}')"
+                             ontouchstart="startSwipe(event, '${notif.id}')">
+                            <div class="notification-icon ${typeColor}">
+                                ${getNotificationIcon(notif.type)}
+                            </div>
+                            <div class="notification-content" 
+                                 onclick="goToNotification('${notif.id}', '${notif.actionLink || ''}')">
+                                <div class="notification-header">
+                                    <div class="notification-title">${escapeHtml(notif.title)}</div>
+                                    <div class="notification-time">${timeAgo}</div>
+                                </div>
+                                <div class="notification-description">${escapeHtml(notif.description)}</div>
+                                ${badge ? `<span class="notification-badge ${notif.relatedType}">${badge}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="notification-item-delete-action" 
+                             onclick="deleteNotificationWithSwipe('${notif.id}')">🗑️</div>
+                    </div>
+                `;
+            });
+            document.getElementById('notifications-list').innerHTML = html;
+        }
+
+        // Get icon for notification type
+        function getNotificationIcon(type) {
+            const icons = {
+                'scheme_update': '📋',
+                'deal_alert': '🤝',
+                'price_alert': '💹',
+                'general_alert': '🔔',
+                'system_update': '⚙️'
+            };
+            return icons[type] || '🔔';
+        }
+
+        // Get color for notification type
+        function getNotificationColor(type) {
+            const colors = {
+                'scheme_update': 'success',
+                'deal_alert': 'info',
+                'price_alert': 'warning',
+                'general_alert': 'info',
+                'system_update': 'info'
+            };
+            return colors[type] || 'info';
+        }
+
+        // Get badge label
+        function getNotificationBadge(type) {
+            const badges = {
+                'scheme': 'योजना',
+                'deal': 'सौदा',
+                'crop': 'फसल',
+                'price': 'मूल्य'
+            };
+            return badges[type] || '';
+        }
+
+        // Time ago formatter
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'अभी';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}मि पहले`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}घं पहले`;
+            const days = Math.floor(hours / 24);
+            if (days < 7) return `${days}दि पहले`;
+            return date.toLocaleDateString('hi-IN');
+        }
+
+        // Go to notification detail
+        function goToNotification(id, actionLink) {
+            // Always open the notification details page
+            // Pass actionLink as query parameter if it exists
+            if (actionLink && actionLink.trim()) {
+                window.location.href = `/notifications/detail/${id}?link=${encodeURIComponent(actionLink)}`;
+            } else {
+                window.location.href = `/notifications/detail/${id}`;
+            }
+        }
+
+        // Delete notification
+        async function deleteNotification(id) {
+            try {
+                const res = await fetch(`/notifications/api/delete/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+                if (res.ok) {
+                    loadNotifications(currentPage);
+                }
+            } catch (err) {
+                console.error('Error deleting notification:', err);
+            }
+        }
+
+        // Delete notification with swipe
+        async function deleteNotificationWithSwipe(id) {
+            try {
+                const res = await fetch(`/notifications/api/delete/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+                if (res.ok) {
+                    const element = document.getElementById(`notif-${id}`);
+                    if (element) {
+                        element.style.animation = 'slideOut 0.3s ease forwards';
+                        setTimeout(() => {
+                            loadNotifications(currentPage);
+                        }, 300);
+                    }
+                }
+            } catch (err) {
+                console.error('Error deleting notification:', err);
+            }
+        }
+
+        // Swipe handling
+        let swipeData = {};
+
+        function startSwipe(e, notifId) {
+            // Don't start swipe if clicking on content
+            if (e.target.closest('.notification-content')) {
+                return;
+            }
+
+            const item = document.getElementById(`notif-${notifId}`);
+            const startX = e.type?.includes('touch') ? e.touches?.[0]?.clientX : e.clientX;
+            const startY = e.type?.includes('touch') ? e.touches?.[0]?.clientY : e.clientY;
+
+            swipeData[notifId] = {
+                startX: startX,
+                startY: startY,
+                currentX: startX,
+                item: item,
+                moved: false
+            };
+
+            const moveHandler = (moveEvent) => handleSwipeMove(moveEvent, notifId);
+            const endHandler = (endEvent) => handleSwipeEnd(endEvent, notifId, moveHandler, endHandler);
+
+            if (e.type?.includes('touch')) {
+                document.addEventListener('touchmove', moveHandler, { passive: false });
+                document.addEventListener('touchend', endHandler, { passive: false });
+                document.addEventListener('touchcancel', endHandler);
+            } else {
+                document.addEventListener('mousemove', moveHandler);
+                document.addEventListener('mouseup', endHandler);
+            }
+
+            swipeData[notifId].moveHandler = moveHandler;
+            swipeData[notifId].endHandler = endHandler;
+        }
+
+        function handleSwipeMove(e, notifId) {
+            if (!swipeData[notifId]) return;
+
+            const currentX = e.type?.includes('touch') ? e.touches?.[0]?.clientX : e.clientX;
+            const diff = currentX - swipeData[notifId].startX;
+
+            // Only register as moved if moved significantly
+            if (Math.abs(diff) > 5) {
+                e.preventDefault?.();
+                swipeData[notifId].moved = true;
+                swipeData[notifId].currentX = currentX;
+                const offset = Math.min(Math.max(diff, -80), 0); // Limit to -80 to 0
+                swipeData[notifId].item.classList.add('swiping');
+                swipeData[notifId].item.style.setProperty('--swipe-offset', `${offset}px`);
+            }
+        }
+
+        function handleSwipeEnd(e, notifId, moveHandler, endHandler) {
+            if (!swipeData[notifId]) return;
+
+            const diff = swipeData[notifId].currentX - swipeData[notifId].startX;
+            const item = swipeData[notifId].item;
+
+            // If swiped left more than 30px, show delete action
+            if (diff < -30) {
+                item.classList.add('swiped');
+                item.style.setProperty('--swipe-offset', '-60px');
+            } else {
+                // Reset
+                item.classList.remove('swiped');
+                item.classList.remove('swiping');
+                item.style.setProperty('--swipe-offset', '0px');
+            }
+
+            item.classList.remove('swiping');
+
+            // Clean up event listeners
+            if (e.type?.includes('touch')) {
+                document.removeEventListener('touchmove', moveHandler);
+                document.removeEventListener('touchend', endHandler);
+                document.removeEventListener('touchcancel', endHandler);
+            } else {
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', endHandler);
+            }
+
+            delete swipeData[notifId];
+        }
+
+        // Mark all as read
+        async function markAllAsRead() {
+            try {
+                const res = await fetch('/notifications/api/mark-all-as-read', { method: 'POST', credentials: 'same-origin' });
+                if (res.ok) {
+                    loadNotifications(currentPage);
+                } else {
+                    console.error('Mark all as read failed', res.status);
+                }
+            } catch (err) {
+                console.error('Error marking all as read:', err);
+            }
+        }
+
+        // Clear all notifications
+        function clearAll() {
+            if (confirm('क्या आप सभी सूचनाएं हटाना चाहते हैं?')) {
+                fetch('/notifications/api/clear-all', { method: 'DELETE', credentials: 'same-origin' })
+                    .then(res => {
+                        if (res.ok) {
+                            loadNotifications(1);
+                        } else {
+                            console.error('Clear all failed', res.status);
+                        }
+                    })
+                    .catch(err => console.error('Error clearing notifications:', err));
+            }
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Go back
+        function goBack() {
+            window.history.back();
+        }
+
+        // Filter tab click
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                currentPage = 1;
+                loadNotifications(1);
+            });
+        });
+
+        // Mark all read button
+        document.getElementById('mark-all-read-btn').addEventListener('click', markAllAsRead);
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotifications(1);
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - Telhan Sathi{% endblock %}
+
+{% block content %}
+<style>
+    .notifications-container {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .notification-controls {
+        background: white;
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+    }
+
+    .notif-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .control-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .control-btn {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s;
+    }
+
+    .control-btn:hover {
+        border-color: #388e3c;
+        color: #388e3c;
+    }
+
+    .content-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .notification-item {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 12px;
+        transition: all 0.3s;
+        cursor: pointer;
+        display: flex;
+        gap: 10px;
+    }
+
+    .notification-item.unread {
+        background: #f0f8f5;
+        border-left: 4px solid #388e3c;
+    }
+
+    .notification-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f0;
+        border-radius: 50%;
+    }
+
+    .notification-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-type {
+        font-size: 11px;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .notification-message {
+        font-size: 13px;
+        color: #1e3a24;
+        font-weight: 500;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    .notification-crop {
+        font-size: 12px;
+        color: #388e3c;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    .notification-time {
+        font-size: 11px;
+        color: #ccc;
+        margin-top: 4px;
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 6px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s;
+    }
+
+    .action-btn:hover {
+        border-color: #388e3c;
+        background: #f0f8f5;
+        color: #388e3c;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+
+    .notification-types {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .type-badge {
+        display: inline-block;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+
+    .type-new-bid {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .type-auction-closed {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+
+    .type-counter-offer {
+        background: #fff3e0;
+        color: #e65100;
+    }
+
+    .type-auction-extended {
+        background: #e0f2f1;
+        color: #00695c;
+    }
+
+    .type-auction-cancelled {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .read-indicator {
+        width: 8px;
+        height: 8px;
+        background: #4caf50;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    @media (max-width: 600px) {
+        .notification-item {
+            gap: 8px;
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="notifications-container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1 class="header-title">Notifications</h1>
+            <p class="header-subtitle">Auction Updates</p>
+        </div>
+        <button class="header-btn" onclick="window.location.href='/bidding/buyer/dashboard'">←</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="notification-controls">
+        <div>
+            <span id="unreadCount">0</span> unread
+            <span class="notif-badge" id="unreadBadge" style="display: none;"></span>
+        </div>
+        <div class="control-buttons">
+            <button class="control-btn" onclick="markAllAsRead()">Mark All Read</button>
+            <button class="control-btn" onclick="clearAll()">Clear All</button>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <div class="notifications-list" id="notificationsList">
+            <div class="loading">🔔 Loading notifications...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allNotifications = [];
+
+    // Load notifications
+    async function loadNotifications() {
+        try {
+            const response = await fetch('/bidding/buyer/notifications/api');
+            const data = await response.json();
+
+            allNotifications = data.notifications;
+
+            document.getElementById('unreadCount').textContent = data.unread_count;
+            
+            if (data.unread_count > 0) {
+                document.getElementById('unreadBadge').textContent = data.unread_count;
+                document.getElementById('unreadBadge').style.display = 'inline-block';
+            }
+
+            if (allNotifications.length === 0) {
+                document.getElementById('notificationsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔔</div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            displayNotifications();
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+            document.getElementById('notificationsList').innerHTML = `
+                <div class="empty-state">
+                    <p>❌ Error loading notifications</p>
+                </div>
+            `;
+        }
+    }
+
+    // Display notifications
+    function displayNotifications() {
+        const container = document.getElementById('notificationsList');
+
+        container.innerHTML = allNotifications.map(notif => {
+            const icon = getNotificationIcon(notif.type);
+            const typeBadge = getNotificationTypeBadge(notif.type);
+            const timeAgo = getTimeAgo(notif.created_at);
+
+            return `
+                <div class="notification-item ${!notif.is_read ? 'unread' : ''}" onclick="markAsRead('${notif.notification_id}')">
+                    <div class="notification-icon">${icon}</div>
+                    <div class="notification-content">
+                        <div class="notification-type">${typeBadge}</div>
+                        <div class="notification-message">${notif.message}</div>
+                        <div class="notification-crop">🌾 ${notif.crop_name}</div>
+                        <div class="notification-time">${timeAgo}</div>
+                        <div class="notification-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); goToAuction('${notif.auction_id}')">
+                                View Auction →
+                            </button>
+                        </div>
+                    </div>
+                    ${!notif.is_read ? '<div class="read-indicator"></div>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Get notification icon
+    function getNotificationIcon(type) {
+        const icons = {
+            'new_bid': '📢',
+            'auction_closed': '⏹',
+            'counter_offer': '💬',
+            'auction_extended': '⏱',
+            'auction_cancelled': '❌'
+        };
+        return icons[type] || '📬';
+    }
+
+    // Get notification type badge
+    function getNotificationTypeBadge(type) {
+        const types = {
+            'new_bid': 'New Bid Placed',
+            'auction_closed': 'Auction Closed',
+            'counter_offer': 'Counter Offer',
+            'auction_extended': 'Auction Extended',
+            'auction_cancelled': 'Auction Cancelled'
+        };
+        return types[type] || type;
+    }
+
+    // Get time ago
+    function getTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        return date.toLocaleDateString();
+    }
+
+    // Mark as read
+    async function markAsRead(notificationId) {
+        try {
+            const response = await fetch(`/bidding/buyer/notifications/${notificationId}/read`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                loadNotifications();
+            }
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    }
+
+    // Mark all as read
+    async function markAllAsRead() {
+        for (const notif of allNotifications) {
+            if (!notif.is_read) {
+                await markAsRead(notif.notification_id);
+            }
+        }
+    }
+
+    // Clear all
+    async function clearAll() {
+        if (confirm('Are you sure you want to clear all notifications?')) {
+            for (const notif of allNotifications) {
+                await markAsRead(notif.notification_id);
+            }
+            loadNotifications();
+        }
+    }
+
+    // Go to auction
+    function goToAuction(auctionId) {
+        window.location.href = `/bidding/buyer/auction/${auctionId}`;
+    }
+
+    // Initial load
+    window.addEventListener('load', () => {
+        loadNotifications();
+        // Refresh every 30 seconds
+        setInterval(loadNotifications, 30000);
+    });
+</script>
+
+{% endblock %}

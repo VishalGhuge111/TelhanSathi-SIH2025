@@ -1,0 +1,776 @@
+{% extends "base.html" %}
+
+{% block title %}मोचन स्टोर - Telhan Sathi{% endblock %}
+
+{% block content %}
+<style>
+    .store-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding-bottom: 100px;
+    }
+
+    /* Coins Header */
+    .coins-header {
+        background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    .coins-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .coin-icon {
+        font-size: 32px;
+    }
+
+    .coins-amount {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .coins-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    /* Navigation Bar */
+    .store-nav {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .nav-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .nav-link {
+        padding: 8px 14px;
+        background: #388e3c;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .nav-link:hover {
+        background: #2e7d32;
+        box-shadow: 0 2px 8px rgba(56, 142, 60, 0.2);
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        margin: 0 -20px 0 -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .filter-tab {
+        flex-shrink: 0;
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid #e0e0e0;
+        background: #f5f5f5;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        color: #666;
+        transition: all 0.3s;
+    }
+
+    .filter-tab:hover,
+    .filter-tab.active {
+        background: #388e3c;
+        color: #fff;
+        border-color: #388e3c;
+    }
+
+    /* Offers Grid */
+    .offers-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .offer-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .offer-card:hover {
+        border-color: #388e3c;
+        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .offer-card-header {
+        padding: 12px;
+        text-align: center;
+        color: #fff;
+        font-weight: 600;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .offer-icon {
+        font-size: 24px;
+        margin-bottom: 6px;
+    }
+
+    .offer-card-content {
+        padding: 12px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .offer-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.3;
+        min-height: 30px;
+    }
+
+    .offer-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #388e3c;
+    }
+
+    .offer-footer {
+        padding: 8px 12px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .coin-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+    }
+
+    .coin-badge-icon {
+        font-size: 14px;
+    }
+
+    .redeem-btn-small {
+        padding: 6px 10px;
+        background: #388e3c;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .redeem-btn-small:hover {
+        background: #2e7d32;
+        transform: scale(1.05);
+    }
+
+    .redeem-btn-small:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Loading State */
+    .loading {
+        text-align: center;
+        padding: 30px 20px;
+        color: #666;
+    }
+
+    .spinner {
+        border: 3px solid #f0f0f0;
+        border-top: 3px solid #388e3c;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 30px 20px;
+        color: #999;
+    }
+
+    .empty-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        opacity: 1;
+        align-items: flex-end;
+    }
+
+    .modal-panel {
+        background: #fff;
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        border-radius: 16px 16px 0 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-overlay.active .modal-panel {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #2d5735 0%, #388e3c 100%);
+        color: #fff;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modal-title-icon {
+        font-size: 24px;
+    }
+
+    .modal-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .modal-section {
+        margin-bottom: 20px;
+    }
+
+    .modal-section-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #388e3c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+
+    .modal-detail {
+        background: #f9fafb;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 3px solid #388e3c;
+    }
+
+    .modal-detail-label {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .modal-detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 10px;
+    }
+
+    .modal-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .modal-btn-primary {
+        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+        color: #fff;
+    }
+
+    .modal-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(60, 142, 60, 0.4);
+    }
+
+    .modal-btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .modal-btn-secondary {
+        background: #f9fafb;
+        color: #666;
+        border: 1px solid #e5e7eb;
+    }
+
+    .modal-btn-secondary:hover {
+        background: #f0f0f0;
+    }
+
+    /* Success Message */
+    .success-message {
+        background: linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%);
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
+        margin-bottom: 16px;
+    }
+
+    .success-message h4 {
+        color: #2e7d32;
+        margin: 0 0 8px 0;
+        font-size: 14px;
+    }
+
+    .success-message p {
+        color: #558b2f;
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .redemption-code {
+        background: #fff;
+        padding: 12px;
+        border-radius: 6px;
+        border: 2px dashed #4CAF50;
+        text-align: center;
+        font-family: monospace;
+        font-size: 16px;
+        font-weight: 700;
+        color: #2e7d32;
+        margin-top: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+        .offers-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="store-content" id="store-content">
+    <!-- Coins Header -->
+    <div class="coins-header">
+        <div class="coins-display">
+            <span class="coin-icon">🪙</span>
+            <span class="coins-amount" id="total-coins">0</span>
+        </div>
+        <div class="coins-label">मोचन के लिए उपलब्ध सिक्के</div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="store-nav">
+        <div class="nav-title">🎁 मोचन स्टोर</div>
+        <a href="{{ url_for('redemption.my_redemptions') }}" class="nav-link">📋 मेरे मोचन</a>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <div class="filter-tab active" data-category="all" onclick="filterOffers('all')">सभी ऑफर</div>
+        <div class="filter-tab" data-category="Farm Inputs" onclick="filterOffers('Farm Inputs')">🌱 कृषि निवेश</div>
+        <div class="filter-tab" data-category="Services" onclick="filterOffers('Services')">👨‍🌾 सेवाएं</div>
+        <div class="filter-tab" data-category="Yantra Sathi" onclick="filterOffers('Yantra Sathi')">🚜 यंत्र साथी</div>
+        <div class="filter-tab" data-category="Technology" onclick="filterOffers('Technology')">📡 तकनीक</div>
+        <div class="filter-tab" data-category="VIP" onclick="filterOffers('VIP')">⭐ वीआईपी</div>
+    </div>
+
+    <!-- Offers Grid -->
+    <div class="offers-grid" id="offers-grid">
+        <div class="loading">
+            <div class="spinner"></div>
+            ऑफर लोड हो रहे हैं...
+        </div>
+    </div>
+</div>
+
+<!-- Offer Details Modal -->
+<div class="modal-overlay" id="offerModal" onclick="closeOfferModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span class="modal-title-icon" id="modalOfferIcon">🎁</span>
+                <span id="modalOfferTitle">ऑफर</span>
+            </div>
+            <button class="modal-close" onclick="closeOfferModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-content">
+            <!-- Success Message (shown after redemption) -->
+            <div class="success-message" id="successMessage" style="display: none;">
+                <h4>✅ सफलतापूर्वक मोचित किया गया!</h4>
+                <p>आपका ऑफर मोचित किया जा चुका है। इसका उपयोग करने के लिए अपना कोड सहेजें।</p>
+                <div class="redemption-code" id="redemptionCode">TS00000000</div>
+            </div>
+
+            <!-- Offer Details -->
+            <div class="modal-section" id="offerDetails">
+                <div class="modal-section-title">इस ऑफर के बारे में</div>
+                <div class="modal-detail">
+                    <div class="modal-detail-label">विवरण</div>
+                    <div class="modal-detail-value" id="modalOfferDescription">विवरण</div>
+                </div>
+                <div class="modal-detail">
+                    <div class="modal-detail-label">वास्तविक मूल्य</div>
+                    <div class="modal-detail-value" id="modalOfferValue">मुफ्त</div>
+                </div>
+                <div class="modal-detail">
+                    <div class="modal-detail-label">वैधता</div>
+                    <div class="modal-detail-value" id="modalOfferValidity">90 दिन</div>
+                </div>
+            </div>
+
+            <!-- Coin Cost -->
+            <div class="modal-section">
+                <div class="modal-section-title">लागत</div>
+                <div class="modal-detail">
+                    <div class="modal-detail-label">आवश्यक सिक्के</div>
+                    <div class="modal-detail-value" id="modalOfferCost">
+                        <span class="coin-badge">
+                            <span class="coin-badge-icon">🪙</span>
+                            <span id="modalCoinCost">150</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use -->
+            <div class="modal-section">
+                <div class="modal-section-title">कैसे उपयोग करें</div>
+                <p style="font-size: 12px; color: #666; line-height: 1.5; margin: 0;">
+                    1. मोचन की पुष्टि करने के लिए "अभी मोचन करें" पर क्लिक करें<br>
+                    2. आपको एक मोचन कोड प्राप्त होगा<br>
+                    3. यह कोड विक्रेता के साथ साझा करें या ऐप में उपयोग करें<br>
+                    4. मोचन की तारीख से 90 दिन के लिए वैध
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeOfferModal()">बंद करें</button>
+            <button class="modal-btn modal-btn-primary" id="redeemBtn" onclick="redeemOffer()">अभी मोचन करें</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+let currentOffer = null;
+let currentCategory = 'all';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await loadCoinBalance();
+        await loadOffers(currentCategory);
+    } catch (err) {
+        console.error('Error loading store:', err);
+    }
+});
+
+async function loadCoinBalance() {
+    try {
+        const resp = await fetch('/redemption/api/balance', { credentials: 'same-origin' });
+        if (resp.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        if (!resp.ok) throw new Error('Failed to load coin balance');
+
+        const data = await resp.json();
+        console.log('Coin balance:', data);
+        document.getElementById('total-coins').textContent = data.available_coins;
+    } catch (err) {
+        console.error('Error loading coin balance:', err);
+    }
+}
+
+async function loadOffers(category) {
+    try {
+        const url = category === 'all' 
+            ? '/redemption/api/offers' 
+            : `/redemption/api/offers?category=${encodeURIComponent(category)}`;
+        
+        const resp = await fetch(url, { credentials: 'same-origin' });
+        
+        // Handle 401 Unauthorized - redirect to login
+        if (resp.status === 401) {
+            console.log('Unauthorized - redirecting to login');
+            window.location.href = '/login';
+            return;
+        }
+        
+        if (!resp.ok) throw new Error('Failed to load offers');
+
+        const data = await resp.json();
+        console.log('Offers:', data.offers);
+
+        if (data.offers.length === 0) {
+            document.getElementById('offers-grid').innerHTML = '<div class="empty-state"><div class="empty-icon">🎁</div><p>इस श्रेणी में कोई ऑफर उपलब्ध नहीं है</p></div>';
+            return;
+        }
+
+        let html = '';
+        for (const offer of data.offers) {
+            const canRedeem = data.available_coins >= offer.coin_cost;
+            
+            html += `
+                <div class="offer-card" onclick="showOfferDetails('${offer.id}')">
+                    <div class="offer-card-header" style="background: ${offer.color};">
+                        <div>
+                            <div class="offer-icon">${offer.icon}</div>
+                        </div>
+                    </div>
+                    <div class="offer-card-content">
+                        <div class="offer-title">${offer.title}</div>
+                        <div class="offer-value">${offer.actual_value}</div>
+                    </div>
+                    <div class="offer-footer">
+                        <div class="coin-badge">
+                            <span class="coin-badge-icon">🪙</span>
+                            <span>${offer.coin_cost}</span>
+                        </div>
+                        <button class="redeem-btn-small" ${!canRedeem ? 'disabled' : ''} onclick="event.stopPropagation(); showOfferDetails('${offer.id}')">
+                            ${canRedeem ? 'मोचन करें' : 'सिक्कों की आवश्यकता'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('offers-grid').innerHTML = html;
+    } catch (err) {
+        console.error('Error loading offers:', err);
+        document.getElementById('offers-grid').innerHTML = '<div class="empty-state"><p>ऑफर लोड करने में त्रुटि</p></div>';
+    }
+}
+
+function filterOffers(category) {
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    currentCategory = category;
+    loadOffers(category);
+}
+
+function showOfferDetails(offerId) {
+    // Find offer in grid
+    fetch('/redemption/api/offers', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => {
+            // Search across all offers
+            fetch(currentCategory === 'all' ? '/redemption/api/offers' : `/redemption/api/offers?category=${currentCategory}`, { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(data => {
+                    const offers = data.offers;
+                    // Get all offers
+                    fetch('/redemption/api/offers', { credentials: 'same-origin' })
+                        .then(r => r.json())
+                        .then(allData => {
+                            const offer = allData.offers.find(o => o.id === offerId);
+                            if (!offer) {
+                                console.error('Offer not found');
+                                return;
+                            }
+
+                            currentOffer = offer;
+
+                            // Populate modal
+                            document.getElementById('modalOfferIcon').textContent = offer.icon;
+                            document.getElementById('modalOfferTitle').textContent = offer.title;
+                            document.getElementById('modalOfferDescription').textContent = offer.description;
+                            document.getElementById('modalOfferValue').textContent = offer.actual_value;
+                            document.getElementById('modalOfferValidity').textContent = offer.validity_days + ' दिन';
+                            document.getElementById('modalCoinCost').textContent = offer.coin_cost;
+                            
+                            // Hide success message on open
+                            document.getElementById('successMessage').style.display = 'none';
+                            document.getElementById('offerDetails').style.display = 'block';
+                            document.getElementById('redeemBtn').textContent = 'अभी मोचन करें';
+                            document.getElementById('redeemBtn').disabled = false;
+
+                            // Open modal
+                            document.getElementById('offerModal').classList.add('active');
+                        });
+                });
+        });
+}
+
+function closeOfferModal(event) {
+    // Close if clicking overlay background
+    if (event && event.target.id !== 'offerModal') return;
+    
+    const modal = document.getElementById('offerModal');
+    modal.classList.remove('active');
+    currentOffer = null;
+}
+
+async function redeemOffer() {
+    if (!currentOffer) return;
+
+    const redeemBtn = document.getElementById('redeemBtn');
+    redeemBtn.disabled = true;
+    redeemBtn.textContent = 'मोचन किया जा रहा है...';
+
+    try {
+        const resp = await fetch('/redemption/api/redeem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ offer_id: currentOffer.id })
+        });
+
+        // Handle 401 Unauthorized - redirect to login
+        if (resp.status === 401) {
+            console.log('Unauthorized - redirecting to login');
+            window.location.href = '/login';
+            return;
+        }
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+            alert(data.error || 'मोचन विफल');
+            redeemBtn.disabled = false;
+            redeemBtn.textContent = 'अभी मोचन करें';
+            return;
+        }
+
+        // Show success message
+        document.getElementById('offerDetails').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('redemptionCode').textContent = data.redemption_code;
+        
+        redeemBtn.textContent = 'बंद करें';
+        redeemBtn.onclick = closeOfferModal;
+
+        // Refresh coin balance
+        await loadCoinBalance();
+        await loadOffers(currentCategory);
+
+    } catch (err) {
+        alert('त्रुटि: ' + err.message);
+        redeemBtn.disabled = false;
+        redeemBtn.textContent = 'अभी मोचन करें';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>व्यवस्थापक - सब्सिडी प्रबंधन</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #388e3c;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #388e3c;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #388e3c;
+        }
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        .btn-secondary {
+            background-color: #999;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background-color: #388e3c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .status-active {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .status-inactive {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>व्यवस्थापक पैनल - योजनाएं और सब्सिडी प्रबंधन करें</h1>
+
+        <!-- Alerts -->
+        <div id="alert-container"></div>
+
+        <!-- Add New Subsidy Section -->
+        <div class="section">
+            <h2>नई योजना/सब्सिडी जोड़ें</h2>
+            <form id="add-subsidy-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="scheme_code">योजना कोड *</label>
+                        <input type="text" id="scheme_code" name="scheme_code" required placeholder="उदा., pmkisan">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">योजना का नाम *</label>
+                        <input type="text" id="name" name="name" required placeholder="उदा., PM-KISAN समान निधि">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="scheme_type">प्रकार *</label>
+                        <select id="scheme_type" name="scheme_type" required>
+                            <option value="">प्रकार चुनें</option>
+                            <option value="subsidy">सब्सिडी</option>
+                            <option value="scheme">योजना</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="focus_area">ध्यान केंद्रित क्षेत्र *</label>
+                        <input type="text" id="focus_area" name="focus_area" required placeholder="उदा., आय समर्थन">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="focus_color">फोकस रंग</label>
+                        <input type="text" id="focus_color" name="focus_color" placeholder="#2196f3" value="#2196f3">
+                    </div>
+                    <div class="form-group">
+                        <label for="benefit_amount">लाभ राशि *</label>
+                        <input type="text" id="benefit_amount" name="benefit_amount" required placeholder="उदा., ₹6,000/वर्ष">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eligibility_criteria">पात्रता मानदंड *</label>
+                    <textarea id="eligibility_criteria" name="eligibility_criteria" required placeholder="पात्रता आवश्यकताएं दर्ज करें"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">विवरण *</label>
+                    <textarea id="description" name="description" required placeholder="पूर्ण विवरण दर्ज करें"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="external_link">बाहरी लिंक (वैकल्पिक)</label>
+                    <input type="url" id="external_link" name="external_link" placeholder="https://example.com">
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="is_recommended" name="is_recommended">
+                        अनुशंसित के रूप में चिह्नित करें
+                    </label>
+                    <label>
+                        <input type="checkbox" id="is_active" name="is_active" checked>
+                        सक्रिय
+                    </label>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>आवेदन चरण (प्रति पंक्ति एक)</label>
+                    <textarea id="apply_steps" name="apply_steps" placeholder="चरण 1&#10;चरण 2&#10;चरण 3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>आवश्यक दस्तावेज़ (प्रति पंक्ति एक)</label>
+                    <textarea id="required_documents" name="required_documents" placeholder="दस्तावेज़ 1&#10;दस्तावेज़ 2&#10;दस्तावेज़ 3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">योजना/सब्सिडी जोड़ें</button>
+            </form>
+        </div>
+
+        <!-- List Existing Subsidies -->
+        <div class="section">
+            <h2>Existing Schemes & Subsidies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>नाम</th>
+                        <th>प्रकार</th>
+                        <th>फोकस</th>
+                        <th>अनुशंसित</th>
+                        <th>स्थिति</th>
+                        <th>कार्य</th>
+                    </tr>
+                </thead>
+                <tbody id="subsidies-table">
+                    <tr>
+                        <td colspan="6" style="text-align: center;">लोड हो रहा है...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+                    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>योजना/सब्सिडी संपादित करें</h2>
+            <form id="edit-subsidy-form">
+                <input type="hidden" id="edit_id" name="edit_id">
+                
+                <div class="form-group">
+                    <label for="edit_name">योजना का नाम</label>
+                    <input type="text" id="edit_name" name="edit_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_benefit_amount">लाभ राशि</label>
+                    <input type="text" id="edit_benefit_amount" name="edit_benefit_amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_eligibility_criteria">पात्रता मानदंड</label>
+                    <textarea id="edit_eligibility_criteria" name="edit_eligibility_criteria" required></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="edit_is_recommended" name="edit_is_recommended">
+                        Recommended
+                    </label>
+                    <label>
+                        <input type="checkbox" id="edit_is_active" name="edit_is_active">
+                        Active
+                    </label>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary">परिवर्तन सहेजें</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load subsidies on page load
+        document.addEventListener('DOMContentLoaded', loadSubsidies);
+
+        // Add subsidy form handler
+        document.getElementById('add-subsidy-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                scheme_code: document.getElementById('scheme_code').value,
+                name: document.getElementById('name').value,
+                scheme_type: document.getElementById('scheme_type').value,
+                focus_area: document.getElementById('focus_area').value,
+                focus_color: document.getElementById('focus_color').value,
+                benefit_amount: document.getElementById('benefit_amount').value,
+                eligibility_criteria: document.getElementById('eligibility_criteria').value,
+                description: document.getElementById('description').value,
+                external_link: document.getElementById('external_link').value,
+                is_recommended: document.getElementById('is_recommended').checked,
+                is_active: document.getElementById('is_active').checked,
+                apply_steps: document.getElementById('apply_steps').value.split('\n').filter(s => s.trim()),
+                required_documents: document.getElementById('required_documents').value.split('\n').filter(s => s.trim())
+            };
+
+            try {
+                const response = await fetch('/admin/api/schemes/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showAlert('Scheme added successfully!', 'success');
+                    document.getElementById('add-subsidy-form').reset();
+                    loadSubsidies();
+                } else {
+                    const error = await response.json();
+                    showAlert('Error: ' + (error.error || 'Failed to add scheme'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error: ' + error.message, 'error');
+            }
+        });
+
+        async function loadSubsidies() {
+            try {
+                const response = await fetch('/admin/api/schemes/list');
+                if (response.ok) {
+                    const schemes = await response.json();
+                    renderSubsidiesTable(schemes);
+                }
+            } catch (error) {
+                console.error('Error loading subsidies:', error);
+            }
+        }
+
+        function renderSubsidiesTable(schemes) {
+            const tbody = document.getElementById('subsidies-table');
+            
+            if (schemes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No schemes found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = schemes.map(scheme => `
+                <tr>
+                    <td>${scheme.name}</td>
+                    <td>${scheme.scheme_type}</td>
+                    <td>${scheme.focus_area}</td>
+                    <td>${scheme.is_recommended ? '✓ Yes' : 'No'}</td>
+                    <td><span class="${scheme.is_active ? 'status-active' : 'status-inactive'}">${scheme.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="editScheme('${scheme.id}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteScheme('${scheme.id}')">हटाएं</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editScheme(schemeId) {
+            // Implementation for edit functionality
+            openEditModal(schemeId);
+        }
+
+        async function deleteScheme(schemeId) {
+            if (!confirm('क्या आप इस योजना को हटाना चाहते हैं?')) return;
+
+            try {
+                const response = await fetch(`/admin/api/schemes/delete/${schemeId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('योजना सफलतापूर्वक हटा दी गई!', 'success');
+                    loadSubsidies();
+                } else {
+                    showAlert('Error deleting scheme', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function openEditModal(schemeId) {
+            try {
+                const response = await fetch(`/admin/api/schemes/detail/${schemeId}`);
+                if (response.ok) {
+                    const scheme = await response.json();
+                    
+                    document.getElementById('edit_id').value = scheme.id;
+                    document.getElementById('edit_name').value = scheme.name;
+                    document.getElementById('edit_benefit_amount').value = scheme.benefit_amount;
+                    document.getElementById('edit_eligibility_criteria').value = scheme.eligibility_criteria;
+                    document.getElementById('edit_is_recommended').checked = scheme.is_recommended;
+                    document.getElementById('edit_is_active').checked = scheme.is_active;
+                    
+                    document.getElementById('edit-modal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading scheme:', error);
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        document.getElementById('edit-subsidy-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const schemeId = document.getElementById('edit_id').value;
+            const updateData = {
+                name: document.getElementById('edit_name').value,
+                benefit_amount: document.getElementById('edit_benefit_amount').value,
+                eligibility_criteria: document.getElementById('edit_eligibility_criteria').value,
+                is_recommended: document.getElementById('edit_is_recommended').checked,
+                is_active: document.getElementById('edit_is_active').checked
+            };
+
+            try {
+                const response = await fetch(`/admin/api/schemes/update/${schemeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (response.ok) {
+                    showAlert('Scheme updated successfully!', 'success');
+                    closeEditModal();
+                    loadSubsidies();
+                } else {
+                    showAlert('Error updating scheme', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error: ' + error.message, 'error');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertContainer.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('edit-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

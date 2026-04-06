@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: telhan-sathi
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 --bind 0.0.0.0:$PORT wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13
+      - key: SECRET_KEY
+        generateValue: true

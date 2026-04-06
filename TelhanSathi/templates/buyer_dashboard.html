@@ -1,0 +1,3015 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>खरीदार डैशबोर्ड - तेलहान साथी</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+            --secondary-color: #f59e0b;
+            --danger-color: #ef4444;
+            --bg-light: #f9fafb;
+            --text-dark: #1f2937;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            height: 70px;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex: 1;
+            margin-left: 40px;
+        }
+
+        .navbar-item {
+            position: relative;
+        }
+
+        .navbar-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 24px 18px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            height: 70px;
+        }
+
+        .navbar-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom-color: white;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-left: auto;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 200px;
+            list-style: none;
+            margin: 8px 0 0 0;
+            padding: 0;
+            display: none;
+            z-index: 1001;
+        }
+
+        .profile-dropdown:hover .profile-dropdown-menu {
+            display: block;
+        }
+        .profile-dropdown::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 0;
+    height: 10px;      /* buffer zone */
+    width: 100%;
+}
+
+
+        .profile-dropdown-item {
+            padding: 12px 18px;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .profile-dropdown-item:first-child {
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+        }
+
+        .profile-dropdown-item:last-child {
+            border-bottom-left-radius: 7px;
+            border-bottom-right-radius: 7px;
+        }
+
+        .profile-dropdown-item:hover {
+            background: var(--bg-light);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .profile-dropdown-item.logout {
+            border-top: 1px solid var(--border-color);
+            color: var(--danger-color);
+        }
+
+        .profile-dropdown-item.logout:hover {
+            background: #fee2e2;
+            border-left-color: var(--danger-color);
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 8px 0;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 15px;
+            margin: 0;
+        }
+
+        /* TABS */
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .nav-link {
+            color: #666;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* CARDS */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* DEALS GRID */
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .deal-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .deal-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .deal-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .deal-content {
+            padding: 15px;
+        }
+
+        .deal-crop {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .deal-detail {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .deal-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-confirmed {
+            background: #dbeafe;
+            color: #0c4a6e;
+        }
+
+        /* PROFILE SECTION */
+        .profile-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+
+            .deals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* BUTTON */
+        .btn-primary-custom {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* LOADING */
+        .loader {
+            border: 4px solid var(--bg-light);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body data-buyer-id="{{ buyer_id }}">
+    <!-- PROFESSIONAL NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="navbar-brand">
+                🛒 TelhanSathi
+            </a>
+
+            <ul class="navbar-menu">
+                <li class="navbar-item">
+                    <a href="#" onclick="switchTab('auctions'); switchAuctionSubtab('browse-auctions'); return false;" class="navbar-link">🔍 Browse Auctions</a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="#" onclick="switchTab('auctions'); switchAuctionSubtab('my-bids'); return false;" class="navbar-link">📊 My Bids</a>
+                </li>
+
+                <li class="navbar-item">
+                    <a href="#" onclick="switchTab('chats'); return false;" class="navbar-link">💬 Chat</a>
+                </li>
+            </ul>
+
+            <div class="navbar-right">
+                <div class="profile-dropdown">
+                    <div class="profile-icon">👤</div>
+                    <ul class="profile-dropdown-menu">
+                        <li><a href="#" onclick="switchTab('profile'); return false;" class="profile-dropdown-item">👤 My Profile</a></li>
+                        <li><a href="#" class="profile-dropdown-item">⚙️ Settings</a></li>
+                        <li><a href="{{ url_for('buyer_auth.buyer_logout') }}" class="profile-dropdown-item logout">🚪 Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+
+        <!-- TAB 1: LIVE AUCTIONS -->
+        <div id="auctions" class="tab-content active">
+            <div class="page-header">
+                <h1>🏪 Live Auctions (NILAMI)</h1>
+                <p>Browse and bid on live auctions from farmers. Place your bids to secure crops at competitive prices.</p>
+            </div>
+
+            <!-- Browse Auctions Subtab -->
+            <div id="browse-auctions" class="auction-subtab-content" style="display: block;">
+            <!-- Auction Stats -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div style="color: #666; font-size: 14px; margin-bottom: 8px;">Active Bids</div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--primary-color);" id="active-bids-count">0</div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div style="color: #666; font-size: 14px; margin-bottom: 8px;">Won Auctions</div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--secondary-color);" id="won-auctions-count">0</div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div style="color: #666; font-size: 14px; margin-bottom: 8px;">Total Spent</div>
+                    <div style="font-size: 28px; font-weight: 700; color: #27ae60;" id="total-spent">₹0</div>
+                </div>
+            </div>
+
+            <!-- Auction Filters & Search -->
+            <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <h3 style="margin-top: 0; margin-bottom: 15px;">Search & Filter</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Crop Name</label>
+                        <input type="text" id="auction-crop-filter" placeholder="e.g., Wheat" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Location</label>
+                        <input type="text" id="auction-location-filter" placeholder="e.g., Maharashtra" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Min Price (₹)</label>
+                        <input type="number" id="auction-min-price-filter" placeholder="Min" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Max Price (₹)</label>
+                        <input type="number" id="auction-max-price-filter" placeholder="Max" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+                    </div>
+                </div>
+                <button onclick="loadAuctions()" style="margin-top: 15px; padding: 10px 25px; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🔍 Search Auctions</button>
+            </div>
+
+            <!-- Auctions List -->
+            <div id="auctions-container" style="display: flex; flex-direction: column; gap: 16px;">
+                <p style="text-align: center; color: #666; grid-column: 1 / -1;">Loading auctions...</p>
+            </div>
+            </div><!-- End browse-auctions subtab -->
+
+            <!-- My Bids Subtab -->
+            <div id="my-bids" class="auction-subtab-content" style="display: none;">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; margin-bottom: 10px;">📊 My Bids & Counter Offers</h3>
+                    <p style="color: #666; margin: 0;">View all your bids, counter offers from farmers, and bid history.</p>
+                </div>
+
+                <!-- My Bids Stats -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: white; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: var(--primary-color);" id="my-active-bids">0</div>
+                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Active Bids</div>
+                    </div>
+                    <div style="background: white; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #ffc107;" id="my-counter-offers">0</div>
+                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Counter Offers</div>
+                    </div>
+                    <div style="background: white; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700; color: #27ae60;" id="my-won-auctions">0</div>
+                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Won Auctions</div>
+                    </div>
+                </div>
+
+                <!-- Status Filters -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="status-filter-btn" data-status="all" onclick="filterBidsByStatus('all')" style="padding: 8px 16px; background: #388e3c; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.3s;">
+                        All
+                    </button>
+                    <button class="status-filter-btn" data-status="pending" onclick="filterBidsByStatus('pending')" style="padding: 8px 16px; background: #f5f5f5; color: #ffc107; border: 2px solid #ffc107; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.3s;">
+                        ⏳ Pending
+                    </button>
+                    <button class="status-filter-btn" data-status="won" onclick="filterBidsByStatus('won')" style="padding: 8px 16px; background: #f5f5f5; color: #27ae60; border: 2px solid #27ae60; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.3s;">
+                        🏆 Won
+                    </button>
+                    <button class="status-filter-btn" data-status="ended" onclick="filterBidsByStatus('ended')" style="padding: 8px 16px; background: #f5f5f5; color: #95a5a6; border: 2px solid #95a5a6; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.3s;">
+                        ⏹️ Ended
+                    </button>
+                    <button class="status-filter-btn" data-status="cancelled" onclick="filterBidsByStatus('cancelled')" style="padding: 8px 16px; background: #f5f5f5; color: #e74c3c; border: 2px solid #e74c3c; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.3s;">
+                        ❌ Cancelled
+                    </button>
+                </div>
+
+                <!-- My Bids List -->
+                <div id="my-bids-container" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="text-align: center; color: #666;">
+                        <p>Loading your bids...</p>
+                    </div>
+                </div>
+            </div><!-- End my-bids subtab -->
+        </div><!-- End auctions tab -->
+
+        <!-- Auction Detail Modal -->
+        <div id="auctionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+            <div style="background: white; border-radius: 12px; width: 100%; max-width: 700px; margin: auto; box-shadow: 0 5px 40px rgba(0,0,0,0.3);">
+                <!-- Modal Header -->
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="auctionModalTitle" style="margin: 0;">Auction Details</h3>
+                    <button onclick="closeAuctionModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">×</button>
+                </div>
+
+                <!-- Modal Body - Split Layout -->
+                <div style="padding: 20px; max-height: 70vh; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Left: Auction Details -->
+                    <div id="auctionDetails"></div>
+                    
+                    <!-- Right: Bid Form -->
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <h4 style="margin: 0; color: var(--primary-color);">🎯 Place Your Bid</h4>
+                        
+                        <div id="bidFormContainer" style="background: #f8f9fa; padding: 16px; border-radius: 8px; display: flex; flex-direction: column; gap: 12px;">
+                            <div style="padding: 12px; background: white; border-radius: 6px; border-left: 4px solid var(--primary-color);">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Current Highest Bid</div>
+                                <div id="bidCurrentHighest" data-modal-field="highest-bid" style="font-weight: 600; font-size: 16px; color: #27ae60;">₹0/Q</div>
+                            </div>
+                            
+                            <div style="padding: 12px; background: white; border-radius: 6px; border-left: 4px solid #ffc107;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Minimum Increment</div>
+                                <div id="bidMinIncrement" style="font-weight: 600; font-size: 16px;">₹0/Q</div>
+                            </div>
+                            
+                            <div style="padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ff9800;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Minimum Bid Required</div>
+                                <div id="bidMinRequired" style="font-weight: 700; font-size: 16px; color: #0066cc;">₹0/Q</div>
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Enter Your Bid (₹/Quintal)</label>
+                                <input type="number" id="bidAmount" placeholder="Enter bid amount" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px;" step="any" min="0">
+                                <div id="bidError" style="color: #c0392b; font-size: 12px; margin-top: 6px; display: none;"></div>
+                            </div>
+                            
+                            <button id="submitBidBtn" style="width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                                Submit Bid
+                            </button>
+                            
+                            <button id="viewAllBidsBtn" onclick="viewAllBidsFromModal()" style="width: 100%; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                                👥 View All Bids
+                            </button>
+                        </div>
+                        
+                        <button onclick="closeAuctionModal()" style="width: 100%; padding: 10px; background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bid Details Modal (View Only - for My Bids) -->
+        <div id="bidDetailsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+            <div style="background: white; border-radius: 12px; width: 100%; max-width: 600px; margin: auto; box-shadow: 0 5px 40px rgba(0,0,0,0.3);">
+                <!-- Modal Header -->
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="bidDetailsModalTitle" style="margin: 0;">Auction Details</h3>
+                    <button onclick="closeBidDetailsModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">×</button>
+                </div>
+
+                <!-- Modal Body - View Only -->
+                <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                    <div id="bidDetailsContent"></div>
+                    
+                    <button onclick="closeBidDetailsModal()" style="width: 100%; padding: 12px; background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; margin-top: 20px;">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Modal -->
+        <div id="photoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+            <div style="background: white; border-radius: 12px; width: 100%; max-width: 600px; margin: auto; box-shadow: 0 5px 40px rgba(0,0,0,0.3); position: relative;">
+                <button onclick="closePhotoModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999; z-index: 1001;">×</button>
+                <div style="padding: 20px; text-align: center;">
+                    <img id="modalPhotoImg" src="" alt="Full size photo" style="width: 100%; max-height: 500px; object-fit: contain; border-radius: 6px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Chats Tab Content -->
+        <div id="chats" class="tab-content">
+            <div class="page-header">
+                <h1>💬 My Chats</h1>
+                <p>View all your conversations with farmers. Chat to discuss offers, negotiate prices, and confirm transactions.</p>
+            </div>
+            <div id="chats-container">
+                <p style="text-align: center; color: #666;">Loading chats...</p>
+            </div>
+        </div>
+
+        <!-- Profile Tab Content -->
+        <div id="profile" class="tab-content">
+            <div class="page-header">
+                <h1>👤 My Profile</h1>
+                <p>Manage your buyer profile and account settings.</p>
+            </div>
+            
+            <!-- Profile Content -->
+            <div id="profile-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- Left: Profile Info -->
+                <div>
+                    <div style="background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--primary-color);">📋 Profile Information</h3>
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">Name</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.buyer_name }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">Email</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.email }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">Phone</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.phone or 'Not provided' }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">Company/Business</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.company_name or 'Not provided' }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">Address</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.address or 'Not provided' }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">District</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.district or 'Not provided' }}</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 6px;">State</label>
+                                <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">{{ buyer.state or 'Maharashtra' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Statistics & Activity -->
+                <div>
+                    <div style="background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--primary-color);">📊 Your Statistics</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background: #f0fdf4; padding: 16px; border-radius: 10px; text-align: center;">
+                                <div id="activeBidsCount" style="font-size: 28px; font-weight: 700; color: var(--primary-color);">-</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 6px;">Active Bids</div>
+                            </div>
+                            <div style="background: #fef3c7; padding: 16px; border-radius: 10px; text-align: center;">
+                                <div id="wonAuctionsCount" style="font-size: 28px; font-weight: 700; color: var(--secondary-color);">-</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 6px;">Won Auctions</div>
+                            </div>
+                            <div style="background: #dbeafe; padding: 16px; border-radius: 10px; text-align: center;">
+                                <div id="totalBidsCount" style="font-size: 28px; font-weight: 700; color: #0284c7;">-</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 6px;">Total Bids</div>
+                            </div>
+                            <div style="background: #f3e8ff; padding: 16px; border-radius: 10px; text-align: center;">
+                                <div id="winningBidsCount" style="font-size: 28px; font-weight: 700; color: #a855f7;">-</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 6px;">Winning Bids</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--primary-color);">⚙️ Account Settings</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button style="padding: 12px 20px; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; text-align: left; font-weight: 500; transition: all 0.3s;">
+                                ✏️ Edit Profile
+                            </button>
+                            <button style="padding: 12px 20px; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; text-align: left; font-weight: 500; transition: all 0.3s;">
+                                🔐 Change Password
+                            </button>
+                            <button style="padding: 12px 20px; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; text-align: left; font-weight: 500; transition: all 0.3s;">
+                                🔔 Notification Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 12px; width: 100%; max-width: 600px; height: 700px; display: flex; flex-direction: column; box-shadow: 0 5px 40px rgba(0,0,0,0.2);">
+            <!-- Chat Header -->
+            <div style="background: var(--primary-color); color: white; padding: 16px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 id="chatTitle" style="margin: 0 0 4px 0; font-size: 16px;">Chat with Farmer</h3>
+                    <div id="chatSubtitle" style="font-size: 12px; opacity: 0.9;"></div>
+                </div>
+                <button onclick="closeChatModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 16px; background: #f8f9fa; display: flex; flex-direction: column; gap: 8px;">
+                <!-- Messages will appear here -->
+                <div style="text-align: center; color: #999; margin-top: 20px;">
+                    <p style="font-size: 12px;">💬 Loading messages...</p>
+                </div>
+            </div>
+
+            <!-- Message Input Area -->
+            <div style="padding: 12px; border-top: 1px solid var(--border-color); display: flex; gap: 8px;">
+                <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px;">
+                <button onclick="sendChatMessage()" style="background: var(--primary-color); color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Load data if needed
+            if (tabName === 'chats') {
+                loadChats();
+            } else if (tabName === 'auctions') {
+                loadAuctions();
+            } else if (tabName === 'profile') {
+                loadBuyerStats();
+            }
+        }
+
+        // Load buyer statistics
+        async function loadBuyerStats() {
+            try {
+                const response = await fetch('/bidding/buyer/dashboard/stats');
+                if (!response.ok) throw new Error('Failed to load statistics');
+
+                const stats = await response.json();
+
+                // Update statistics display
+                document.getElementById('activeBidsCount').textContent = stats.active_bids || 0;
+                document.getElementById('wonAuctionsCount').textContent = stats.won_auctions || 0;
+                document.getElementById('totalBidsCount').textContent = stats.total_bids || 0;
+                document.getElementById('winningBidsCount').textContent = stats.winning_bids || 0;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                // Show error state
+                document.getElementById('activeBidsCount').textContent = '?';
+                document.getElementById('wonAuctionsCount').textContent = '?';
+                document.getElementById('totalBidsCount').textContent = '?';
+                document.getElementById('winningBidsCount').textContent = '?';
+            }
+        }
+
+        // Global variables for bid filtering
+        let allBids = [];
+        let allCounterOffers = [];
+        let currentStatusFilter = 'all';
+
+        // Switch auction subtabs (Browse vs My Bids)
+        function switchAuctionSubtab(subtabName) {
+            // Hide all auction subtabs
+            const subtabs = document.querySelectorAll('.auction-subtab-content');
+            subtabs.forEach(subtab => subtab.style.display = 'none');
+
+            // Remove active class from all subtab buttons
+            const buttons = document.querySelectorAll('.auction-subtab-btn');
+            buttons.forEach(btn => {
+                btn.style.color = '#999';
+                btn.style.borderBottomColor = 'transparent';
+            });
+
+            // Show selected subtab
+            document.getElementById(subtabName).style.display = 'block';
+
+            // Add active class to clicked button
+            event.target.style.color = 'var(--text-dark)';
+            event.target.style.borderBottomColor = 'var(--primary-color)';
+
+            // Load data if needed
+            if (subtabName === 'my-bids') {
+                loadMyBids();
+            }
+        }
+
+        // Handle create offer form submission
+        async function handleCreateOffer(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const errorDiv = document.getElementById('form-error');
+            const successDiv = document.getElementById('form-success');
+            const form = document.getElementById('create-offer-form');
+            const offerId = form.getAttribute('data-offer-id');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            errorDiv.innerHTML = '';
+            successDiv.innerHTML = '';
+
+            const data = {
+                crop_name: formData.get('crop_name'),
+                quantity_quintal: parseFloat(formData.get('quantity_quintal')),
+                initial_price: parseFloat(formData.get('initial_price')),
+                location_wanted: formData.get('location_wanted'),
+                district_wanted: formData.get('district_wanted')
+            };
+
+            // Validation
+            if (!data.crop_name || !data.quantity_quintal || !data.initial_price) {
+                errorDiv.innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 4px;">❌ Please fill in all required fields (*)</div>';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (data.quantity_quintal <= 0) {
+                errorDiv.innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 4px;">❌ Quantity must be greater than 0</div>';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (data.initial_price <= 0) {
+                errorDiv.innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 4px;">❌ Price must be greater than 0</div>';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                let url = '/buyer/api/create-offer';
+                let method = 'POST';
+                let message = 'Offer created successfully!';
+                
+                // If editing, use PUT and update endpoint
+                if (offerId) {
+                    url = `/buyer/api/offers/${offerId}`;
+                    method = 'PUT';
+                    message = 'Offer updated successfully!';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    successDiv.innerHTML = `<div>✅ ${result.message || message}</div>`;
+                    successDiv.style.display = 'block';
+                    
+                    // Reset form
+                    form.reset();
+                    form.removeAttribute('data-offer-id');
+                    document.querySelector('button[type="submit"]').textContent = '🚀 Post Your Offer';
+                    
+                    // Reload offers after 2 seconds
+                    setTimeout(() => {
+                        loadMyOffers();
+                        switchTab('my-offers');
+                    }, 2000);
+                } else {
+                    errorDiv.innerHTML = `<div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 4px;">❌ ${result.error || 'Failed to save offer'}</div>`;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error creating offer:', error);
+                errorDiv.innerHTML = '<div style="color: #721c24; background: #f8d7da; padding: 12px; border-radius: 4px;">❌ Error creating offer. Please try again.</div>';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Load my offers
+        async function loadMyOffers() {
+            try {
+                const response = await fetch('/buyer/api/my-offers');
+                if (!response.ok) throw new Error('Failed to load offers');
+
+                const offers = await response.json();
+                displayOffers(offers);
+
+                // Update count
+                document.getElementById('offers-count').textContent = offers.length;
+            } catch (error) {
+                console.error('Error loading offers:', error);
+                document.getElementById('offers-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Failed to load offers</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display deals
+        function displayDeals(deals) {
+            const grid = document.getElementById('deals-grid');
+
+            if (deals.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No deals available at the moment</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = deals.map(deal => `
+                <div class="deal-card">
+                    <div class="deal-card-header" onclick="viewDealDetails('${deal.id}')" style="cursor: pointer;">
+                        <div class="deal-image">
+                            ${deal.crop_name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="deal-content">
+                            <div class="deal-crop">${deal.crop_name}</div>
+                            <div class="deal-detail">
+                                <span>Quantity:</span>
+                                <span>${deal.quantity_quintal} Quintals</span>
+                            </div>
+                            <div class="deal-detail">
+                                <span>Location:</span>
+                                <span>${deal.location || '-'}</span>
+                            </div>
+                            <div class="deal-detail">
+                                <span>Farmer:</span>
+                                <span>${deal.farmer_name || '-'}</span>
+                            </div>
+                            <div class="deal-price">₹${deal.expected_price}/Qtl</div>
+                            <span class="status-badge status-${deal.status}">${formatStatus(deal.status)}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 10px;" onclick="openOfferModal('${deal.id}', '${deal.crop_name}', ${deal.expected_price})">
+                        💰 Make Offer
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Load my offers
+        async function loadMyOffers() {
+            try {
+                const response = await fetch('/buyer/api/my-offers');
+                if (!response.ok) throw new Error('Failed to load offers');
+
+                const offers = await response.json();
+                displayOffers(offers);
+
+                // Update count
+                document.getElementById('offers-count').textContent = offers.length;
+            } catch (error) {
+                console.error('Error loading offers:', error);
+                document.getElementById('offers-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Failed to load offers</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display offers
+        function displayOffers(offers) {
+            const container = document.getElementById('offers-container');
+
+            if (offers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🚫</div>
+                        <p>Marketplace functionality has been removed</p>
+                        <p style="font-size: 12px; color: #999; margin-top: 10px;">Please use the Bidding System to buy crops from farmers.</p>
+                        <button onclick="window.location.href='/bidding/dashboard'" style="margin-top: 15px; padding: 8px 16px; background: #388e3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">Go to Bidding System</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--bg-light); border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 12px; text-align: left; font-weight: 600;">Crop</th>
+                                <th style="padding: 12px; text-align: left; font-weight: 600;">Location</th>
+                                <th style="padding: 12px; text-align: left; font-weight: 600;">Offer Price (₹/Qtl)</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${offers.map(offer => `
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 12px; font-weight: 600;">${offer.crop_name}</td>
+                                    <td style="padding: 12px;">${offer.location_wanted || offer.district_wanted || 'Any'}</td>
+                                    <td style="padding: 12px; font-weight: 600; color: #ff6f00;">₹${offer.initial_price}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <button onclick="editOffer('${offer.id}', '${offer.crop_name}', ${offer.quantity_quintal}, '${offer.location_wanted || ''}', '${offer.district_wanted || ''}', ${offer.initial_price})" style="padding: 6px 12px; margin-right: 8px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">✏️ Edit</button>
+                                        <button onclick="deleteOffer('${offer.id}')" style="padding: 6px 12px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">🗑️ Delete</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Edit offer
+        function editOffer(offerId, cropName, quantity, location, district, price) {
+            // Populate the form with offer data
+            document.querySelector('input[name="crop_name"]').value = cropName;
+            document.querySelector('input[name="quantity_quintal"]').value = quantity;
+            document.querySelector('input[name="initial_price"]').value = price;
+            document.querySelector('input[name="location_wanted"]').value = location;
+            document.querySelector('input[name="district_wanted"]').value = district;
+            
+            // Store the offer ID for update
+            document.getElementById('create-offer-form').setAttribute('data-offer-id', offerId);
+            document.querySelector('button[type="submit"]').textContent = '💾 Update Offer';
+            
+            // Switch to create tab
+            switchTab('create-offer');
+            
+            // Scroll to form
+            document.getElementById('create-offer-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Delete offer
+        async function deleteOffer(offerId) {
+            if (!confirm('Are you sure you want to delete this offer?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/buyer/api/offers/${offerId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('✅ Offer deleted successfully!');
+                    loadMyOffers();
+                } else {
+                    const result = await response.json();
+                    alert(`❌ ${result.error || 'Failed to delete offer'}`);
+                }
+            } catch (error) {
+                console.error('Error deleting offer:', error);
+                alert('❌ Error deleting offer. Please try again.');
+            }
+        }
+
+        // Helper function
+        function formatStatus(status) {
+            const statuses = {
+                'pending': 'Pending',
+                'accepted': 'Accepted',
+                'final_confirmed': 'Confirmed',
+                'declined': 'Declined'
+            };
+            return statuses[status] || status;
+        }
+
+        // View deal details
+        function viewDealDetails(dealId) {
+            // TODO: Navigate to deal details page or show modal
+            console.log('Viewing deal:', dealId);
+            alert('Deal details view coming soon');
+        }
+
+        // Helper function
+        function formatStatus(status) {
+            const statuses = {
+                'pending': 'Pending',
+                'accepted': 'Accepted',
+                'final_confirmed': 'Confirmed',
+                'declined': 'Declined'
+            };
+            return statuses[status] || status;
+        }
+
+        // Load initial data on page load
+        loadAuctions();
+
+        // Load Chats
+        async function loadChats() {
+            try {
+                const container = document.getElementById('chats-container');
+                container.innerHTML = '<p style="text-align: center; color: #666;">Loading chats...</p>';
+
+                const response = await fetch('/bidding/buyer/chats/list');
+                if (!response.ok) throw new Error('Failed to load chats');
+
+                const data = await response.json();
+                displayChats(data.chats);
+            } catch (error) {
+                console.error('Error loading chats:', error);
+                document.getElementById('chats-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Failed to load chats</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display Chats
+        function displayChats(chats) {
+            const container = document.getElementById('chats-container');
+
+            if (!chats || chats.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <p>No active chats yet. Win an auction to start chatting with farmers!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px;">
+                    ${chats.map(chat => `
+                        <div class="card" style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" onclick="openExistingChat('${chat.chat_id}', '${chat.farmer_name}', '${chat.crop_name}')">
+                            <!-- Chat Header -->
+                            <div style="padding: 16px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                                <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700;">👨‍🌾 ${chat.farmer_name}</h3>
+                                <div style="font-size: 13px; opacity: 0.9;">🌾 ${chat.crop_name}</div>
+                            </div>
+
+                            <!-- Chat Body -->
+                            <div style="padding: 16px;">
+                                <!-- Last Message -->
+                                <div style="margin-bottom: 12px;">
+                                    <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Last Message</div>
+                                    <div style="font-size: 13px; color: #333; padding: 8px; background: #f8f9fa; border-radius: 4px; max-height: 60px; overflow: hidden;">
+                                        <strong>${chat.last_message_sender === 'buyer' ? 'You' : 'Farmer'}:</strong> ${chat.last_message || 'No messages yet'}
+                                    </div>
+                                </div>
+
+                                <!-- Unread Badge -->
+                                ${chat.unread_count > 0 ? `
+                                    <div style="display: inline-block; background: #ff6b6b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-bottom: 12px;">
+                                        ${chat.unread_count} unread
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <!-- Footer -->
+                            <div style="padding: 12px; background: #f8f9fa; border-top: 1px solid var(--border-color);">
+                                <button style="width: 100%; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px;" onclick="event.stopPropagation(); openExistingChat('${chat.chat_id}', '${chat.farmer_name}', '${chat.crop_name}')">
+                                    💬 Open Chat
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // Open Existing Chat
+        async function openExistingChat(chatId, farmerName, cropName) {
+            try {
+                // Set current chat
+                window.currentChat = {
+                    id: chatId,
+                    farmerName: farmerName,
+                    cropName: cropName,
+                    messages: []
+                };
+
+                // Update modal header
+                document.getElementById('chatTitle').textContent = `Chat with ${farmerName}`;
+                document.getElementById('chatSubtitle').textContent = `About: ${cropName}`;
+
+                // Show modal
+                document.getElementById('chatModal').style.display = 'flex';
+
+                // Load messages
+                const response = await fetch(`/bidding/buyer/chat/${chatId}/messages`);
+                if (!response.ok) throw new Error('Failed to load messages');
+
+                const data = await response.json();
+                window.currentChat.messages = data.messages;
+
+                // Display messages
+                const messagesDiv = document.getElementById('chatMessages');
+                if (!data.messages || data.messages.length === 0) {
+                    messagesDiv.innerHTML = `<div style="text-align: center; color: #999; padding: 20px 0;">No messages yet. Start the conversation!</div>`;
+                } else {
+                    messagesDiv.innerHTML = data.messages.map(msg => `
+                        <div style="display: flex; justify-content: ${msg.sender_type === 'buyer' ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
+                            <div style="background: ${msg.sender_type === 'buyer' ? 'var(--primary-color)' : '#e9ecef'}; color: ${msg.sender_type === 'buyer' ? 'white' : '#333'}; padding: 10px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; font-size: 14px;">
+                                ${msg.message}
+                                <div style="font-size: 11px; margin-top: 4px; opacity: 0.7;">${new Date(msg.timestamp).toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+
+                // Clear input
+                document.getElementById('chatInput').value = '';
+
+                // Focus on input
+                setTimeout(() => {
+                    document.getElementById('chatInput').focus();
+                }, 100);
+            } catch (error) {
+                console.error('Error opening chat:', error);
+                alert('Failed to open chat: ' + error.message);
+            }
+        }
+
+        // Initiate chat when winning auction
+        async function initiateChat(auctionId, farmerName) {
+            try {
+                // First fetch auction details to get crop_name
+                const auctionResponse = await fetch(`/bidding/buyer/auction/${auctionId}/api`);
+                if (!auctionResponse.ok) {
+                    throw new Error('Failed to fetch auction details');
+                }
+                const auction = await auctionResponse.json();
+                
+                // Create or get existing chat (without initial message)
+                const response = await fetch('/bidding/buyer/chat/initiate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        auction_id: auctionId,
+                        message: '' // Empty initial message
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to initiate chat');
+                }
+
+                const chatData = await response.json();
+                
+                // Open the chat modal directly with fetched auction data
+                openExistingChat(chatData.chat_id, farmerName, auction.crop_name);
+                
+            } catch (error) {
+                console.error('Error initiating chat:', error);
+                alert('Failed to start chat: ' + error.message);
+            }
+        }
+
+        // Close Chat Modal
+        function closeChatModal() {
+            document.getElementById('chatModal').style.display = 'none';
+            document.getElementById('chatInput').value = '';
+        }
+
+        // Send Chat Message
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message || !window.currentChat || !window.currentChat.id) return;
+
+            const messagesDiv = document.getElementById('chatMessages');
+
+            try {
+                // Send message to backend
+                const response = await fetch(`/bidding/buyer/chat/${window.currentChat.id}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to send message');
+
+                const messageData = await response.json();
+
+                // Add buyer message to UI
+                const buyerMsgDiv = document.createElement('div');
+                buyerMsgDiv.style.cssText = 'display: flex; justify-content: flex-end; margin-bottom: 8px;';
+                buyerMsgDiv.innerHTML = `
+                    <div style="background: var(--primary-color); color: white; padding: 10px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; font-size: 14px;">
+                        ${message}
+                        <div style="font-size: 11px; margin-top: 4px; opacity: 0.7;">${new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                `;
+                messagesDiv.appendChild(buyerMsgDiv);
+
+                // Clear input
+                input.value = '';
+
+                // Scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                // Focus back on input
+                input.focus();
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Failed to send message. Please try again.');
+            }
+        }
+
+
+        // Allow Enter key to send message
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendChatMessage();
+                    }
+                });
+            }
+        });
+
+        // ===== AUCTION FUNCTIONS =====
+
+        // Load all auctions with filters
+        async function loadAuctions() {
+            try {
+                const cropFilter = document.getElementById('auction-crop-filter')?.value || '';
+                const locationFilter = document.getElementById('auction-location-filter')?.value || '';
+                const minPrice = document.getElementById('auction-min-price-filter')?.value || '';
+                const maxPrice = document.getElementById('auction-max-price-filter')?.value || '';
+
+                let url = '/bidding/buyer/auctions/api';
+                if (cropFilter) url += `?crop=${encodeURIComponent(cropFilter)}`;
+                if (locationFilter) url += `${cropFilter ? '&' : '?'}district=${encodeURIComponent(locationFilter)}`;
+                if (minPrice) url += `${(cropFilter || locationFilter) ? '&' : '?'}min_price=${minPrice}`;
+                if (maxPrice) url += `${(cropFilter || locationFilter || minPrice) ? '&' : '?'}max_price=${maxPrice}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    showError('Failed to load auctions: ' + data.error);
+                } else if (data.auctions && Array.isArray(data.auctions)) {
+                    loadAuctionStats();
+                    displayAuctions(data.auctions);
+                } else {
+                    showError('Failed to load auctions: Invalid response format');
+                }
+            } catch (error) {
+                console.error('Error loading auctions:', error);
+                showError('Error loading auctions. Please try again.');
+            }
+        }
+
+        // Display auctions in grid
+        function displayAuctions(auctions) {
+            const container = document.getElementById('auctions-container');
+            
+            if (!auctions || auctions.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #666; padding: 40px; background: white; border-radius: 10px; border: 1px solid var(--border-color);"><p style="margin: 0;">No auctions found. Try adjusting your filters.</p></div>';
+                return;
+            }
+
+            let html = auctions.map(auction => {
+                const timeRemaining = Math.max(0, auction.time_remaining || 0);
+                const timeText = formatTimeRemaining(timeRemaining);
+                
+                // Determine status based on either status field OR time remaining
+                let statusBadgeColor = '#e74c3c'; // default red
+                let statusText = 'UNKNOWN';
+                
+                // Check if auction has ended by time remaining
+                const hasEnded = timeRemaining <= 0;
+                
+                if (hasEnded) {
+                    // Auction has ended regardless of status field
+                    statusBadgeColor = '#4caf50'; // dark green for completed
+                    statusText = 'COMPLETED';
+                } else if (auction.status) {
+                    // Auction is still active by time, check status field
+                    const status = String(auction.status).toLowerCase().trim();
+                    if (status === 'active') {
+                        statusBadgeColor = '#27ae60'; // bright green
+                        statusText = 'ACTIVE';
+                    } else if (status === 'completed' || status === 'closed') {
+                        statusBadgeColor = '#4caf50'; // dark green
+                        statusText = 'COMPLETED';
+                    } else if (status === 'pending') {
+                        statusBadgeColor = '#ff9800'; // orange
+                        statusText = 'PENDING';
+                    } else {
+                        statusText = status.toUpperCase();
+                    }
+                }
+                
+                return `
+                    <div data-auction-id="${auction.id}" data-auction-status="${hasEnded ? 'completed' : auction.status}" style="background: white; border-radius: 10px; border: 1px solid var(--border-color); padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start;">
+                        <!-- Left: Auction Details -->
+                        <div>
+                            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="margin: 0 0 6px 0; font-size: 16px; color: var(--text-dark);">${auction.crop_name}</h4>
+                                    <p style="margin: 0; color: #666; font-size: 13px;">👨‍🌾 by ${auction.farmer_name || 'Unknown Farmer'}</p>
+                                </div>
+                                <div>
+                                    <span data-field="status" style="display: inline-block; padding: 4px 12px; background: ${statusBadgeColor}; color: white; border-radius: 20px; font-size: 11px; font-weight: 600;">${statusText}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">📍 Location</div>
+                                    <div style="font-weight: 600; color: #2c3e50;">${auction.location || 'N/A'}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">📦 Quantity</div>
+                                    <div style="font-weight: 600; color: #2c3e50;">${auction.quantity_quintals || 0}Q</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">💰 Base Price</div>
+                                    <div style="font-weight: 600; color: var(--primary-color);">₹${auction.base_price || 0}/Q</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">📈 Highest Bid</div>
+                                    <div data-field="highest-bid" style="font-weight: 700; color: ${auction.bids_count > 0 ? '#27ae60' : '#999'};">${auction.bids_count > 0 ? '₹' + auction.highest_bid + '/Q' : 'No bid'}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">🎯 Bids</div>
+                                    <div data-field="bid-count" style="font-weight: 700; color: #2196f3;">${auction.bids_count || 0}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">⏱️ Time Left</div>
+                                    <div style="font-weight: 600; color: ${timeRemaining > 3600 ? '#27ae60' : timeRemaining > 0 ? '#ff9800' : '#e74c3c'};">${timeText}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Action Buttons -->
+                        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 160px;">
+                            <button class="view-auction-btn" data-auction-id="${auction.id}" style="padding: 10px; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                                📊 View Details & place bid
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to buttons after rendering
+            setTimeout(() => {
+                document.querySelectorAll('.view-auction-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const auctionId = this.getAttribute('data-auction-id');
+                        viewAuctionDetails(auctionId);
+                    });
+                });
+                
+                document.querySelectorAll('.bid-auction-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const auctionId = this.getAttribute('data-auction-id');
+                        viewAuctionDetails(auctionId);
+                    });
+                });
+            }, 100);
+        }
+
+        // ==================== SOCKET.IO REAL-TIME AUCTION HANDLER ====================
+
+        // IMPORTANT: This function is called automatically by socket_bidding.js when an auction is created
+        // You can also manually test by calling: testAuctionReceived() in the browser console
+        
+        /**
+         * Handle new auctions received from Socket.IO in real-time
+         * This function is called when a farmer creates a new auction
+         */
+        function handleNewAuctionReceived(auctionData) {
+            console.log('🎯 [Real-time] NEW AUCTION HANDLER CALLED:', auctionData);
+            
+            // Visual notification
+            showNotification('🎉 New Auction Available', `New ${auctionData.crop_name} auction by ${auctionData.farmer_name}!`);
+            
+            // Add the new auction to the top of the list
+            const container = document.getElementById('auctions-container');
+            if (!container) return;
+            
+            // Get current HTML
+            const currentHTML = container.innerHTML;
+            
+            // Calculate time remaining
+            const now = new Date().getTime();
+            const endTime = new Date(auctionData.end_time).getTime();
+            const timeRemaining = Math.max(0, Math.floor((endTime - now) / 1000));
+            const timeText = formatTimeRemaining(timeRemaining);
+            
+            // Create new auction card HTML (same format as displayAuctions)
+            const newAuctionHTML = `
+                <div data-auction-id="${auctionData.auction_id}" style="background: white; border-radius: 10px; border: 2px solid var(--primary-color); padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start; animation: slideIn 0.3s ease-out;">
+                    <!-- Left: Auction Details -->
+                    <div>
+                        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="margin: 0 0 6px 0; font-size: 16px; color: var(--text-dark);">${auctionData.crop_name}</h4>
+                                <p style="margin: 0; color: #666; font-size: 13px;">👨‍🌾 by ${auctionData.farmer_name || 'Unknown Farmer'}</p>
+                            </div>
+                            <div>
+                                <span style="display: inline-block; padding: 4px 12px; background: #10b981; color: white; border-radius: 20px; font-size: 11px; font-weight: 600;">ACTIVE</span>
+                                <span style="display: inline-block; padding: 4px 12px; background: #f59e0b; color: white; border-radius: 20px; font-size: 11px; font-weight: 600; margin-left: 8px;">🆕 NEW</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                            <div>
+                                <div style="color: #666; font-size: 12px;">📍 Location</div>
+                                <div style="font-weight: 600; color: #2c3e50;">${auctionData.location || 'N/A'}</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px;">📦 Quantity</div>
+                                <div style="font-weight: 600; color: #2c3e50;">${auctionData.quantity_quintals || 0}Q</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px;">💰 Base Price</div>
+                                <div style="font-weight: 600; color: var(--primary-color);">₹${auctionData.base_price_per_quintal || 0}/Q</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div>
+                                <div style="color: #666; font-size: 12px;">📈 Current Bid</div>
+                                <div data-field="highest-bid" style="font-weight: 700; color: var(--primary-color);">₹${auctionData.base_price_per_quintal}/Q</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px;">🎯 Bids</div>
+                                <div data-field="bid-count" style="font-weight: 700; color: #2196f3;">0</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px;">⏱️ Time Left</div>
+                                <div style="font-weight: 600; color: #27ae60;">${timeText}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Action Buttons -->
+                    <div style="display: flex; flex-direction: column; gap: 8px; min-width: 160px;">
+                        <button class="view-auction-btn" data-auction-id="${auctionData.auction_id}" style="padding: 10px; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                            📊 View & Bid Now
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Prepend new auction to the container
+            container.insertAdjacentHTML('afterbegin', newAuctionHTML);
+            
+            // Add event listener to the new button
+            setTimeout(() => {
+                const newBtn = container.querySelector('.view-auction-btn[data-auction-id="' + auctionData.auction_id + '"]');
+                if (newBtn) {
+                    newBtn.addEventListener('click', function() {
+                        viewAuctionDetails(auctionData.auction_id);
+                    });
+                }
+            }, 100);
+        }
+
+        /**
+         * Show a notification toast to the user
+         */
+        function showNotification(title, message) {
+            // Create a toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                font-weight: 600;
+                max-width: 320px;
+            `;
+            toast.innerHTML = `<div>${title}</div><div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">${message}</div>`;
+            document.body.appendChild(toast);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // ==================== MANUAL TEST FUNCTION ====================
+        // Call from browser console: testAuctionReceived()
+        window.testAuctionReceived = function() {
+            console.log('🧪 TEST: Simulating real-time auction...');
+            const testData = {
+                auction_id: 'TEST-' + Date.now(),
+                crop_name: '🧪 TEST CROP',
+                farmer_name: '🧪 Test Farmer',
+                location: 'Test Location',
+                quantity_quintals: 100,
+                base_price_per_quintal: 5000,
+                end_time: new Date(Date.now() + 86400000).toISOString()
+            };
+            handleNewAuctionReceived(testData);
+            console.log('✅ Test auction added! If you see it at top of list, real-time system is working');
+        };
+        console.log('✅ Dashboard Ready - Type testAuctionReceived() in console to test, or wait for real auctions');
+
+        // ==================== REAL-TIME BID UPDATE HANDLER ====================
+        /**
+         * Handle bid updates received from Socket.IO in real-time
+         * Updates auction cards AND the details modal if it's open
+         */
+        window.handleBidUpdate = function(bidData) {
+            console.log('💰 [Real-time BID] Update received:', bidData);
+            
+            const auctionId = bidData.auction_id;
+            const highestBid = bidData.highest_bid;
+            const buyerCount = bidData.buyer_count;
+            const minimumIncrement = bidData.minimum_bid_increment;
+            const minimumBidRequired = bidData.minimum_bid_required;
+            
+            // Check if auction details modal is open for this auction
+            const modal = document.getElementById('auctionModal');
+            if (modal && modal.style.display === 'flex') {
+                const modalAuctionId = modal.getAttribute('data-auction-id');
+                if (modalAuctionId === auctionId) {
+                    console.log('📝 Updating modal for auction:', auctionId);
+                    
+                    // Update Current Highest in LEFT SIDE (Pricing Information section)
+                    const auctionCurrentHighestDisplay = document.getElementById('auctionCurrentHighestDisplay');
+                    if (auctionCurrentHighestDisplay) {
+                        auctionCurrentHighestDisplay.textContent = '₹' + highestBid.toLocaleString('en-IN') + '/Q';
+                        // Add pulse animation
+                        auctionCurrentHighestDisplay.style.animation = 'none';
+                        setTimeout(() => {
+                            auctionCurrentHighestDisplay.style.animation = 'bidPulse 0.6s ease-out';
+                        }, 10);
+                    }
+                    
+                    // Update highest bid in RIGHT SIDE (Place Your Bid form)
+                    const modalBidElement = modal.querySelector('[data-modal-field="highest-bid"]');
+                    if (modalBidElement) {
+                        const oldBid = modalBidElement.textContent;
+                        modalBidElement.textContent = '₹' + highestBid.toLocaleString('en-IN') + '/q';
+                        
+                        // Add pulse animation
+                        modalBidElement.style.animation = 'none';
+                        setTimeout(() => {
+                            modalBidElement.style.animation = 'bidPulse 0.6s ease-out';
+                        }, 10);
+                    }
+                    
+                    // Update minimum bid increment
+                    const minIncrementElement = document.getElementById('bidMinIncrement');
+                    if (minIncrementElement && minimumIncrement !== undefined) {
+                        minIncrementElement.textContent = '₹' + minimumIncrement.toLocaleString('en-IN') + '/Q';
+                    }
+                    
+                    // Update minimum bid required
+                    const minRequiredElement = document.getElementById('bidMinRequired');
+                    if (minRequiredElement && minimumBidRequired !== undefined) {
+                        minRequiredElement.textContent = '₹' + minimumBidRequired.toLocaleString('en-IN') + '/Q';
+                    }
+                    
+                    // Update the input field placeholder and minimum value
+                    const bidAmountInput = document.getElementById('bidAmount');
+                    if (bidAmountInput && minimumBidRequired !== undefined) {
+                        bidAmountInput.min = minimumBidRequired;
+                        bidAmountInput.placeholder = `Enter amount (minimum: ₹${minimumBidRequired.toLocaleString('en-IN')})`;
+                    }
+                    
+                    // Update bid count in modal
+                    const modalBidCountElement = modal.querySelector('[data-modal-field="bid-count"]');
+                    if (modalBidCountElement) {
+                        modalBidCountElement.textContent = buyerCount;
+                    }
+                    
+                    // Reload the bids list (if displayed)
+                    setTimeout(() => {
+                        loadBidsInModal(auctionId);
+                    }, 300);
+                }
+            }
+            
+            // Also update auction cards on the page (browse section)
+            const auctionCards = document.querySelectorAll(`[data-auction-id="${auctionId}"]`);
+            auctionCards.forEach(card => {
+                // Find the highest bid display
+                const bidElements = card.querySelectorAll('[data-field="highest-bid"]');
+                bidElements.forEach(elem => {
+                    const oldBid = elem.textContent;
+                    elem.textContent = '₹' + highestBid.toLocaleString('en-IN');
+                    
+                    // Add pulse animation
+                    elem.style.animation = 'none';
+                    setTimeout(() => {
+                        elem.style.animation = 'bidPulse 0.6s ease-out';
+                    }, 10);
+                });
+                
+                // Update bid count
+                const bidCountElements = card.querySelectorAll('[data-field="bid-count"]');
+                bidCountElements.forEach(elem => {
+                    elem.textContent = buyerCount;
+                });
+            });
+            
+            // Refresh "My Bids" section if it's currently displayed
+            const myBidsTab = document.getElementById('my-bids');
+            if (myBidsTab && myBidsTab.style.display !== 'none') {
+                console.log('🔄 Refreshing My Bids section for auction:', auctionId);
+                // Reload my bids to update the "Increase Your Bid" boxes with new minimum bid requirements
+                setTimeout(() => {
+                    loadMyBids();
+                }, 500);
+            }
+            
+            // Show notification
+            showNotification('💰 New Bid Placed', `Highest bid updated to ₹${highestBid.toLocaleString('en-IN')}/q`);
+        };
+
+        // Handle real-time counter offer updates
+        window.handleCounterOfferUpdate = function(counterOfferData) {
+            console.log('🔔 [Real-time COUNTER OFFER] Update received:', counterOfferData);
+            
+            const eventType = counterOfferData.event_type;
+            
+            // Refresh "My Bids" section if it's currently displayed (for counter offer sent to buyer)
+            const myBidsTab = document.getElementById('my-bids');
+            if (myBidsTab && myBidsTab.style.display !== 'none') {
+                console.log('🔄 Refreshing My Bids section for counter offer update');
+                setTimeout(() => {
+                    loadMyBids();
+                }, 300);
+            }
+            
+            // Show notification based on event type
+            if (eventType === 'counter_offer_sent') {
+                showNotification(
+                    '🔔 Counter Offer Received',
+                    `Farmer offered ₹${counterOfferData.counter_price.toLocaleString('en-IN')}/Q for ${counterOfferData.crop_name}`
+                );
+            } else if (eventType === 'counter_offer_response') {
+                // This could be for farmer's side (if they're viewing)
+                const status = counterOfferData.status;
+                const message = status === 'accepted' 
+                    ? `Buyer accepted counter offer! ✓`
+                    : `Buyer rejected counter offer`;
+                
+                showNotification(
+                    `🔔 Counter Offer ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+                    message
+                );
+            }
+        };
+
+        // Handle bid acceptance from farmer
+        window.handleBidAccepted = function(bidData) {
+            console.log('✅ [Real-time BID ACCEPTANCE] Update received:', bidData);
+            
+            const auctionId = bidData.auction_id;
+            const winningBuyerId = bidData.winning_buyer_id;
+            const winningPrice = bidData.winning_price;
+            const cropName = bidData.crop_name;
+            const farmerName = bidData.farmer_name;
+            
+            // Get current logged-in buyer ID
+            const loggedInBuyerId = document.body.getAttribute('data-buyer-id');
+            
+            console.log(`Buyer ID: ${loggedInBuyerId}, Winning Buyer: ${winningBuyerId}, Auction: ${auctionId}`);
+            
+            // Immediately update status badges on the page
+            console.log('🎨 Updating status badges for auction:', auctionId);
+            const auctionCards = document.querySelectorAll(`[data-auction-id="${auctionId}"]`);
+            auctionCards.forEach(card => {
+                // Update data attribute
+                card.setAttribute('data-auction-status', 'completed');
+                
+                // Update status badge
+                const statusBadge = card.querySelector('[data-field="status"]');
+                if (statusBadge) {
+                    statusBadge.textContent = 'COMPLETED';
+                    statusBadge.style.background = '#4caf50';
+                    statusBadge.style.color = 'white';
+                    console.log('✅ Status badge updated');
+                }
+                
+                // Fade out the card slightly to indicate completion
+                card.style.opacity = '0.85';
+                card.style.borderColor = '#4caf50';
+                card.style.borderWidth = '2px';
+            });
+            
+            // If this auction is open in modal, close it
+            const modal = document.getElementById('auctionModal');
+            if (modal && modal.style.display === 'flex') {
+                const modalAuctionId = modal.getAttribute('data-auction-id');
+                if (modalAuctionId === auctionId) {
+                    console.log('🚪 Closing auction modal for completed auction');
+                    closeAuctionModal();
+                }
+            }
+            
+            // Reload ALL auctions on Browse Auctions tab (slight delay to ensure DB is updated)
+            console.log('🔄 Reloading auctions list for auction completion');
+            setTimeout(() => {
+                loadAuctions();
+            }, 300);
+            
+            // Reload "My Bids" section to update the auction status
+            console.log('🔄 Reloading My Bids section for auction completion');
+            setTimeout(() => {
+                loadMyBids();
+            }, 300);
+            
+            // Show notification based on who won
+            if (loggedInBuyerId === winningBuyerId) {
+                showNotification(
+                    '🏆 Your Bid Accepted!',
+                    `Congratulations! Your bid of ₹${winningPrice.toLocaleString('en-IN')}/Q for ${cropName} has been accepted!`
+                );
+            } else {
+                showNotification(
+                    '⏹️ Auction Closed',
+                    `${farmerName} accepted a bid for ${cropName} at ₹${winningPrice.toLocaleString('en-IN')}/Q`
+                );
+            }
+        };
+
+        // Handle auction extension
+        window.handleAuctionExtended = function(auctionData) {
+            console.log('⏱️ [Real-time AUCTION EXTENDED] Update received:', auctionData);
+            
+            const auctionId = auctionData.auction_id;
+            const newEndTime = auctionData.new_end_time;
+            const additionalHours = auctionData.additional_hours;
+            const cropName = auctionData.crop_name;
+            const farmerName = auctionData.farmer_name;
+            
+            // Reload auctions to get updated end times
+            console.log('🔄 Reloading auctions for extension update');
+            loadAuctions();
+            loadMyBids();
+            
+            showNotification(
+                '⏱️ Auction Extended',
+                `${farmerName} extended auction for ${cropName} by ${additionalHours} hour(s)`
+            );
+        };
+
+        // Handle auction price update
+        window.handleAuctionPriceUpdated = function(auctionData) {
+            console.log('💰 [Real-time AUCTION PRICE UPDATE] Update received:', auctionData);
+            
+            const auctionId = auctionData.auction_id;
+            const newMinimumPrice = auctionData.new_minimum_price;
+            const cropName = auctionData.crop_name;
+            const farmerName = auctionData.farmer_name;
+            
+            // Reload auctions to get updated prices
+            console.log('🔄 Reloading auctions for price update');
+            loadAuctions();
+            loadMyBids();
+            
+            showNotification(
+                '💰 Auction Price Updated',
+                `${farmerName} updated minimum price for ${cropName} to ₹${newMinimumPrice.toLocaleString('en-IN')}/Q`
+            );
+        };
+
+        // Handle auction cancellation
+        window.handleAuctionCancelled = function(auctionData) {
+            console.log('❌ [Real-time AUCTION CANCELLED] Update received:', auctionData);
+            
+            const auctionId = auctionData.auction_id;
+            const cropName = auctionData.crop_name;
+            const farmerName = auctionData.farmer_name;
+            
+            // Close modal if this auction is open
+            const modal = document.getElementById('auctionModal');
+            if (modal && modal.style.display === 'flex') {
+                const modalAuctionId = modal.getAttribute('data-auction-id');
+                if (modalAuctionId === auctionId) {
+                    console.log('🚪 Closing auction modal for cancelled auction');
+                    closeAuctionModal();
+                }
+            }
+            
+            // Reload auctions to remove cancelled auction
+            console.log('🔄 Reloading auctions for cancellation');
+            loadAuctions();
+            loadMyBids();
+            
+            showNotification(
+                '❌ Auction Cancelled',
+                `${farmerName} cancelled the auction for ${cropName}`
+            );
+        };
+
+        // Add bid pulse animation
+        if (!document.querySelector('style[data-bid-animations]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-bid-animations', 'true');
+            style.textContent = `
+                @keyframes bidPulse {
+                    0% { 
+                        transform: scale(1);
+                        color: var(--primary-color);
+                    }
+                    50% { 
+                        transform: scale(1.15);
+                        color: #f59e0b;
+                        font-weight: 700;
+                    }
+                    100% { 
+                        transform: scale(1);
+                        color: var(--primary-color);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Load bids in the modal for real-time updates
+        async function loadBidsInModal(auctionId) {
+            try {
+                const response = await fetch(`/bidding/buyer/auction/${auctionId}/api`);
+                const data = await response.json();
+                
+                if (!data.error) {
+                    const auction = data;
+                    const modal = document.getElementById('auctionModal');
+                    
+                    // Update the "Total Bids" count if it exists in the modal
+                    const bidCountElement = modal.querySelector('[data-modal-field="bid-count"]');
+                    if (bidCountElement) {
+                        bidCountElement.textContent = auction.bids_count || 0;
+                    }
+                    
+                    // Update highest bid
+                    const bidElement = modal.querySelector('[data-modal-field="highest-bid"]');
+                    if (bidElement) {
+                        bidElement.textContent = '₹' + (auction.current_highest_bid || auction.base_price || 0).toLocaleString('en-IN') + '/Q';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading bids:', error);
+            }
+        }
+
+        // Add CSS animations if not already present
+        if (!document.querySelector('style[data-socketio-animations]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-socketio-animations', 'true');
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                @keyframes slideInRight {
+                    from {
+                        opacity: 0;
+                        transform: translateX(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                
+                @keyframes slideOutRight {
+                    from {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ==================== END SOCKET.IO HANDLERS ====================
+
+        // Load auction statistics
+        async function loadAuctionStats() {
+            try {
+                const response = await fetch('/bidding/buyer/dashboard/stats');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('active-bids-count').textContent = data.stats.active_bids_count || 0;
+                    document.getElementById('won-auctions-count').textContent = data.stats.won_auctions_count || 0;
+                    document.getElementById('total-spent').textContent = '₹' + (data.stats.total_amount_spent || 0).toLocaleString('en-IN');
+                }
+            } catch (error) {
+                console.error('Error loading auction stats:', error);
+            }
+        }
+
+        // View specific auction details
+        async function viewAuctionDetails(auctionId) {
+            try {
+                console.log('Loading auction details for ID:', auctionId);
+                const response = await fetch(`/bidding/buyer/auction/${auctionId}/api`);
+                const data = await response.json();
+
+                console.log('API Response:', data);
+
+                if (data.error) {
+                    showError('Failed to load auction: ' + data.error);
+                    return;
+                }
+
+                const auction = data;
+                const topBids = auction.top_bids || [];
+
+                document.getElementById('auctionModalTitle').textContent = `${auction.crop_name} Auction`;
+                
+                let detailsHtml = `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--primary-color);">📋 Auction Information</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Crop</div>
+                                <div style="font-weight: 600; font-size: 16px;">${auction.crop_name}</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Quality</div>
+                                <div style="font-weight: 600; font-size: 16px;">${auction.quality_grade || 'Standard'}</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Quantity</div>
+                                <div style="font-weight: 600; font-size: 16px;">${auction.quantity_quintals} Q</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Location</div>
+                                <div style="font-weight: 600; font-size: 16px;">${auction.location || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--primary-color);">💰 Pricing Information</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Base Price</div>
+                                <div style="font-weight: 600; font-size: 18px; color: var(--primary-color);">₹${auction.base_price || 0}/Q</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Current Highest</div>
+                                <div id="auctionCurrentHighestDisplay" style="font-weight: 600; font-size: 18px; color: #27ae60;">₹${auction.current_highest_bid || auction.base_price || 0}/Q</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Min Increment</div>
+                                <div style="font-weight: 600; font-size: 18px;">₹${auction.minimum_bid_increment || 0}/Q</div>
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Bids</div>
+                                <div data-modal-field="bid-count" style="font-weight: 600; font-size: 18px;">${auction.bids_count || 0}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--primary-color);">📸 Auction Photos</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <div style="text-align: center;">
+                                ${auction.photo1_path ? `<img src="${auction.photo1_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo1_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Main Harvest</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Main Harvest</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo2_path ? `<img src="${auction.photo2_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo2_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Detail View</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Detail View</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo3_path ? `<img src="${auction.photo3_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo3_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Quality/Grade</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Quality/Grade</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo4_path ? `<img src="${auction.photo4_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo4_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Storage/Packaging</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Storage/Packaging</p>`}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--primary-color);">👨‍🌾 Farmer Information</h4>
+                        <div style="padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                            <div style="font-weight: 600; margin-bottom: 8px;">${auction.farmer_name || 'Unknown'}</div>
+                            <div style="color: #666; font-size: 14px;">📍 ${auction.farmer_location || 'N/A'}</div>
+                        </div>
+                    </div>
+                `;
+
+                if (topBids && topBids.length > 0) {
+                    detailsHtml += `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: var(--primary-color);">📊 Top Bids</h4>
+                            <div style="background: #f8f9fa; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                                ${topBids.map((bid, idx) => `
+                                    <div style="padding: 10px 12px; border-bottom: 1px solid #e0e0e0; ${idx === 0 ? 'background: #e8f5e9;' : ''}">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                            <span style="font-weight: 600;">₹${bid.bid_price}/Q</span>
+                                            <span style="color: #999; font-size: 12px;">₹${bid.bid_total} Total</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('auctionDetails').innerHTML = detailsHtml;
+                
+                // Populate bid form fields
+                const currentHighest = auction.current_highest_bid || auction.base_price || 0;
+                const minIncrement = auction.minimum_bid_increment || 0;
+                const minimumBid = currentHighest + minIncrement;
+                
+                document.getElementById('bidCurrentHighest').textContent = `₹${currentHighest}/Q`;
+                document.getElementById('bidMinIncrement').textContent = `₹${minIncrement}/Q`;
+                document.getElementById('bidMinRequired').textContent = `₹${minimumBid}/Q`;
+                
+                const bidAmountInput = document.getElementById('bidAmount');
+                bidAmountInput.value = '';
+                bidAmountInput.min = minimumBid;
+                bidAmountInput.placeholder = `Enter amount (minimum: ${minimumBid})`;
+                
+                // Clear previous bid error
+                document.getElementById('bidError').style.display = 'none';
+                document.getElementById('bidError').textContent = '';
+                
+                const modal = document.getElementById('auctionModal');
+                modal.style.display = 'flex';
+                console.log('Modal opened for auction:', auctionId);
+                
+                // Store auction ID and data for placing bid
+                modal.dataset.auctionId = auctionId;
+                modal.dataset.minimumBid = minimumBid;
+                
+                // Set up submit button
+                const submitBtn = document.getElementById('submitBidBtn');
+                submitBtn.onclick = function() {
+                    submitPlaceBid(auctionId, minimumBid);
+                };
+            } catch (error) {
+                console.error('Error fetching auction details:', error);
+                showError('Error loading auction details. Please try again.');
+            }
+        }
+
+        // View All Bids From Modal
+        function viewAllBidsFromModal() {
+            const modal = document.getElementById('auctionModal');
+            const auctionId = modal.dataset.auctionId;
+            const title = document.getElementById('auctionModalTitle').textContent;
+            
+            if (auctionId) {
+                // Extract crop name from title
+                const cropName = title.replace(' Auction', '');
+                viewAllBids(auctionId, cropName);
+            } else {
+                showError('Unable to load bids. Please try again.');
+            }
+        }
+
+        // Submit place bid
+        async function submitPlaceBid(auctionId, minimumBid) {
+            try {
+                const bidAmount = parseFloat(document.getElementById('bidAmount').value);
+                const bidError = document.getElementById('bidError');
+
+                if (!bidAmount || isNaN(bidAmount)) {
+                    bidError.textContent = 'Please enter a valid bid amount';
+                    bidError.style.display = 'block';
+                    return;
+                }
+
+                if (bidAmount < minimumBid) {
+                    bidError.textContent = `Bid must be at least ₹${minimumBid}/Q`;
+                    bidError.style.display = 'block';
+                    return;
+                }
+
+                const response = await fetch(`/bidding/buyer/auction/${auctionId}/place-bid`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bid_price: bidAmount })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    bidError.textContent = data.error;
+                    bidError.style.display = 'block';
+                } else if (data.success) {
+                    showSuccess('Bid placed successfully! Your bid has been recorded.');
+                    setTimeout(() => {
+                        closeAuctionModal();
+                        loadAuctions();
+                    }, 1500);
+                } else {
+                    bidError.textContent = 'Failed to place bid';
+                    bidError.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error placing bid:', error);
+                document.getElementById('bidError').textContent = 'Error placing bid. Please try again.';
+                document.getElementById('bidError').style.display = 'block';
+            }
+        }
+
+        // Close auction modal
+        function closeAuctionModal() {
+            document.getElementById('auctionModal').style.display = 'none';
+            document.getElementById('auctionDetails').innerHTML = '';
+        }
+
+        // Close Bid Details Modal
+        function closeBidDetailsModal() {
+            document.getElementById('bidDetailsModal').style.display = 'none';
+            document.getElementById('bidDetailsContent').innerHTML = '';
+        }
+
+        // Photo Modal Functions
+        function openPhotoModal(photoPath) {
+            const modal = document.getElementById('photoModal');
+            const img = document.getElementById('modalPhotoImg');
+            img.src = photoPath;
+            modal.style.display = 'flex';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+
+        // Close photo modal when clicking outside
+        document.getElementById('photoModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closePhotoModal();
+            }
+        });
+
+        // Close bid details modal when clicking outside
+        document.getElementById('bidDetailsModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeBidDetailsModal();
+            }
+        });
+
+        // Close auction modal when clicking outside
+        document.getElementById('auctionModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeAuctionModal();
+            }
+        });
+
+        // View Bid Details (from My Bids - view only, no bidding form)
+        async function viewBidDetails(auctionId) {
+            try {
+                const response = await fetch(`/bidding/buyer/auction/${auctionId}/api`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                const auction = data;
+                
+                // Build HTML for bid details view only
+                let html = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Crop Name</div>
+                            <div style="font-weight: 600; font-size: 16px; color: #333;">${auction.crop_name}</div>
+                        </div>
+                        <div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Quality Grade</div>
+                            <div style="font-weight: 600; font-size: 16px; color: #333;">${auction.quality_grade || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Location</div>
+                            <div style="font-weight: 600; font-size: 16px; color: #333;">📍 ${auction.location}</div>
+                        </div>
+                        <div>
+                            <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Farmer</div>
+                            <div style="font-weight: 600; font-size: 16px; color: #333;">👤 ${auction.farmer_name}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 12px 0; color: var(--primary-color);">📊 Auction Details</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Quantity</div>
+                                <div style="font-weight: 600; font-size: 15px;">${auction.quantity_quintals} Quintals</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Base Price</div>
+                                <div style="font-weight: 600; font-size: 15px;">₹${auction.base_price.toLocaleString('en-IN')}/Q</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Current Highest Bid</div>
+                                <div style="font-weight: 600; font-size: 15px; color: #27ae60;">₹${auction.current_highest_bid.toLocaleString('en-IN')}/Q</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Bids</div>
+                                <div style="font-weight: 600; font-size: 15px;">${auction.bids_count}</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Time Remaining</div>
+                                <div style="font-weight: 600; font-size: 15px; color: ${auction.time_remaining > 0 ? '#1976d2' : '#e74c3c'};">${getTimeLeft(auction.end_time)}</div>
+                            </div>
+                            <div>
+                                <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Min. Increment</div>
+                                <div style="font-weight: 600; font-size: 15px;">₹${auction.minimum_bid_increment.toLocaleString('en-IN')}/Q</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${auction.my_bid ? `
+                        <div style="background: #e8f5e9; padding: 16px; border-radius: 8px; border-left: 4px solid #27ae60; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 12px 0; color: #27ae60;">🎯 Your Bid</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Your Bid Price</div>
+                                    <div style="font-weight: 600; font-size: 15px;">₹${auction.my_bid.bid_price.toLocaleString('en-IN')}/Q</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px; margin-bottom: 4px;">Total Amount</div>
+                                    <div style="font-weight: 600; font-size: 15px;">₹${auction.my_bid.bid_total.toLocaleString('en-IN')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 12px 0;">📸 Auction Photos</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <div style="text-align: center;">
+                                ${auction.photo1_path ? `<img src="${auction.photo1_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo1_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Main Harvest</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Main Harvest</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo2_path ? `<img src="${auction.photo2_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo2_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Detail View</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Detail View</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo3_path ? `<img src="${auction.photo3_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo3_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Quality/Grade</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Quality/Grade</p>`}
+                            </div>
+                            <div style="text-align: center;">
+                                ${auction.photo4_path ? `<img src="${auction.photo4_path}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; cursor: pointer; margin-bottom: 6px;" onclick="openPhotoModal('${auction.photo4_path}')"><p style="margin: 0; font-size: 12px; color: #666; font-weight: 500;">Storage/Packaging</p>` : `<div style="width: 100%; height: 120px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #ccc; margin-bottom: 6px;">No Photo</div><p style="margin: 0; font-size: 12px; color: #999;">Storage/Packaging</p>`}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${auction.description ? `
+                        <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 12px 0;">📝 Description</h4>
+                            <p style="margin: 0; color: #666; line-height: 1.6;">${auction.description}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${auction.top_bids && auction.top_bids.length > 0 ? `
+                        <div style="background: #f5f5f5; padding: 16px; border-radius: 8px;">
+                            <h4 style="margin: 0 0 12px 0;">💰 Top Bids</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${auction.top_bids.map((bid, idx) => `
+                                    <div style="padding: 8px; background: white; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: #666; font-size: 13px;">#${idx + 1}</span>
+                                        <span style="font-weight: 600;">₹${bid.bid_price.toLocaleString('en-IN')}/Q</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('bidDetailsContent').innerHTML = html;
+                document.getElementById('bidDetailsModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error loading auction details:', error);
+                showError('Failed to load auction details');
+            }
+        }
+
+        // Helper function to format time remaining in seconds
+        function formatTimeRemaining(seconds) {
+            if (seconds <= 0) return 'Auction Ended';
+            
+            const days = Math.floor(seconds / (24 * 3600));
+            const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            
+            if (days > 0) return `${days}d ${hours}h left`;
+            if (hours > 0) return `${hours}h ${minutes}m left`;
+            return `${minutes}m left`;
+        }
+
+        // Helper function to get time left
+        function getTimeLeft(endTime) {
+            if (!endTime) return 'N/A';
+            const now = new Date();
+            const end = new Date(endTime);
+            const diff = end - now;
+            
+            if (diff <= 0) return 'Auction Ended';
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) return `${days}d ${hours}h left`;
+            if (hours > 0) return `${hours}h ${minutes}m left`;
+            return `${minutes}m left`;
+        }
+
+        // Helper function to show success message
+        function showSuccess(message) {
+            const div = document.createElement('div');
+            div.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; padding: 15px 20px; border-radius: 6px; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);';
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // Helper function to show error
+        function showError(message) {
+            const div = document.createElement('div');
+            div.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #e74c3c; color: white; padding: 15px 20px; border-radius: 6px; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);';
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // Load My Bids
+        async function loadMyBids() {
+            try {
+                // Fetch bids and counter offers in parallel
+                const [bidsResponse, counterOffersResponse] = await Promise.all([
+                    fetch('/bidding/buyer/bids/api'),
+                    fetch('/bidding/buyer/counter-offers/api')
+                ]);
+                
+                const bidsData = await bidsResponse.json();
+                const counterOffersData = await counterOffersResponse.json();
+                
+                console.log('Bids Data:', bidsData);
+                console.log('Counter Offers Data:', counterOffersData);
+                
+                if (bidsData.error) {
+                    showError(bidsData.error);
+                    return;
+                }
+                
+                if (counterOffersData.error) {
+                    console.error('Counter offers error:', counterOffersData.error);
+                    // Don't fail on counter offers error, continue anyway
+                }
+                
+                // Update stats
+                const activeBids = bidsData.bids ? bidsData.bids.filter(b => b.auction_active).length : 0;
+                const wonAuctions = bidsData.bids ? bidsData.bids.filter(b => b.is_winning && !b.auction_active).length : 0;
+                const pendingCounterOffers = counterOffersData.counter_offers ? counterOffersData.counter_offers.filter(o => o.status === 'pending').length : 0;
+                
+                document.getElementById('my-active-bids').textContent = activeBids;
+                document.getElementById('my-counter-offers').textContent = pendingCounterOffers;
+                document.getElementById('my-won-auctions').textContent = wonAuctions;
+                
+                // Store bids and counter offers for filtering
+                allBids = bidsData.bids || [];
+                allCounterOffers = counterOffersData.counter_offers || [];
+                currentStatusFilter = 'all';
+                
+                // Render bids and counter offers (all initially)
+                renderMyBidsAndOffers(allBids, allCounterOffers);
+            } catch (error) {
+                console.error('Error loading my bids:', error);
+                showError('Error loading bids and counter offers');
+            }
+        }
+
+        // Render My Bids and Counter Offers
+        function renderMyBidsAndOffers(bids, counterOffers) {
+            const container = document.getElementById('my-bids-container');
+            
+            if (!bids || bids.length === 0) {
+                const noDataMessage = currentStatusFilter === 'all' 
+                    ? 'No bids placed yet. Browse auctions and place your first bid!'
+                    : `No bids with ${currentStatusFilter} status found.`;
+                container.innerHTML = `<div style="text-align: center; color: #666; padding: 40px; background: white; border-radius: 10px; border: 1px solid var(--border-color);"><p style="margin: 0;">${noDataMessage}</p></div>`;
+                return;
+            }
+            
+            let html = '';
+            
+            // Helper function to get status badge
+            function getStatusBadge(status) {
+                const statusConfig = {
+                    'pending': { icon: '⏳', text: 'Pending', color: '#ffc107', bgColor: '#fff8e1' },
+                    'won': { icon: '🏆', text: 'Won', color: '#27ae60', bgColor: '#e8f5e9' },
+                    'cancelled': { icon: '❌', text: 'Cancelled', color: '#e74c3c', bgColor: '#ffebee' },
+                    'ended': { icon: '⏹️', text: 'Ended', color: '#95a5a6', bgColor: '#eceff1' }
+                };
+                
+                const config = statusConfig[status] || statusConfig['pending'];
+                return `<div style="display: inline-block; padding: 6px 12px; background: ${config.bgColor}; color: ${config.color}; border-radius: 20px; font-weight: 600; font-size: 12px;">${config.icon} ${config.text}</div>`;
+            }
+            
+            // Render each bid
+            bids.forEach(bid => {
+                // Find if there's a counter offer for this bid
+                const counterOffer = counterOffers.find(co => co.bid_id === bid.bid_id && co.status === 'pending');
+                
+                html += `
+                    <div style="background: white; border-radius: 10px; border: 1px solid var(--border-color); padding: 16px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: start;">
+                        <!-- Left: Bid Details -->
+                        <div>
+                            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="margin: 0 0 6px 0; font-size: 16px; color: var(--text-dark);">${bid.crop_name}</h4>
+                                    <p style="margin: 0; color: #666; font-size: 13px;">📍 ${bid.location}</p>
+                                </div>
+                                <div>
+                                    ${getStatusBadge(bid.status)}
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">Your Bid</div>
+                                    <div style="font-weight: 600; color: #2c3e50;">₹${bid.bid_price}/Q</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">Highest Bid</div>
+                                    <div style="font-weight: 700; color: ${bid.is_winning ? '#4caf50' : '#ff6f00'};">₹${bid.highest_bid}/Q</div>
+                                </div>
+                                <div>
+                                    <div style="color: #666; font-size: 12px;">Position</div>
+                                    <div style="font-weight: 600; color: ${bid.is_winning ? '#27ae60' : '#ffc107'};">${bid.is_winning ? '🥇 Winning' : '🥈 Not Winning'}</div>
+                                </div>
+                            </div>
+                            
+                            ${bid.auction_active && !bid.is_winning ? `
+                                <div style="background: #f5f5f5; padding: 10px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #ff9800;">
+                                    <div style="font-size: 12px; color: #999; margin-bottom: 8px; font-weight: 600;">⬆️ Increase Your Bid</div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="number" id="newBid_${bid.bid_id}" placeholder="New price" min="${bid.highest_bid + (bid.minimum_bid_increment || 0)}" step="0.01" 
+                                               style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                                        <button onclick="updateBid('${bid.auction_id}', '${bid.bid_id}', document.getElementById('newBid_${bid.bid_id}').value, ${bid.highest_bid}, ${bid.minimum_bid_increment || 0})" 
+                                                style="background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                                            Update
+                                        </button>
+                                    </div>
+                                    <div style="font-size: 11px; color: #999; margin-top: 4px;">Min: ₹${(bid.highest_bid + (bid.minimum_bid_increment || 0)).toFixed(2)}/Q</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${counterOffer ? `
+                                <div style="padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ff9800; margin-bottom: 12px;">
+                                    <div style="color: #856404; font-size: 12px; margin-bottom: 4px; font-weight: 600;">🔔 Counter Offer Pending</div>
+                                    <div style="color: #856404; font-size: 13px;">Farmer offered: <strong>₹${counterOffer.counter_price}/Q</strong></div>
+                                </div>
+                            ` : ''}
+                            
+                            <div style="font-size: 12px; color: #666;">
+                                <span style="display: inline-block; padding: 4px 8px; background: ${bid.auction_active ? '#e3f2fd' : '#f5f5f5'}; color: ${bid.auction_active ? '#1976d2' : '#999'}; border-radius: 4px; margin-right: 8px;">
+                                    ${bid.auction_active ? '🔴 Active' : '✓ Closed'}
+                                </span>
+                                Bid Date: ${new Date(bid.bid_date).toLocaleDateString()}
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Actions -->
+                        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 160px;">
+                            <button onclick="viewBidDetails('${bid.auction_id}')" style="padding: 10px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                                📊 View Details
+                            </button>
+                            
+                            <button onclick="viewAllBids('${bid.auction_id}', '${bid.crop_name}')" style="padding: 10px; background: #9c27b0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">
+                                👥 View All Bids
+                            </button>
+                            
+                            ${bid.status === 'won' ? `
+                                <div style="padding: 10px; background: #e8f5e9; border-radius: 6px; border-left: 4px solid #27ae60; text-align: center;">
+                                    <div style="color: #666; font-size: 11px; margin-bottom: 4px;">Farmer Phone</div>
+                                    <div style="font-weight: 700; font-size: 14px; color: #27ae60;">${bid.farmer_phone || 'N/A'}</div>
+                                </div>
+                                <button onclick="initiateChat('${bid.auction_id}', '${bid.farmer_name}')" style="padding: 10px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                    💬 Message
+                                </button>
+                            ` : ''}
+                            
+                            ${counterOffer ? `
+                                <button onclick="acceptCounterOffer('${counterOffer.counter_offer_id}')" style="padding: 10px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                    ✓ Accept
+                                </button>
+                                <button onclick="rejectCounterOffer('${counterOffer.counter_offer_id}')" style="padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                                    ✕ Reject
+                                </button>
+                            ` : `
+                                ${bid.status !== 'won' ? `
+                                    <div style="padding: 10px; text-align: center; background: #f8f9fa; border-radius: 6px; font-size: 12px; color: #666;">
+                                        No offers yet
+                                    </div>
+                                ` : ''}
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Filter bids by status
+        function filterBidsByStatus(status) {
+            currentStatusFilter = status;
+            
+            // Update filter button styles
+            document.querySelectorAll('.status-filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-status') === status) {
+                    // Active state
+                    if (status === 'all') {
+                        btn.style.background = '#388e3c';
+                        btn.style.color = 'white';
+                        btn.style.border = 'none';
+                    } else {
+                        const colorMap = {
+                            'pending': '#ffc107',
+                            'won': '#27ae60',
+                            'ended': '#95a5a6',
+                            'cancelled': '#e74c3c'
+                        };
+                        btn.style.background = colorMap[status];
+                        btn.style.color = 'white';
+                        btn.style.border = 'none';
+                    }
+                } else {
+                    // Inactive state
+                    btn.style.background = '#f5f5f5';
+                    btn.style.border = '2px solid ' + (
+                        btn.getAttribute('data-status') === 'pending' ? '#ffc107' :
+                        btn.getAttribute('data-status') === 'won' ? '#27ae60' :
+                        btn.getAttribute('data-status') === 'ended' ? '#95a5a6' :
+                        btn.getAttribute('data-status') === 'cancelled' ? '#e74c3c' : '#ccc'
+                    );
+                    const textColorMap = {
+                        'pending': '#ffc107',
+                        'won': '#27ae60',
+                        'ended': '#95a5a6',
+                        'cancelled': '#e74c3c'
+                    };
+                    btn.style.color = btn.getAttribute('data-status') === 'all' ? '#333' : textColorMap[btn.getAttribute('data-status')];
+                }
+            });
+            
+            // Filter and render bids
+            let filteredBids = allBids;
+            if (status !== 'all') {
+                filteredBids = allBids.filter(bid => bid.status === status);
+            }
+            
+            renderMyBidsAndOffers(filteredBids, allCounterOffers);
+        }
+
+        // Accept Counter Offer
+        async function acceptCounterOffer(counterOfferId) {
+            try {
+                const response = await fetch(`/bidding/buyer/counter-offer/${counterOfferId}/accept`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    showSuccess('Counter offer accepted! ✓');
+                    loadMyBids();
+                }
+            } catch (error) {
+                console.error('Error accepting counter offer:', error);
+                showError('Error accepting counter offer');
+            }
+        }
+
+        // Reject Counter Offer
+        async function rejectCounterOffer(counterOfferId) {
+            try {
+                const response = await fetch(`/bidding/buyer/counter-offer/${counterOfferId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    showSuccess('Counter offer rejected');
+                    loadMyBids();
+                }
+            } catch (error) {
+                console.error('Error rejecting counter offer:', error);
+                showError('Error rejecting counter offer');
+            }
+        }
+
+        // View All Bids for an Auction
+        async function viewAllBids(auctionId, cropName) {
+            try {
+                const response = await fetch(`/bidding/buyer/auction/${auctionId}/all-bids`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showError(data.error || 'Failed to load bids');
+                    return;
+                }
+                
+                // Create modal
+                const modal = document.createElement('div');
+                modal.id = 'allBidsModal';
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.7); display: flex; align-items: center; 
+                    justify-content: center; z-index: 3000; padding: 20px;
+                `;
+                
+                const bidsHtml = data.bids.map(bid => `
+                    <div style="display: grid; grid-template-columns: 40px 1fr 1fr 1fr 80px; gap: 12px; align-items: center; padding: 12px; background: ${bid.is_my_bid ? '#e3f2fd' : 'white'}; border-radius: 6px; border-left: ${bid.is_my_bid ? '4px solid #2196f3' : 'none'}; border-bottom: 1px solid #e0e0e0;">
+                        <div style="text-align: center; font-weight: 700; color: ${bid.rank === 1 ? '#ffc107' : '#666'}; font-size: 16px;">
+                            ${bid.rank === 1 ? '🥇' : bid.rank === 2 ? '🥈' : bid.rank === 3 ? '🥉' : bid.rank}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #333; font-size: 13px;">${bid.company_name}</div>
+                            <div style="font-size: 11px; color: #999;">${bid.buyer_name}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-weight: 600; color: #27ae60; font-size: 13px;">₹${parseFloat(bid.bid_price).toFixed(2)}/Q</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-weight: 600; color: #2196f3; font-size: 12px;">₹${parseFloat(bid.bid_total).toFixed(2)}</div>
+                            <div style="font-size: 10px; color: #999;">Total</div>
+                        </div>
+                        <div style="text-align: center;">
+                            ${bid.is_my_bid ? `
+                                <span style="display: inline-block; padding: 4px 8px; background: #2196f3; color: white; border-radius: 12px; font-weight: 600; font-size: 11px;">You</span>
+                            ` : `
+                                <span style="display: inline-block; padding: 4px 8px; background: #f0f0f0; color: #666; border-radius: 12px; font-size: 11px;">Bid #${bid.rank}</span>
+                            `}
+                        </div>
+                    </div>
+                `).join('');
+                
+                const contentHtml = `
+                    <div style="background: white; border-radius: 12px; padding: 30px; max-width: 800px; width: 100%; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 40px rgba(0,0,0,0.3);">
+                        <!-- Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+                            <div>
+                                <h3 style="margin: 0 0 4px 0; color: #2c3e50; font-size: 20px;">👥 All Bids</h3>
+                                <p style="margin: 0; color: #999; font-size: 13px;">${data.crop_name} • ${data.quantity}Q</p>
+                            </div>
+                            <button onclick="document.getElementById('allBidsModal').remove()" style="background: #f0f0f0; color: #666; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer;">✕</button>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                            <div style="padding: 12px; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #2196f3; text-align: center;">
+                                <div style="font-size: 11px; color: #666;">Total Bids</div>
+                                <div style="font-weight: 700; color: #2196f3; font-size: 18px;">${data.total_bids}</div>
+                            </div>
+                            <div style="padding: 12px; background: #f0f8ff; border-radius: 8px; border-left: 4px solid #27ae60; text-align: center;">
+                                <div style="font-size: 11px; color: #666;">Highest Bid</div>
+                                <div style="font-weight: 700; color: #27ae60; font-size: 18px;">₹${data.bids.length > 0 ? parseFloat(data.bids[0].bid_price).toFixed(2) : '0'}/Q</div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Bids Table Header -->
+                        <div style="display: grid; grid-template-columns: 40px 1fr 1fr 1fr 80px; gap: 12px; padding: 12px; background: #f5f5f5; border-radius: 6px; margin-bottom: 10px; font-weight: 600; color: #666; font-size: 12px;">
+                            <div style="text-align: center;">Rank</div>
+                            <div>Company</div>
+                            <div style="text-align: center;">Bid Price</div>
+                            <div style="text-align: center;">Total</div>
+                            <div style="text-align: center;">Status</div>
+                        </div>
+                        
+                        <!-- Bids List -->
+                        <div style="display: flex; flex-direction: column; gap: 0;">
+                            ${bidsHtml}
+                        </div>
+                        
+                        <!-- Footer Message -->
+                        <div style="margin-top: 20px; padding: 12px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #27ae60;">
+                            <div style="font-size: 12px; color: #27ae60;">
+                                <strong>💡 Tip:</strong> Analyze competitor bids and adjust your strategy accordingly. You can update your bid to stay competitive.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                modal.innerHTML = contentHtml;
+                
+                // Close modal when clicking outside
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                });
+                
+                document.body.appendChild(modal);
+                
+            } catch (error) {
+                console.error('Error loading all bids:', error);
+                showError('Error loading bids. Please try again.');
+            }
+        }
+
+        // Update bid price
+        function updateBid(auctionId, bidId, newPrice, highestBid, minIncrement) {
+            const price = parseFloat(newPrice);
+            const minimumRequired = parseFloat(highestBid) + parseFloat(minIncrement);
+            
+            if (isNaN(price) || price <= 0) {
+                alert('Please enter a valid bid price');
+                return;
+            }
+            
+            if (price <= parseFloat(highestBid)) {
+                alert(`New bid must be higher than the current highest bid (₹${parseFloat(highestBid).toFixed(2)}/Q)`);
+                return;
+            }
+            
+            if (price < minimumRequired) {
+                alert(`New bid must be at least ₹${minimumRequired.toFixed(2)}/Q (Highest: ₹${parseFloat(highestBid).toFixed(2)} + Increment: ₹${parseFloat(minIncrement).toFixed(2)})`);
+                return;
+            }
+            
+            // Send update to backend using the correct endpoint
+            fetch(`/bidding/buyer/auction/${auctionId}/place-bid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bid_price: price
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess('Bid updated successfully!');
+                    loadMyBids(); // Reload the bids list
+                } else {
+                    alert('Error: ' + (data.message || data.error || 'Failed to update bid'));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Error updating bid');
+            });
+        }
+    </script>
+
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    
+    <!-- Custom Socket.IO Bidding Module -->
+    <script src="{{ url_for('static', filename='js/socket_bidding.js') }}"></script>
+
+</body>
+</html>

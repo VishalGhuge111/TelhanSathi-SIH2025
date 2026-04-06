@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheme Management - TelhanSathi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-brand:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .add-scheme-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .add-scheme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .schemes-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .schemes-section h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .schemes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schemes-table thead {
+            background: #f9f9f9;
+        }
+
+        .schemes-table th {
+            padding: 12px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .schemes-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .schemes-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .scheme-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .scheme-code {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .badge-recommended {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1976d2;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .btn-toggle {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-toggle:hover {
+            background: #388e3c;
+        }
+
+        .btn-recommend {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-recommend:hover {
+            background: #f57c00;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-picker-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-input {
+            width: 60px !important;
+            height: 40px !important;
+            padding: 4px !important;
+            cursor: pointer;
+            border: 2px solid #ddd !important;
+            border-radius: 5px !important;
+        }
+
+        .color-hex-input {
+            flex: 1 !important;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto !important;
+            margin-right: 8px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c00;
+        }
+
+        .no-schemes {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .schemes-table {
+                font-size: 12px;
+            }
+
+            .schemes-table th,
+            .schemes-table td {
+                padding: 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-brand" onclick="window.location.href='/admin/dashboard'">📱 TelhanSathi Admin</div>
+        <a href="{{ url_for('admin_auth.admin_dashboard') }}" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>💰 Scheme Management</h1>
+            <button class="add-scheme-btn" onclick="openAddModal()">+ Add Scheme</button>
+        </div>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Schemes</div>
+                <div class="stat-value">{{ stats.total_schemes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Schemes</div>
+                <div class="stat-value">{{ stats.active_schemes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Recommended Schemes</div>
+                <div class="stat-value">{{ stats.recommended_schemes }}</div>
+            </div>
+        </div>
+
+        <!-- Schemes Table -->
+        <div class="schemes-section">
+            <h2>Government Schemes & Subsidies</h2>
+            
+            {% if schemes %}
+                <table class="schemes-table">
+                    <thead>
+                        <tr>
+                            <th>Scheme Name</th>
+                            <th>Type</th>
+                            <th>Focus Area</th>
+                            <th>Benefit</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schemesTableBody">
+                        {% for scheme in schemes %}
+                            <tr data-scheme-id="{{ scheme.id }}">
+                                <td>
+                                    <div class="scheme-name">{{ scheme.name }}</div>
+                                    <div class="scheme-code">{{ scheme.scheme_code }}</div>
+                                </td>
+                                <td>{{ scheme.scheme_type }}</td>
+                                <td>{{ scheme.focus_area }}</td>
+                                <td>{{ scheme.benefit_amount }}</td>
+                                <td>
+                                    <span class="badge {% if scheme.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+                                        {% if scheme.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-small btn-edit" onclick="editScheme('{{ scheme.id }}')">Edit</button>
+                                        <button class="btn-small btn-toggle" onclick="toggleScheme('{{ scheme.id }}')">Toggle</button>
+
+                                        <button class="btn-small btn-delete" onclick="deleteScheme('{{ scheme.id }}')">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-schemes">
+                    <p>No schemes available. Create your first scheme!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="schemeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle">Add New Scheme</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="schemeForm" onsubmit="saveScheme(event)">
+                <div class="form-group">
+                    <label for="scheme_code">Scheme Code *</label>
+                    <input type="text" id="scheme_code" name="scheme_code" placeholder="e.g., pmkisan" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Scheme Name *</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., PM-KISAN Samman Nidhi" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" placeholder="Detailed description of the scheme" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="scheme_type">Scheme Type *</label>
+                        <select id="scheme_type" name="scheme_type" required>
+                            <option value="">Select Type</option>
+                            <option value="subsidy">Subsidy</option>
+                            <option value="scheme">Scheme</option>
+                            <option value="grant">Grant</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="focus_area">Focus Area *</label>
+                        <select id="focus_area" name="focus_area" required>
+                            <option value="">Select Focus Area</option>
+                            <option value="Income Support">Income Support</option>
+                            <option value="Crop Switch">Crop Switch</option>
+                            <option value="Equipment">Equipment</option>
+                            <option value="Fertilizer">Fertilizer</option>
+                            <option value="Seeds">Seeds</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="benefit_amount">Benefit Amount *</label>
+                    <input type="text" id="benefit_amount" name="benefit_amount" placeholder="e.g., ₹6,000/year, 40-50% Subsidy" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eligibility_criteria">Eligibility Criteria *</label>
+                    <textarea id="eligibility_criteria" name="eligibility_criteria" placeholder="Enter eligibility criteria" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="external_link">External Link (Optional)</label>
+                    <input type="url" id="external_link" name="external_link" placeholder="https://example.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="focus_color">Color</label>
+                        <div class="color-picker-container">
+                            <input type="color" id="colorPicker" class="color-picker-input" value="#2196f3" onchange="updateColorHex(this.value)">
+                            <input type="text" id="focus_color" name="focus_color" placeholder="#2196f3" value="#2196f3" class="color-hex-input" onchange="updateColorPicker(this.value)">
+                        </div>
+                        <div class="color-palette">
+                            <button type="button" class="color-option" style="background: #2196f3;" onclick="setColor('#2196f3')" title="Blue"></button>
+                            <button type="button" class="color-option" style="background: #4caf50;" onclick="setColor('#4caf50')" title="Green"></button>
+                            <button type="button" class="color-option" style="background: #ff9800;" onclick="setColor('#ff9800')" title="Orange"></button>
+                            <button type="button" class="color-option" style="background: #f44336;" onclick="setColor('#f44336')" title="Red"></button>
+                            <button type="button" class="color-option" style="background: #9c27b0;" onclick="setColor('#9c27b0')" title="Purple"></button>
+                            <button type="button" class="color-option" style="background: #00bcd4;" onclick="setColor('#00bcd4')" title="Cyan"></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="is_active" name="is_active" checked>
+                                Active
+                            </label>
+                            <label>
+                                <input type="checkbox" id="is_recommended" name="is_recommended">
+                                Recommended
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Scheme</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentSchemeId = null;
+
+        function updateColorHex(hex) {
+            document.getElementById('focus_color').value = hex;
+        }
+
+        function updateColorPicker(hex) {
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                document.getElementById('colorPicker').value = hex;
+            }
+        }
+
+        function setColor(hex) {
+            document.getElementById('colorPicker').value = hex;
+            document.getElementById('focus_color').value = hex;
+        }
+
+        function openAddModal() {
+            currentSchemeId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Scheme';
+            document.getElementById('schemeForm').reset();
+            document.getElementById('colorPicker').value = '#2196f3';
+            document.getElementById('focus_color').value = '#2196f3';
+            document.getElementById('is_active').checked = true;
+            document.getElementById('is_recommended').checked = false;
+            document.getElementById('schemeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('schemeModal').classList.remove('active');
+            currentSchemeId = null;
+        }
+
+        function editScheme(schemeId) {
+            currentSchemeId = schemeId;
+            document.getElementById('modalTitle').textContent = 'Edit Scheme';
+            
+            fetch(`/admin/api/schemes/${schemeId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('scheme_code').value = data.scheme_code;
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('description').value = data.description;
+                    document.getElementById('scheme_type').value = data.scheme_type;
+                    document.getElementById('focus_area').value = data.focus_area;
+                    document.getElementById('benefit_amount').value = data.benefit_amount;
+                    document.getElementById('eligibility_criteria').value = data.eligibility_criteria;
+                    document.getElementById('external_link').value = data.external_link || '';
+                    document.getElementById('focus_color').value = data.focus_color;
+                    document.getElementById('colorPicker').value = data.focus_color;
+                    document.getElementById('is_active').checked = data.is_active;
+                    document.getElementById('is_recommended').checked = data.is_recommended;
+                    document.getElementById('scheme_code').disabled = true;
+                    document.getElementById('schemeModal').classList.add('active');
+                })
+                .catch(err => alert('Error loading scheme: ' + err));
+        }
+
+        function saveScheme(e) {
+            e.preventDefault();
+            
+            const formData = {
+                scheme_code: document.getElementById('scheme_code').value,
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                scheme_type: document.getElementById('scheme_type').value,
+                focus_area: document.getElementById('focus_area').value,
+                benefit_amount: document.getElementById('benefit_amount').value,
+                eligibility_criteria: document.getElementById('eligibility_criteria').value,
+                external_link: document.getElementById('external_link').value,
+                focus_color: document.getElementById('focus_color').value,
+                is_active: document.getElementById('is_active').checked,
+                is_recommended: document.getElementById('is_recommended').checked
+            };
+
+            const method = currentSchemeId ? 'PUT' : 'POST';
+            const url = currentSchemeId 
+                ? `/admin/api/schemes/${currentSchemeId}` 
+                : '/admin/api/schemes';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    closeModal();
+                    location.reload();
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+        function deleteScheme(schemeId) {
+            if (confirm('Are you sure you want to delete this scheme?')) {
+                fetch(`/admin/api/schemes/${schemeId}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        location.reload();
+                    }
+                })
+                .catch(err => alert('Error: ' + err));
+            }
+        }
+
+        function toggleScheme(schemeId) {
+            fetch(`/admin/api/schemes/${schemeId}/toggle`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    location.reload();
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+
+
+        document.getElementById('schemeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'schemeModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

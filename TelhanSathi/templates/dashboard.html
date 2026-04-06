@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block title %}Telhan Sathi - डैशबोर्ड{% endblock %}
+
+{% block style %}
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            --green-main: #388e3c;
+            --green-dark: #2e7d32;
+            --green-light: #E8F5E9;
+            --green-border: #C8E6C9;
+            --text: #222;
+            --muted: #5a5a5a;
+        }
+
+        /* ==================== CAROUSEL ==================== */
+        .carousel-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background: transparent;
+            max-height: 400px;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform .5s ease;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.12);
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .carousel-arrow.prev {
+            left: 10px;
+        }
+
+        .carousel-arrow.next {
+            right: 10px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+        }
+
+        .indicator.active {
+            background: #fff;
+        }
+
+        /* ==================== FEATURE SECTION ==================== */
+        .feature-section {
+            max-width: 1100px;
+            margin: 18px auto;
+            padding: 12px;
+            border: 1px solid var(--green-border);
+            background: #fff;
+            border-radius: 8px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-left: 6px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid var(--green-border);
+            border-radius: 8px;
+            padding: 12px 10px;
+            min-height: 86px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .15s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .feature-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--green-main);
+        }
+
+        .feature-label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ==================== SPECIAL SECTION ==================== */
+        .special-section {
+            max-width: 1100px;
+            margin: 8px auto;
+            padding: 12px;
+            padding-top: 2px;
+        }
+
+        /* Full width special card */
+        .special-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .special-card-icon {
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--green-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .special-card-icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        .special-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+
+        .special-card-sub {
+            font-size: 13px;
+            color: #444;
+            margin-top: 2px;
+        }
+
+        /* Row of two half-width cards */
+        .row-two {
+            display: flex;
+            gap: 12px;
+        }
+
+        .row-card {
+            flex: 1;
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .row-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .row-icon {
+            width: 36px;
+            height: 36px;
+            background: #fff;
+            border-radius: 50%;
+            border: 1px solid var(--green-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .row-icon .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--green-dark);
+        }
+
+        /* ==================== 3-CARD SLIDER ==================== */
+        .info-slider-section-2 {
+            width: 100%;
+            background: #ffffff;
+            padding: 18px 0 22px;
+            border-top: 1px solid var(--green-border);
+            border-bottom: 1px solid var(--green-border);
+        }
+
+        .info-slider-container-2 {
+            max-width: 1100px;
+            margin: 0 auto;
+            overflow-x: auto;
+            display: flex;
+            gap: 14px;
+            padding: 0 12px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .info-slider-container-2::-webkit-scrollbar {
+            display: none;
+        }
+
+        .info-card-slide-2 {
+            flex: 0 0 82%;
+            max-width: 360px;
+            background: #fff;
+            border: 1px solid var(--green-border);
+            border-radius: 14px;
+            overflow: hidden;
+            scroll-snap-align: start;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .info-card-img-2 {
+            width: 100%;
+            height: 155px;
+            object-fit: cover;
+        }
+
+        .info-card-content-2 {
+            padding: 14px 16px;
+            position: relative;
+        }
+
+        .info-card-title-2 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--green-dark);
+        }
+
+        .info-card-sub-2 {
+            font-size: 13.5px;
+            color: #4d4d4d;
+            line-height: 1.4;
+            margin-right: 30px;
+        }
+
+        .info-card-arrow-2 {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            font-size: 20px;
+            color: var(--green-dark);
+        }
+
+        @media(min-width:800px) {
+            .info-card-slide-2 {
+                flex: 0 0 320px;
+            }
+        }
+
+        .dashboard-container {
+            padding-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="dashboard-container">
+
+  <!-- ================================================ CAROUSEL ================================================ -->
+  <div class="carousel-container">
+    <button class="carousel-arrow prev" onclick="prevSlide()">❮</button>
+
+    <div class="carousel-track" id="carousel-track">
+      <div class="carousel-slide"><img src="/static/img/1.png"></div>
+      <div class="carousel-slide"><img src="/static/img/2.jpg"></div>
+      <div class="carousel-slide"><img src="/static/img/3.png"></div>
+      <div class="carousel-slide"><img src="/static/img/4.png"></div>
+    </div>
+
+    <button class="carousel-arrow next" onclick="nextSlide()">❯</button>
+
+    <div class="carousel-indicators">
+      <div class="indicator active" onclick="goToSlide(0)"></div>
+      <div class="indicator" onclick="goToSlide(1)"></div>
+      <div class="indicator" onclick="goToSlide(2)"></div>
+      <div class="indicator" onclick="goToSlide(3)"></div>
+    </div>
+  </div>
+
+  <!-- ================================================ उपकरण ================================================ -->
+  <section class="feature-section">
+    <div class="feature-title">उपकरण</div>
+
+    <div class="feature-grid">
+
+      <a href="{{ url_for('weather.dashboard') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">cloud</span>
+        </div>
+        <div class="feature-label">मौसम पूर्वानुमान</div>
+      </a>
+
+      <a href="{{ url_for('profit.simulator_page') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">bar_chart</span>
+        </div>
+        <div class="feature-label">लाभ सिम्युलेटर</div>
+      </a>
+
+      <a href="{{ url_for('subsidies.subsidies_list') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">account_balance</span>
+        </div>
+        <div class="feature-label">सरकारी योजनाएँ</div>
+      </a>
+
+      <a href="{{ url_for('crop_economics.dashboard') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">eco</span>
+        </div>
+        <div class="feature-label">फसल अर्थशास्त्र</div>
+      </a>
+
+      <a href="{{ url_for('redemption.redemption_store') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">redeem</span>
+        </div>
+        <div class="feature-label">रिडेम्पशन</div>
+      </a>
+
+      <a href="{{ url_for('bidding.farmer_dashboard') }}" class="feature-card" style="text-decoration: none; color: inherit;">
+        <div class="feature-icon">
+          <span class="material-symbols-outlined">gavel</span>
+        </div>
+        <div class="feature-label">निलामी (Nilami)</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ================================================ SPECIAL SECTION ================================================ -->
+  <section class="special-section">
+
+    <!-- SPECIAL FULL WIDTH CARD -->
+    <a href="{{ url_for('iot.device_guide') }}" class="special-card" style="text-decoration: none; color: inherit;">
+      <div class="special-card-icon">
+        <img src="https://cdn-icons-png.freepik.com/512/5110/5110528.png" alt="">
+      </div>
+
+      <div>
+        <div class="special-card-title">विशेष: खेत निगरानी उपकरण (IoT Device)</div>
+        <div class="special-card-sub">स्मार्ट सेंसर, रीयल-टाइम डेटा, मिट्टी नमी, तापमान और प्रकाश माप।</div>
+      </div>
+    </a>
+
+    <!-- TWO HALF-WIDTH CARDS -->
+    <div class="row-two">
+
+      <a href="{{ url_for('bidding.farmer_leaderboard_page') }}" class="row-card">
+        <div class="row-title">लीडरबोर्ड</div>
+        <div class="row-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+      </a>
+
+     
+      <a href="{{ url_for('redemption.redemption_store') }}" class="row-card">
+        <div class="row-title">स्टोर</div>
+        <div class="row-icon"><span class="material-symbols-outlined">storefront</span></div>
+      </a>
+
+    </div>
+
+  </section>
+
+ 
+  <!-- ======================= NEW 3-CARD SLIDER (SCHEMES + IoT + PLATFORM) ======================= -->
+
+
+<div class="info-slider-section-2">
+  <div class="info-slider-container-2">
+
+    <!-- CARD 1: Subsidy & Govt Schemes -->
+    <a href="{{ url_for('subsidies.subsidies_list') }}" class="info-card-slide-2" style="text-decoration: none; color: inherit;">
+      <img class="info-card-img-2"
+        src="static/img/sarkari-yojana-1735992951.jpg">
+      <div class="info-card-content-2">
+        <div class="info-card-title-2">सब्सिडी व सरकारी योजनाएँ</div>
+        <div class="info-card-sub-2">
+          सभी कृषि योजनाएँ, पात्रता, दस्तावेज़ और सब्सिडी जानकारी — आसान भाषा में, एक ही जगह पर उपलब्ध।
+        </div>
+        <span class="material-symbols-outlined info-card-arrow-2">arrow_forward</span>
+      </div>
+    </a>
+
+    <!-- CARD 2: IoT आधारित स्मार्ट कृषि -->
+    <div class="info-card-slide-2" onclick="window.location.href='/field-monitoring/device-guide'">
+      <img class="info-card-img-2"
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9RHvRr8k0TWHtIsLsjyWRmpDqqnMFzkMCGfCmU2Gc1Vak_tZGKRME2_vzmk-VJf0AD3g&usqp=CAU">
+      <div class="info-card-content-2">
+        <div class="info-card-title-2">IoT आधारित स्मार्ट कृषि</div>
+        <div class="info-card-sub-2">
+          सेंसर्स, लाइव डेटा, मिट्टी नमी, तापमान और फसल स्थिति — पूरी खेती का रियल-टाइम वैज्ञानिक विश्लेषण।
+        </div>
+        <span class="material-symbols-outlined info-card-arrow-2">arrow_forward</span>
+      </div>
+    </div>
+
+    <!-- CARD 3: निलामी (Nilami) - ऑयलसीड की बोली प्रणाली -->
+    <a href="{{ url_for('bidding.farmer_dashboard') }}" class="info-card-slide-2">
+      <img class="info-card-img-2"
+        src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop">
+      <div class="info-card-content-2">
+        <div class="info-card-title-2">निलामी - फसल की बोली</div>
+        <div class="info-card-sub-2">
+          अपनी तेल बीज की फसल की निलामी करें, प्रतिस्पर्धी बोलियाँ पाएँ, सर्वश्रेष्ठ मूल्य प्राप्त करें।
+        </div>
+        <span class="material-symbols-outlined info-card-arrow-2">arrow_forward</span>
+      </div>
+    </a>
+
+    <!-- CARD 4: आपका डिजिटल कृषि प्लेटफ़ॉर्म -->
+    <a href="{{ url_for('profit.simulator_page') }}" class="info-card-slide-2" style="text-decoration: none; color: inherit;">
+      <img class="info-card-img-2"
+        src="static/img/1.png">
+      <div class="info-card-content-2">
+        <div class="info-card-title-2">आपका संपूर्ण कृषि प्लेटफ़ॉर्म</div>
+        <div class="info-card-sub-2">
+          बाजार, मौसम, लाभ सिम्युलेटर, योजनाएँ, आर्थिक विश्लेषण, मॉनिटरिंग — सब कुछ एक ऐप में।
+        </div>
+        <span class="material-symbols-outlined info-card-arrow-2">arrow_forward</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let currentIndex = 0;
+        const track = document.getElementById('carousel-track');
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const total = slides.length;
+
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            indicators.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+        }
+
+        function nextSlide() { currentIndex = (currentIndex + 1) % total; updateCarousel(); }
+        function prevSlide() { currentIndex = (currentIndex - 1 + total) % total; updateCarousel(); }
+        function goToSlide(i) { currentIndex = i; updateCarousel(); }
+
+        let auto = setInterval(nextSlide, 5000);
+
+        // Pause auto-slide on manual interaction
+        track.addEventListener('mousedown', () => { clearInterval(auto); });
+        track.addEventListener('touchstart', () => { clearInterval(auto); });
+
+        function goToOfferPage() {
+            window.location.href = "{{ url_for('redemption.redemption_store') }}";
+        }
+    </script>
+{% endblock %}
+
+
+

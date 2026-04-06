@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>सब्सिडी विवरण</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+            color: #1e3a24;
+            background-color: #1e3a24;
+            background-image: linear-gradient(180deg, #2d5735 0%, #1e3a24 100%);
+        }
+
+        .frame {
+            width: 100%;
+            max-width: 420px;
+            background-color: #f7f9f7;
+            border-radius: 8px;
+            box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #ffffff;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .icon-button {
+            width: 24px;
+            height: 24px;
+            fill: #333333;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        /* Subsidy Name & Focus */
+        .subsidy-header {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .subsidy-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subsidy-focus-tag {
+            display: inline-block;
+            font-size: 12px;
+            color: #fff;
+            background-color: #2196f3;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .subsidy-amount {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 5px;
+        }
+
+        .subsidy-eligibility {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Section */
+        .detail-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #388e3c;
+            margin-bottom: 10px;
+            border-left: 3px solid #388e3c;
+            padding-left: 8px;
+        }
+
+        .section-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .how-to-apply {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .how-to-apply li {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        /* Key Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #4caf50;
+        }
+
+        .info-box-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .info-box-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Apply Button */
+        .apply-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #ff9800;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .apply-btn:hover {
+            background-color: #fb8c00;
+        }
+
+        /* Requirements List */
+        .requirements {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .requirements-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .requirements ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .requirements li {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="frame">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-item" onclick="goBack()">
+                <svg class="icon-button" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                <div class="header-title">वापस</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Subsidy Header -->
+            <div class="subsidy-header">
+                <div class="subsidy-title" id="subsidy-name">लोड हो रहा है...</div>
+                <div class="subsidy-focus-tag" id="subsidy-focus">सब्सिडी</div>
+                <div class="subsidy-amount" id="subsidy-amount">लाभ विवरण</div>
+                <div class="subsidy-eligibility" id="subsidy-eligibility">पात्रता: लोड हो रहा है...</div>
+            </div>
+
+            <!-- Overview Section -->
+            <div class="detail-section">
+                <div class="section-title">अवलोकन</div>
+                <div class="section-text" id="subsidy-description">विवरण लोड हो रहा है...</div>
+            </div>
+
+            <!-- Key Info Section -->
+            <div class="detail-section">
+                <div class="section-title">मुख्य जानकारी</div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-box-label">योजना प्रकार</div>
+                        <div class="info-box-value" id="scheme-type">सब्सिडी</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-label">पात्रता</div>
+                        <div class="info-box-value" id="eligibility-status">सभी किसान</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Apply Section -->
+            <div class="detail-section">
+                <div class="section-title">आवेदन कैसे करें</div>
+                <ol class="how-to-apply" id="how-to-apply-list">
+                    <li>चरण लोड हो रहे हैं...</li>
+                </ol>
+                <div class="requirements">
+                    <div class="requirements-title">आवश्यक दस्तावेज़:</div>
+                    <ul id="documents-list">
+                        <li>भूमि स्वामित्व का सबूत</li>
+                        <li>आधार कार्ड</li>
+                        <li>बैंक खाता विवरण</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Apply Button -->
+            <a href="#" target="_blank" id="apply-link" class="apply-btn">अभी आवेदन करें (बाहरी लिंक)</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get subsidy ID from URL
+            const url = window.location.pathname;
+            const subsidyId = url.split('/').pop();
+
+            // Fetch subsidy data from API
+            fetch(`/subsidies/api/detail/${subsidyId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load subsidy');
+                    return response.json();
+                })
+                .then(subsidy => {
+                    // Populate page with subsidy data
+                    document.getElementById('subsidy-name').textContent = subsidy.name;
+                    document.getElementById('subsidy-focus').textContent = subsidy.focus_area;
+                    document.getElementById('subsidy-focus').style.backgroundColor = subsidy.focus_color;
+                    document.getElementById('subsidy-amount').textContent = subsidy.benefit_amount;
+                    document.getElementById('subsidy-eligibility').textContent = `Eligibility: ${subsidy.eligibility_criteria}`;
+                    document.getElementById('subsidy-description').textContent = subsidy.description;
+                    document.getElementById('scheme-type').textContent = subsidy.scheme_type.charAt(0).toUpperCase() + subsidy.scheme_type.slice(1);
+                    document.getElementById('eligibility-status').textContent = subsidy.eligibility_criteria;
+                    document.getElementById('apply-link').href = subsidy.external_link || '#';
+
+                    // Populate How to Apply steps
+                    const stepsList = document.getElementById('how-to-apply-list');
+                    stepsList.innerHTML = '';
+                    if (subsidy.apply_steps && subsidy.apply_steps.length > 0) {
+                        subsidy.apply_steps.forEach(step => {
+                            const li = document.createElement('li');
+                            li.textContent = step;
+                            stepsList.appendChild(li);
+                        });
+                    } else {
+                        stepsList.innerHTML = '<li>कोई आवेदन चरण उपलब्ध नहीं है।</li>';
+                    }
+
+                    // Populate Documents Required
+                    const docsList = document.getElementById('documents-list');
+                    docsList.innerHTML = '';
+                    if (subsidy.required_documents && subsidy.required_documents.length > 0) {
+                        subsidy.required_documents.forEach(doc => {
+                            const li = document.createElement('li');
+                            li.textContent = doc;
+                            docsList.appendChild(li);
+                        });
+                    } else {
+                        docsList.innerHTML = '<li>कोई विशिष्ट दस्तावेज़ सूचीबद्ध नहीं है।</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading subsidy:', error);
+                    document.querySelector('.main-content').innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">सब्सिडी नहीं मिली या विवरण लोड करने में त्रुटि।</div>';
+                });
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block title %}मेरी बातचीत - तेलहान साथी{% endblock %}
+
+{% block style %}
+<style>
+    :root {
+        --primary-color: #388e3c;
+        --secondary-color: #ffa726;
+        --border-color: #e0e0e0;
+        --success-color: #4caf50;
+    }
+
+    .chats-container {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .chat-card {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        background: white;
+    }
+
+    .chat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .chat-card-header {
+        padding: 16px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .chat-card-header h3 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .chat-card-header div {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    .chat-card-body {
+        padding: 16px;
+    }
+
+    .last-message {
+        margin-bottom: 12px;
+    }
+
+    .last-message-label {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 4px;
+    }
+
+    .last-message-text {
+        font-size: 13px;
+        color: #333;
+        padding: 8px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        max-height: 60px;
+        overflow: hidden;
+    }
+
+    .chat-metadata {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .chat-card-footer {
+        padding: 12px;
+        background: #f8f9fa;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .open-chat-btn {
+        width: 100%;
+        padding: 8px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        transition: background 0.3s;
+    }
+
+    .open-chat-btn:hover {
+        background: #2e7d32;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* Chat Modal Styles */
+    .chat-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .chat-modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 5px 40px rgba(0,0,0,0.2);
+    }
+
+    .chat-modal-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 16px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-modal-header h3 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+    }
+
+    .chat-modal-header div {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    .chat-close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        background: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 8px;
+    }
+
+    .message.sent {
+        justify-content: flex-end;
+    }
+
+    .message.received {
+        justify-content: flex-start;
+    }
+
+    .message-bubble {
+        padding: 10px 12px;
+        border-radius: 12px;
+        max-width: 70%;
+        word-wrap: break-word;
+        font-size: 14px;
+    }
+
+    .message.sent .message-bubble {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .message.received .message-bubble {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .message-time {
+        font-size: 11px;
+        margin-top: 4px;
+        opacity: 0.7;
+    }
+
+    .chat-input-area {
+        padding: 12px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 8px;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .chat-send-btn {
+        background: var(--primary-color);
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .chat-send-btn:hover {
+        background: #2e7d32;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="padding: 16px;">
+    <h1 style="font-size: 24px; font-weight: 700; color: var(--primary-color); margin: 0 0 16px 0;">💬 मेरी बातचीत</h1>
+    <div id="chats-container" class="chats-container">
+        <div class="empty-state">
+            <div class="empty-state-icon">⏳</div>
+            <p>बातचीत लोड हो रही है...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="chat-modal">
+    <div class="chat-modal-content">
+        <!-- Chat Header -->
+        <div class="chat-modal-header">
+            <div>
+                <h3 id="chatTitle">बातचीत</h3>
+                <div id="chatSubtitle"></div>
+            </div>
+            <button class="chat-close-btn" onclick="closeChatModal()">×</button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chatMessages" class="chat-messages">
+            <div style="text-align: center; color: #999; padding: 20px 0;">
+                <p style="font-size: 12px;">संदेश लोड हो रहे हैं...</p>
+            </div>
+        </div>
+
+        <!-- Message Input Area -->
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="संदेश लिखें...">
+            <button class="chat-send-btn" onclick="sendChatMessage()">भेजें</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load chats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFarmerChats();
+
+        // Allow Enter key to send message
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    });
+
+    // Load farmer chats
+    async function loadFarmerChats() {
+        try {
+            const response = await fetch('/bidding/farmer/chats/list');
+            if (!response.ok) throw new Error('Failed to load chats');
+
+            const data = await response.json();
+            displayFarmerChats(data.chats);
+        } catch (error) {
+            console.error('Error loading chats:', error);
+            document.getElementById('chats-container').innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-state-icon">⚠️</div>
+                    <p>बातचीत लोड करने में विफल</p>
+                </div>
+            `;
+        }
+    }
+
+    // Display farmer chats
+    function displayFarmerChats(chats) {
+        const container = document.getElementById('chats-container');
+
+        if (chats.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <div class="empty-state-icon">💭</div>
+                    <p>अभी कोई सक्रिय बातचीत नहीं है। खरीदार के संदेशों का जवाब देकर बातचीत शुरू करें!</p>
+                </div>
+            `;
+            return;
+        }
+
+        const html = chats.map(chat => `
+            <div class="chat-card" onclick="openFarmerChat('${chat.chat_id}', '${chat.crop_name}')">
+                <div class="chat-card-header">
+                    <h3>🌾 ${chat.crop_name}</h3>
+                    <div>खरीदार: ${chat.buyer_name}</div>
+                </div>
+
+                <div class="chat-card-body">
+                    <div class="last-message">
+                        <div class="last-message-label">अंतिम संदेश</div>
+                        <div class="last-message-text">
+                            ${chat.last_message ? `<strong>${chat.last_message_sender === 'farmer' ? 'आप' : chat.buyer_name}:</strong> ${chat.last_message}` : 'अभी कोई संदेश नहीं'}
+                        </div>
+                    </div>
+
+                    <div class="chat-metadata">
+                        <div>
+                            <span>${chat.unread_count} अपढ़े</span>
+                        </div>
+                        <div>
+                            ${chat.last_message_time ? `<span>${new Date(chat.last_message_time).toLocaleDateString('hi-IN')}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-card-footer">
+                    <button class="open-chat-btn" onclick="event.stopPropagation(); openFarmerChat('${chat.chat_id}', '${chat.crop_name}')">
+                        💬 बातचीत खोलें
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        container.innerHTML = html;
+    }
+
+    // Open existing chat for farmer
+    async function openFarmerChat(chatId, cropName) {
+        try {
+            // Set current chat
+            window.currentChat = {
+                id: chatId,
+                cropName: cropName
+            };
+
+            // Update modal header
+            document.getElementById('chatTitle').textContent = `Chat about ${cropName}`;
+            document.getElementById('chatSubtitle').textContent = `शुरू किया गया: ${new Date().toLocaleDateString('hi-IN')}`
+
+            // Load messages
+            const response = await fetch(`/bidding/farmer/chat/${chatId}/messages`);
+            if (!response.ok) throw new Error('Failed to load messages');
+
+            const data = await response.json();
+            window.currentChat.messages = data.messages;
+
+            // Display messages
+            const messagesDiv = document.getElementById('chatMessages');
+            if (data.messages.length === 0) {
+                messagesDiv.innerHTML = `<div style="text-align: center; color: #999; padding: 20px 0;">कोई संदेश नहीं। बातचीत शुरू करें!</div>`;
+            } else {
+                messagesDiv.innerHTML = data.messages.map(msg => `
+                    <div class="message ${msg.sender_type === 'farmer' ? 'sent' : 'received'}">
+                        <div class="message-bubble">
+                            ${msg.message}
+                            <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString('hi-IN', {hour: '2-digit', minute: '2-digit'})}</div>
+                        </div>
+                    </div>
+                `).join('');
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+
+            // Clear input
+            document.getElementById('chatInput').value = '';
+
+            // Show modal
+            document.getElementById('chatModal').style.display = 'flex';
+
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('chatInput').focus();
+            }, 100);
+        } catch (error) {
+            alert('बातचीत खोलने में विफल: ' + error.message);
+        }
+    }
+
+    // Close chat modal
+    function closeChatModal() {
+        document.getElementById('chatModal').style.display = 'none';
+        document.getElementById('chatInput').value = '';
+    }
+
+    // Send chat message
+    async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+
+        if (!message || !window.currentChat || !window.currentChat.id) return;
+
+        const messagesDiv = document.getElementById('chatMessages');
+
+        try {
+            // Send message to backend
+            const response = await fetch(`/bidding/farmer/chat/${window.currentChat.id}/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to send message');
+
+            // Add farmer message to UI
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${message}
+                    <div class=\"message-time\">${new Date().toLocaleTimeString('hi-IN', {hour: '2-digit', minute: '2-digit'})}</div>
+                </div>
+            `;
+            messagesDiv.appendChild(messageDiv);
+
+            // Clear input
+            input.value = '';
+
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Focus back on input
+            input.focus();
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('संदेश भेजने में विफल। कृपया पुनः प्रयास करें।');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,985 @@
+{% extends "base.html" %}
+
+{% block title %}नीलामी बनाएं - तेलहान साथी{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>🎯 नई नीलामी क्रिएट करें</h1>
+            <p>अपनी तिलहन फसल सेल के लिए लिस्ट करें</p>
+        </div>
+
+        <form id="createAuctionForm" class="auction-form">
+            <!-- Crop Information Section -->
+            <fieldset class="form-section">
+                <legend>क्रॉप की जानकारी</legend>
+                
+                <div class="form-group">
+                    <label for="cropName">क्रॉप टाइप *</label>
+                    <select id="cropName" name="cropName" required>
+                        <option value="">क्रॉप सिलेक्ट करें</option>
+                        <option value="Mustard">Mustard (सरसों)</option>
+                        <option value="Groundnut">Groundnut (मूंगफली)</option>
+                        <option value="Sunflower">Sunflower (सूरजमुखी)</option>
+                        <option value="Soybean">Soybean (सोयाबीन)</option>
+                        <option value="Sesame">Sesame (तिल)</option>
+                        <option value="Safflower">Safflower (कुसुम)</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">क्वांटिटी (क्विंटल) *</label>
+                        <input type="number" id="quantity" name="quantity_quintals" min="1" step="0.1" required>
+                        <small>1 क्विंटल = 100 किलो</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quality">क्वालिटी ग्रेड</label>
+                        <select id="quality" name="quality_grade">
+                            <option value="Standard">स्टैंडर्ड</option>
+                            <option value="A">ग्रेड ए - प्रीमियम</option>
+                            <option value="B">ग्रेड बी - गुड</option>
+                            <option value="C">ग्रेड सी - नॉर्मल</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">विवरण (ऑप्शनल)</label>
+                    <textarea id="description" name="description" rows="3" placeholder="अपनी फसल के बारे में जानकारी लिखें..."></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Pricing Section -->
+            <fieldset class="form-section">
+                <legend>प्राइसिंग & बिडिंग</legend>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="basePrice">बेस प्राइस (₹/क्विंटल) *</label>
+                        <input type="number" id="basePrice" name="base_price" min="100" step="10" required>
+                        <small>बिडिंग के लिए स्टार्टिंग प्राइस</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minIncrement">मिनिमम बिड इंक्रीमेंट (₹)</label>
+                        <input type="number" id="minIncrement" name="minimum_bid_increment" min="10" step="10" value="50">
+                        <small>हर बिड में कम से कम इतना बढ़ाएं</small>
+                    </div>
+                </div>
+
+                
+            </fieldset>
+
+            <!-- Timeline Section -->
+            <fieldset class="form-section">
+                <legend>ऑक्शन ड्यूरेशन</legend>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration">ऑक्शन ड्यूरेशन (घंटे) *</label>
+                        <select id="duration" name="duration_hours" required>
+                            <option value="">ड्यूरेशन सिलेक्ट करें</option>
+                            <option value="1">1 घंटा</option>
+                            <option value="2">2 घंटे</option>
+                            <option value="4">4 घंटे</option>
+                            <option value="6">6 घंटे</option>
+                            <option value="12">12 घंटे</option>
+                            <option value="24">24 घंटे (1 दिन)</option>
+                            <option value="48">48 घंटे (2 दिन)</option>
+                            <option value="72">72 घंटे (3 दिन)</option>
+                            <option value="168">7 दिन</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ऑक्शन स्टार्ट टाइम</label>
+                        <input type="text" value="अभी" disabled>
+                        <small>ऑक्शन क्रिएट होते ही शुरू होगा</small>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Location Section -->
+            <fieldset class="form-section">
+                <legend>लोकेशन & लॉजिस्टिक्स</legend>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">फार्म लोकेशन *</label>
+                        <input type="text" id="location" name="location" placeholder="पता" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="district">डिस्ट्रिक्ट *</label>
+                        <input type="text" id="district" name="district" value="{{ farmer.district }}" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="state">स्टेट</label>
+                        <input type="text" id="state" name="state" value="Maharashtra">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storage">स्टोरेज लोकेशन (ऑप्शनल)</label>
+                        <input type="text" id="storage" name="storage_location" placeholder="फसल कहाँ रखी है">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="harvestDate">हार्वेस्ट डेट (ऑप्शनल)</label>
+                    <input type="date" id="harvestDate" name="harvest_date">
+                </div>
+            </fieldset>
+
+            <!-- Photo Section -->
+            <fieldset class="form-section">
+                <legend>📸 ऑयलसीड हार्वेस्ट फोटो</legend>
+                <p class="section-description">अपनी ऑयलसीड फसल की 4 फोटो अपलोड करें ताकि खरीदार क्वालिटी देख सकें</p>
+                
+                <div class="photos-grid">
+                    <div class="photo-upload-group">
+                        <label for="photo1">फोटो 1 (जरूरी)</label>
+                        <div class="photo-input-wrapper">
+                            <input type="file" id="photo1" name="photo1" accept="image/*" required>
+                            <div class="photo-preview" id="preview1">
+                                <span class="preview-placeholder">📷</span>
+                                <span class="preview-text">अपलोड करने के लिए क्लिक करें</span>
+                            </div>
+                        </div>
+                        <small>मुख्य फसल की फोटो - लिस्टिंग के लिए जरूरी</small>
+                    </div>
+
+                    <div class="photo-upload-group">
+                        <label for="photo2">फोटो 2 (ऑप्शनल)</label>
+                        <div class="photo-input-wrapper">
+                            <input type="file" id="photo2" name="photo2" accept="image/*">
+                            <div class="photo-preview" id="preview2">
+                                <span class="preview-placeholder">📷</span>
+                                <span class="preview-text">अपलोड करने के लिए क्लिक करें</span>
+                            </div>
+                        </div>
+                        <small>अलग एंगल या डिटेल व्यू</small>
+                    </div>
+
+                    <div class="photo-upload-group">
+                        <label for="photo3">फोटो 3 (ऑप्शनल)</label>
+                        <div class="photo-input-wrapper">
+                            <input type="file" id="photo3" name="photo3" accept="image/*">
+                            <div class="photo-preview" id="preview3">
+                                <span class="preview-placeholder">📷</span>
+                                <span class="preview-text">अपलोड करने के लिए क्लिक करें</span>
+                            </div>
+                        </div>
+                        <small>क्वालिटी/ग्रेडिंग डिटेल्स</small>
+                    </div>
+
+                    <div class="photo-upload-group">
+                        <label for="photo4">फोटो 4 (ऑप्शनल)</label>
+                        <div class="photo-input-wrapper">
+                            <input type="file" id="photo4" name="photo4" accept="image/*">
+                            <div class="photo-preview" id="preview4">
+                                <span class="preview-placeholder">📷</span>
+                                <span class="preview-text">अपलोड करने के लिए क्लिक करें</span>
+                            </div>
+                        </div>
+                        <small>स्टोरेज/पैकेजिंग जानकारी</small>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Submit Section -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span>🎯</span> क्रिएट ऑक्शन
+                </button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="window.history.back()">
+                    कैंसल
+                </button>
+            </div>
+
+            <div id="formMessage" class="form-message" style="display: none;"></div>
+        </form>
+    </div>
+</div>
+<br><br><br>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #388e3c 0%, #1b5e20 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.form-header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.form-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+}
+
+.auction-form {
+    padding: 30px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+legend {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95em;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1em;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #388e3c;
+    box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+}
+
+input[disabled] {
+    background: #f5f5f5;
+    color: #999;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+small {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+    font-size: 0.85em;
+}
+
+.price-guide {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.price-guide strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.price-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.price-item {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid #ff9800;
+}
+
+.price-item-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.price-item-value {
+    color: #388e3c;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.loading-small {
+    color: #999;
+    text-align: center;
+    padding: 10px;
+}
+
+.section-description {
+    color: #666;
+    margin: -10px 0 20px 0;
+    font-size: 0.95em;
+}
+
+.photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.photo-upload-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.photo-input-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.photo-preview {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    transition: all 0.3s;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.photo-preview:hover {
+    border-color: #388e3c;
+    background: #f0f7f0;
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.preview-placeholder {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+}
+
+.preview-text {
+    font-size: 0.85em;
+    color: #999;
+    text-align: center;
+}
+
+.photo-preview.has-image {
+    border-color: #388e3c;
+    background: white;
+}
+
+.photo-preview.has-image .preview-placeholder,
+.photo-preview.has-image .preview-text {
+    display: none;
+}
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.btn-lg {
+    padding: 14px 32px;
+    font-size: 1.05em;
+}
+
+.btn-primary {
+    background: #388e3c;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2e7d34;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #d0d0d0;
+}
+
+.form-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.form-message.success {
+    background: #c8e6c9;
+    color: #1b5e20;
+}
+
+.form-message.error {
+    background: #ffccbc;
+    color: #bf360c;
+}
+
+/* ===== TABLET (768px and below) ===== */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .form-container {
+        border-radius: 10px;
+    }
+
+    .form-header {
+        padding: 25px 15px;
+    }
+
+    .form-header h1 {
+        font-size: 1.6em;
+    }
+
+    .form-header p {
+        font-size: 0.95em;
+    }
+
+    .auction-form {
+        padding: 20px;
+    }
+
+    .form-section {
+        margin-bottom: 22px;
+        padding-bottom: 22px;
+    }
+
+    legend {
+        font-size: 1.15em;
+        margin-bottom: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    label {
+        font-size: 0.92em;
+        margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        padding: 11px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    textarea {
+        min-height: 90px;
+    }
+
+    small {
+        font-size: 0.8em;
+        margin-top: 4px;
+    }
+
+    .photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .section-description {
+        font-size: 0.9em;
+        margin: -8px 0 16px 0;
+    }
+
+    .price-guide {
+        padding: 12px;
+        margin-top: 12px;
+    }
+
+    .price-guide strong {
+        font-size: 0.95em;
+        margin-bottom: 8px;
+    }
+
+    .price-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .price-item {
+        padding: 9px;
+    }
+
+    .price-item-name {
+        font-size: 0.88em;
+    }
+
+    .price-item-value {
+        font-size: 1.1em;
+    }
+
+    .form-actions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-lg {
+        padding: 13px 24px;
+        font-size: 1em;
+    }
+
+    .btn {
+        gap: 7px;
+    }
+
+    .form-message {
+        font-size: 0.92em;
+        padding: 13px;
+        margin-top: 18px;
+    }
+}
+
+/* ===== MOBILE (480px and below) ===== */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .form-container {
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .form-header {
+        padding: 18px 12px;
+    }
+
+    .form-header h1 {
+        font-size: 1.35em;
+        margin: 0;
+    }
+
+    .form-header p {
+        font-size: 0.85em;
+        margin-top: 8px;
+    }
+
+    .auction-form {
+        padding: 12px;
+    }
+
+    .form-section {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+    }
+
+    .form-section:last-of-type {
+        padding-bottom: 0;
+    }
+
+    legend {
+        font-size: 1.05em;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    label {
+        font-size: 0.88em;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        padding: 10px 8px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #388e3c;
+        box-shadow: 0 0 0 2px rgba(56, 142, 60, 0.08);
+    }
+
+    textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    small {
+        font-size: 0.75em;
+        color: #888;
+        margin-top: 3px;
+        display: block;
+    }
+
+    .section-description {
+        font-size: 0.8em;
+        color: #666;
+        margin: -6px 0 12px 0;
+    }
+
+    .photos-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .photo-upload-group {
+        gap: 8px;
+    }
+
+    .photo-preview {
+        min-height: 140px;
+        border-radius: 6px;
+    }
+
+    .preview-placeholder {
+        font-size: 1.8em;
+        margin-bottom: 4px;
+    }
+
+    .preview-text {
+        font-size: 0.75em;
+        color: #999;
+    }
+
+    .photo-upload-group label {
+        font-size: 0.85em;
+        margin-bottom: 5px;
+    }
+
+    .price-guide {
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .price-guide strong {
+        font-size: 0.85em;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .price-list {
+        grid-template-columns: 1fr;
+        gap: 7px;
+    }
+
+    .price-item {
+        padding: 8px;
+        border-left: 2px solid #ff9800;
+    }
+
+    .price-item-name {
+        font-weight: 600;
+        font-size: 0.8em;
+        margin-bottom: 3px;
+    }
+
+    .price-item-value {
+        color: #388e3c;
+        font-size: 1.05em;
+        font-weight: 700;
+    }
+
+    .form-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .btn {
+        padding: 11px 16px;
+        font-size: 0.95em;
+        gap: 6px;
+        border-radius: 6px;
+    }
+
+    .btn-lg {
+        padding: 11px 16px;
+        font-size: 0.95em;
+    }
+
+    .btn-primary {
+        background: #388e3c;
+        color: white;
+    }
+
+    .btn-primary:active {
+        background: #2e7d34;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+
+    .btn-secondary:active {
+        background: #e8e8e8;
+    }
+
+    .form-message {
+        font-size: 0.8em;
+        padding: 10px;
+        margin-top: 14px;
+        border-radius: 6px;
+    }
+
+    .form-message.success {
+        background: #c8e6c9;
+        color: #1b5e20;
+    }
+
+    .form-message.error {
+        background: #ffccbc;
+        color: #bf360c;
+    }
+}
+
+/* ===== EXTRA SMALL (under 360px) ===== */
+@media (max-width: 359px) {
+    .container {
+        padding: 8px;
+    }
+
+    .form-header {
+        padding: 14px 10px;
+    }
+
+    .form-header h1 {
+        font-size: 1.2em;
+    }
+
+    .form-header p {
+        font-size: 0.8em;
+    }
+
+    .auction-form {
+        padding: 10px;
+    }
+
+    legend {
+        font-size: 0.95em;
+    }
+
+    .form-actions {
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+
+    .preview-placeholder {
+        font-size: 1.5em;
+    }
+}
+</style>
+
+<script>
+// Photo preview functionality
+['photo1', 'photo2', 'photo3', 'photo4'].forEach((photoId) => {
+    const fileInput = document.getElementById(photoId);
+    const preview = document.getElementById(`preview${photoId.slice(-1)}`);
+    
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                preview.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    preview.addEventListener('click', () => fileInput.click());
+});
+
+document.getElementById('createAuctionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Create FormData for file uploads
+    const formData = new FormData();
+    
+    // Add form fields
+    formData.append('crop_name', document.getElementById('cropName').value);
+    formData.append('quantity_quintals', document.getElementById('quantity').value);
+    formData.append('quality_grade', document.getElementById('quality').value);
+    formData.append('base_price', document.getElementById('basePrice').value);
+    formData.append('minimum_bid_increment', document.getElementById('minIncrement').value);
+    formData.append('duration_hours', document.getElementById('duration').value);
+    formData.append('location', document.getElementById('location').value);
+    formData.append('district', document.getElementById('district').value);
+    formData.append('state', document.getElementById('state').value);
+    formData.append('description', document.getElementById('description').value);
+    formData.append('harvest_date', document.getElementById('harvestDate').value || null);
+    formData.append('storage_location', document.getElementById('storage').value);
+    
+    // Add photo files
+    for (let i = 1; i <= 4; i++) {
+        const photoInput = document.getElementById(`photo${i}`);
+        if (photoInput.files && photoInput.files[0]) {
+            formData.append(`photo${i}`, photoInput.files[0]);
+        }
+    }
+
+    try {
+        const response = await fetch('/bidding/farmer/create-auction', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        const messageDiv = document.getElementById('formMessage');
+
+        if (response.ok) {
+            messageDiv.className = 'form-message success';
+            messageDiv.textContent = '✅ ऑक्शन सफलतापूर्वक क्रिएट हो गया! रीडायरेक्ट कर रहे हैं...';
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = '/bidding/farmer/dashboard';
+            }, 2000);
+        } else {
+            messageDiv.className = 'form-message error';
+            messageDiv.textContent = '❌ एरर: ' + (data.error || 'ऑक्शन क्रिएट करने में समस्या');
+            messageDiv.style.display = 'block';
+        }
+    } catch (error) {
+        document.getElementById('formMessage').className = 'form-message error';
+        document.getElementById('formMessage').textContent = '❌ एरर: ' + error.message;
+        document.getElementById('formMessage').style.display = 'block';
+    }
+});
+
+
+</script>
+{% endblock %}

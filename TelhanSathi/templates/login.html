@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>टेलहन साथी - लॉगिन</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #2d5735 0%, #1e3a24 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            color: #1e3a24;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            background: #f7f9f7;
+            border-radius: 8px;
+            box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a4721 0%, #2e7d32 100%);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            width: 56px;
+            height: 56px;
+            background: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .app-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            margin-bottom: 2px;
+        }
+
+        .ministry {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 24px;
+            }
+
+            .logo-container {
+                width: 48px;
+                height: 48px;
+            }
+
+            .app-title {
+                font-size: 22px;
+            }
+
+            .ministry {
+                font-size: 13px;
+            }
+        }
+
+        .content {
+            padding: 16px 24px 24px 24px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 16px 20px 20px 20px;
+            }
+
+            .features-section {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .login-form-section {
+            flex-shrink: 0;
+            margin-bottom: 16px;
+        }
+
+        .features-section {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e9 100%);
+            border: 1px solid #c8e6c9;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            background: linear-gradient(135deg, #e8f5e9 0%, #dcedc8 100%);
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+        }
+
+        .feature-card-icon {
+            width: 40px;
+            height: 40px;
+            background: #2e7d32;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .feature-card-icon .material-icons {
+            font-size: 20px;
+        }
+
+        .feature-card-content {
+            flex: 1;
+        }
+
+        .feature-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1b5e20;
+            margin-bottom: 3px;
+        }
+
+        .feature-card-desc {
+            font-size: 12px;
+            color: #558b2f;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .features-section {
+                gap: 10px;
+            }
+
+            .feature-card {
+                padding: 12px 14px;
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .feature-card-icon {
+                width: 36px;
+                height: 36px;
+                margin: 0 auto;
+            }
+
+            .feature-card-icon .material-icons {
+                font-size: 18px;
+            }
+
+            .feature-card-title {
+                font-size: 12px;
+            }
+
+            .feature-card-desc {
+                font-size: 11px;
+            }
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3a24;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title .material-icons {
+            color: #2e7d32;
+            font-size: 24px;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-label .material-icons {
+            font-size: 18px;
+            color: #2e7d32;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: #999;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+            padding-left: 2px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, #43a047 0%, #27632a 100%);
+            transform: translateY(-1px);
+        }
+
+        .login-button:active {
+            transform: scale(0.98);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-button .material-icons {
+            font-size: 18px;
+        }
+
+        .error-message {
+            background: #fff5f5;
+            color: #d32f2f;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            border: 1px solid #ffcdd2;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .error-message .material-icons {
+            font-size: 18px;
+            flex-shrink: 0;
+            color: #d32f2f;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #2d5735 0%, #1e3a24 100%);
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .footer-message {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .footer-message-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .footer-message-subtitle {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 14px 20px;
+            }
+
+            .footer-message {
+                font-size: 11px;
+            }
+
+            .footer-message-subtitle {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="static/img/agri_logo.jpg" alt="Logo">
+            </div>
+            <div class="title-section">
+                <div class="app-title">टेलहन साथी</div>
+                <div class="ministry">कृषि मंत्रालय, भारत सरकार</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="login-form-section">
+                <div class="form-title">
+                    <span class="material-icons">phone_android</span>
+                    मोबाइल लॉगिन
+                </div>
+                <div class="form-subtitle">
+                    अपना पंजीकृत मोबाइल नंबर दर्ज करें
+                </div>
+
+                {% if error or mobile_error %}
+                <div class="error-message">
+                    <span class="material-icons">error</span>
+                    <span>{{ error or mobile_error }}</span>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('auth.login_with_mobile') }}" id="mobileForm">
+                    <div class="input-group">
+                        <label class="input-label" for="mobile_number">
+                            <span class="material-icons">call</span>
+                            मोबाइल नंबर
+                        </label>
+                        <input
+                            type="tel"
+                            id="mobile_number"
+                            name="mobile_number"
+                            class="input-field"
+                            placeholder="10 अंकों का मोबाइल नंबर"
+                            pattern="^(\+91)?[6-9]\d{9}$"
+                            required
+                            autofocus
+                        >
+                        <div class="input-hint">
+                            10 अंकों का भारतीय मोबाइल नंबर
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-button" id="mobileSubmit">
+                        <span class="material-icons">login</span>
+                        लॉगिन करें
+                    </button>
+                </form>
+            </div>
+
+            <div class="features-section">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">trending_up</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">फसल के दाम</div>
+                        <div class="feature-card-desc">बाजार भाव और मूल्य रुझान जानें</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">cloud_queue</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">मौसम की जानकारी</div>
+                        <div class="feature-card-desc">वर्षा, तापमान और खेती के सुझाव</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">gavel</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">नीलामी</div>
+                        <div class="feature-card-desc">सीधे खरीदारों से जुड़ें, बेहतर दाम पाएं</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">card_giftcard</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">सरकारी योजनाएं</div>
+                        <div class="feature-card-desc">सब्सिडी और लाभ के बारे में जानकारी</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">shopping_cart</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">रिडेम्पशन स्टोर</div>
+                        <div class="feature-card-desc">पॉइंट्स से किसान सामग्री खरीदें</div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-icons">psychology</span>
+                    </div>
+                    <div class="feature-card-content">
+                        <div class="feature-card-title">लाभ सिमुलेटर</div>
+                        <div class="feature-card-desc">AI से अपनी खेती का लाभ जानें</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-message">
+                <div class="footer-message-title">© भारत सरकार - कृषि मंत्रालय</div>
+                <div class="footer-message-subtitle">टेलहन साथी - किसानों का डिजिटल साथी</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Input formatting for Mobile Number
+        document.getElementById('mobile_number')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.substring(0, 10);
+            e.target.value = value;
+        });
+
+        // Form submission handler
+        document.getElementById('mobileForm')?.addEventListener('submit', function(e) {
+            const mobile = document.getElementById('mobile_number').value;
+            const pattern = /^[6-9]\d{9}$/;
+            
+            if (!pattern.test(mobile)) {
+                e.preventDefault();
+                showError('mobile_number', 'कृपया सही 10 अंकों का भारतीय मोबाइल नंबर दर्ज करें');
+                return false;
+            }
+            
+            // Show loading state
+            const button = document.getElementById('mobileSubmit');
+            button.classList.add('loading');
+            button.disabled = true;
+            
+            return true;
+        });
+
+        // Error display function
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const form = field.closest('.content');
+            
+            // Remove existing error
+            const existingError = form.querySelector('.error-message:not([data-server])');
+            if (existingError) existingError.remove();
+            
+            // Add new error
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <span class="material-icons">error</span>
+                <span>${message}</span>
+            `;
+            
+            const title = form.querySelector('.form-title');
+            title.parentNode.insertBefore(errorDiv, title.nextSibling.nextSibling);
+            
+            // Focus and highlight field
+            field.focus();
+            field.style.borderColor = '#d32f2f';
+            
+            // Reset styling after interaction
+            field.addEventListener('input', function() {
+                this.style.borderColor = '#e0e0e0';
+                errorDiv.remove();
+            }, { once: true });
+        }
+
+        // Input validation styling
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value && !this.checkValidity()) {
+                    this.style.borderColor = '#d32f2f';
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.checkValidity()) {
+                    this.style.borderColor = '#4caf50';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

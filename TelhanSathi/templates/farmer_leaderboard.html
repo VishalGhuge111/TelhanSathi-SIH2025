@@ -1,0 +1,1116 @@
+{% extends "base.html" %}
+
+{% block title %}किसान लीडरबोर्ड - तेलहान साथी{% endblock %}
+
+{% block style %}
+<style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #f39c12;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-color: #ecf0f1;
+            --bg-light: #f8f9fa;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        .leaderboard-container {
+            max-width: 100%;
+            margin: 0;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .leaderboard-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .leaderboard-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .leaderboard-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Tab Navigation */
+        .leaderboard-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .leaderboard-tab-btn {
+            flex: 1;
+            padding: 14px 12px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .leaderboard-tab-btn:hover {
+            color: var(--primary-color);
+            background: rgba(46, 204, 113, 0.05);
+        }
+
+        .leaderboard-tab-btn.active {
+            color: var(--primary-color);
+        }
+
+        .leaderboard-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        /* Content Area */
+        .leaderboard-content {
+            padding: 16px;
+        }
+
+        .leaderboard-tab-content {
+            display: none;
+        }
+
+        .leaderboard-tab-content.active {
+            display: block;
+        }
+
+        /* Quick Stats - Prominent */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card.activity {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.05));
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-subtext {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Collapsible Sections */
+        .collapsible-section {
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+
+        .section-header:hover {
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .section-header.expanded {
+            border-radius: 8px 8px 0 0;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            border-color: var(--primary-color);
+        }
+
+        .toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .section-header.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            display: none;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 16px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .section-content.expanded {
+            display: block;
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        .leaderboard-table thead {
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .leaderboard-table th {
+            padding: 10px 6px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table td {
+            padding: 10px 6px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .leaderboard-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: rgba(46, 204, 113, 0.05);
+        }
+
+        .leaderboard-table tbody tr.your-row {
+            background: rgba(52, 152, 219, 0.1);
+            font-weight: 600;
+            border-left: 4px solid #3498db;
+        }
+
+        .rank {
+            font-weight: 700;
+            font-size: 16px;
+            width: 10%;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .rank-1 { color: #ffc107; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        .rank-default { color: var(--text-light); }
+
+        .farmer-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        .farmer-name span:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+        }
+
+        .farmer-name .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 1px 4px;
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .farmer-name .you-badge {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .table-value {
+            text-align: right;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Info Buttons */
+        .info-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 10px 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 12px;
+        }
+
+        .info-btn:hover {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(52, 152, 219, 0.2));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .info-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Info Panels */
+        .info-panel {
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideDown 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .panel-header h3 {
+            font-size: 16px;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .panel-content {
+            padding: 16px;
+        }
+
+        /* Top Crops Grid */
+        .crops-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .crop-item {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            text-align: center;
+        }
+
+        .crop-item .crop-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .crop-item .crop-count {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .progress-section h4 {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), #e67e22);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Motivation Message */
+        .motivation {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 16px;
+        }
+
+        .motivation-text {
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-light);
+        }
+
+        .no-data-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+
+            .leaderboard-header {
+                padding: 16px;
+            }
+
+            .leaderboard-header h1 {
+                font-size: 24px;
+                margin-bottom: 3px;
+            }
+
+            .leaderboard-tab-btn {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+
+            .leaderboard-content {
+                padding: 16px;
+            }
+
+            .quick-stats {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+
+            .leaderboard-table {
+                font-size: 12px;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 10px;
+            }
+
+            .rank {
+                font-size: 16px;
+                width: 40px;
+            }
+
+            .table-value {
+                font-size: 12px;
+            }
+
+            .crops-list {
+                grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+                gap: 8px;
+            }
+
+            .crop-item {
+                padding: 10px;
+            }
+
+            .crop-item .crop-name {
+                font-size: 13px;
+            }
+        }
+</style>
+{% endblock %}{% block content %}
+<div class="leaderboard-container">
+    <!-- Header -->
+    <div class="leaderboard-header">
+        <h1>🏆 किसान लीडरबोर्ड</h1>
+        <p>देखें आप तेलहान साथी पर किसानों में किस रैंक पर हैं</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="leaderboard-tabs">
+        <button class="leaderboard-tab-btn active" onclick="switchTab('activity')">
+            📊 एक्टिविटी
+        </button>
+        <button class="leaderboard-tab-btn" onclick="switchTab('rewards')">
+            🎁 रिवॉर्ड्स
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div class="leaderboard-content">
+
+        <!-- ACTIVITY LEADERBOARD TAB -->
+        <div id="activity" class="leaderboard-tab-content active">
+            
+            <!-- INFO BUTTONS ROW - ABOVE TABLE -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 16px;">
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">📍</span>
+                    <span>आपके आंकड़े</span>
+                </button>
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">🌾</span>
+                    <span>टॉप फसलें</span>
+                </button>
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">🎯</span>
+                    <span>टॉप 3 तक</span>
+                </button>
+            </div>
+
+            <!-- YOUR STATS PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="yourStatsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>📍 आपके आंकड़े</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="quick-stats">
+                        <div class="stat-card activity">
+                            <div class="stat-label">स्थिति</div>
+                            <div class="stat-value" id="activityRankValue">4</div>
+                            <div class="stat-subtext">150 किसानों में से</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">कुल नीलामी</div>
+                            <div class="stat-value" id="activityAuctionsValue">25</div>
+                            <div class="stat-subtext">नीलामी बनाई</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">कुल कमाई</div>
+                            <div class="stat-value" style="font-size: 18px;" id="activityRevenue">₹4,25,000</div>
+                            <div class="stat-subtext">कमाई गई</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">रैंक बदलाव</div>
+                            <div class="stat-value" id="activityRankChange">📈 ऊपर 2</div>
+                            <div class="stat-subtext">इस महीने</div>
+                        </div>
+                    </div>
+                    <div class="motivation">
+                        <div class="motivation-text" id="activityMotivation">
+                            🚀 आप बहुत अच्छा कर रहे हैं! रैंक बढ़ाने के लिए और नीलामी बनाएं!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP CROPS PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="topCropsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>🌾 आपकी टॉप फसलें</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="crops-list" id="activityTopCrops">
+                        <div class="crop-item">
+                            <div class="crop-name">चावल</div>
+                            <div class="crop-count">12 नीलामी</div>
+                        </div>
+                        <div class="crop-item">
+                            <div class="crop-name">गेहूं</div>
+                            <div class="crop-count">8 नीलामी</div>
+                        </div>
+                        <div class="crop-item">
+                            <div class="crop-name">सरसों</div>
+                            <div class="crop-count">5 नीलामी</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOAL PROGRESS PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="goalPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>🎯 टॉप 3 तक पहुंचने के लिए</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="progress-section">
+                        <h4>📈 प्रगति</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="activityProgressBar" style="width: 40%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>40% पूरा</span>
+                            <span id="activityNeedAuctions">17 और नीलामी</span>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; border-left: 4px solid var(--secondary-color); margin-top: 12px;">
+                        <div style="font-size: 12px; color: var(--text-light); font-weight: 600; margin-bottom: 4px;">या कमाई चाहिए:</div>
+                        <div style="font-size: 16px; color: var(--secondary-color); font-weight: 700;" id="activityNeedRevenue">₹3,50,000 और</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP PERFORMERS TABLE - PRIMARY CONTENT (NOW BELOW PANELS) -->
+            <div style="margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <h2 style="margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 18px;">
+                    👥 टॉप परफॉर्मर
+                </h2>
+                <table class="leaderboard-table" id="activityTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">रैंक</th>
+                            <th style="width: 50%;">किसान</th>
+                            <th style="width: 25%; text-align: right;">नीलामी</th>
+                            <th style="width: 25%; text-align: right;">कमाई</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityLeaderboard">
+                        <tr>
+                            <td colspan="4" class="no-data">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- REWARDS LEADERBOARD TAB -->
+        <div id="rewards" class="leaderboard-tab-content">
+            
+            <!-- INFO BUTTONS ROW - ABOVE TABLE -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 16px;">
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">💰</span>
+                    <span>आपके कॉइन्स</span>
+                </button>
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">📊</span>
+                    <span>कमाई कैसे</span>
+                </button>
+                <button class="info-btn" onclick="toggleSection(event)">
+                    <span style="font-size: 18px;">🎯</span>
+                    <span>टॉप 1 तक</span>
+                </button>
+            </div>
+
+            <!-- YOUR COINS PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="yourCoinsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>💰 आपकी कमाई</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="quick-stats">
+                        <div class="stat-card activity">
+                            <div class="stat-label">स्थिति</div>
+                            <div class="stat-value" id="rewardsRankValue">3</div>
+                            <div class="stat-subtext">150 किसानों में से</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">कुल कॉइन्स</div>
+                            <div class="stat-value" id="rewardsCoinsValue">1,250</div>
+                            <div class="stat-subtext">कॉइन्स कमाए</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">इस महीने</div>
+                            <div class="stat-value" id="rewardsCoinsMonth">450</div>
+                            <div class="stat-subtext">कॉइन्स</div>
+                        </div>
+                        <div class="stat-card activity">
+                            <div class="stat-label">रैंक बदलाव</div>
+                            <div class="stat-value" id="rewardsRankChange">📈 ऊपर 5</div>
+                            <div class="stat-subtext">इस महीने</div>
+                        </div>
+                    </div>
+                    <div class="motivation">
+                        <div class="motivation-text" id="rewardsMotivation">
+                            ⭐ बहुत अच्छा! आप टॉप 3 में हैं, स्कीम्स का उपयोग करें और बोनस कॉइन्स पाएं!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EARNINGS BREAKDOWN PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="earningsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>📊 आप कैसे कमा रहे हैं</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="crops-list" id="rewardsEarnings">
+                        <div class="crop-item">
+                            <div class="crop-name">नीलामी</div>
+                            <div class="crop-count">800 कॉइन्स</div>
+                        </div>
+                        <div class="crop-item">
+                            <div class="crop-name">स्कीम बोनस</div>
+                            <div class="crop-count">300 कॉइन्स</div>
+                        </div>
+                        <div class="crop-item">
+                            <div class="crop-name">क्वालिटी प्रीमियम</div>
+                            <div class="crop-count">150 कॉइन्स</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOAL PROGRESS PANEL - COLLAPSIBLE (DIRECTLY BELOW BUTTONS) -->
+            <div class="info-panel" id="rewardGoalPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>🎯 टॉप 1 तक पहुंचने के लिए</h3>
+                    <button class="close-btn" onclick="closePanel(event)">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="progress-section">
+                        <h4>📈 प्रगति</h4>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="rewardsProgressBar" style="width: 60%; background: linear-gradient(90deg, var(--secondary-color), #e67e22);"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>60% पूरा</span>
+                            <span id="rewardsNeedCoins">500 और कॉइन्स</span>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; border-left: 4px solid var(--secondary-color); margin-top: 12px;">
+                        <div style="font-size: 12px; color: var(--text-light); font-weight: 600; margin-bottom: 4px;">मौजूदा रेट पर:</div>
+                        <div style="font-size: 16px; color: var(--secondary-color); font-weight: 700;" id="rewardsTimeToTop">~2 हफ्ते</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP EARNERS TABLE - PRIMARY CONTENT (NOW BELOW PANELS) -->
+            <div style="margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <h2 style="margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 18px;">
+                    👥 टॉप कमाई करने वाले
+                </h2>
+                <table class="leaderboard-table" id="rewardsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">रैंक</th>
+                            <th style="width: 50%;">किसान</th>
+                            <th style="width: 25%; text-align: right;">कुल</th>
+                            <th style="width: 25%; text-align: right;">महीना</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rewardsLeaderboard">
+                        <tr>
+                            <td colspan="4" class="no-data">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+        // Toggle info panels with buttons
+        function toggleSection(event) {
+            event.preventDefault();
+            const btn = event.target.closest('.info-btn');
+            const panelName = getPanelNameFromButton(btn);
+            const panel = document.getElementById(panelName);
+            
+            if (panel) {
+                // Close all other panels in this tab
+                document.querySelectorAll('.info-panel').forEach(p => {
+                    if (p !== panel) p.style.display = 'none';
+                });
+                
+                // Toggle current panel
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // Get panel ID from button content
+        function getPanelNameFromButton(btn) {
+            const text = btn.textContent.trim();
+            const tab = document.querySelector('.leaderboard-tab-content.active');
+            // Hindi matching for activity tab
+            if (tab.id === 'activity') {
+                if (text.includes('आपके आंकड़े')) return 'yourStatsPanel';
+                if (text.includes('टॉप फसलें')) return 'topCropsPanel';
+                if (text.includes('टॉप 3 तक')) return 'goalPanel';
+            } else if (tab.id === 'rewards') {
+                if (text.includes('आपके कॉइन्स')) return 'yourCoinsPanel';
+                if (text.includes('कमाई कैसे')) return 'earningsPanel';
+                if (text.includes('टॉप 1 तक')) return 'rewardGoalPanel';
+            }
+            // Fallback to English for robustness
+            if (tab.id === 'activity') {
+                if (text.includes('Your Stats')) return 'yourStatsPanel';
+                if (text.includes('Top Crops')) return 'topCropsPanel';
+                if (text.includes('Top 3')) return 'goalPanel';
+            } else if (tab.id === 'rewards') {
+                if (text.includes('Your Coins')) return 'yourCoinsPanel';
+                if (text.includes('How Earning')) return 'earningsPanel';
+                if (text.includes('Top 1')) return 'rewardGoalPanel';
+            }
+            return null;
+        }
+
+        // Close panel
+        function closePanel(event) {
+            event.preventDefault();
+            const panel = event.target.closest('.info-panel');
+            if (panel) panel.style.display = 'none';
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.leaderboard-tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Update buttons
+            const buttons = document.querySelectorAll('.leaderboard-tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Close all panels
+            document.querySelectorAll('.info-panel').forEach(p => p.style.display = 'none');
+
+            // Load data for the tab
+            if (tabName === 'activity') {
+                loadActivityLeaderboard();
+            } else if (tabName === 'rewards') {
+                loadRewardsLeaderboard();
+            }
+        }
+
+        // Load Activity Leaderboard
+        async function loadActivityLeaderboard() {
+            try {
+                const response = await fetch('/bidding/farmer/leaderboard/activity');
+                if (!response.ok) throw new Error('Failed to load leaderboard');
+
+                const data = await response.json();
+                displayActivityLeaderboard(data);
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                document.getElementById('activityLeaderboard').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="no-data">
+                            <div class="no-data-icon">⚠️</div>
+                            <div>Failed to load leaderboard</div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Display Activity Leaderboard
+        function displayActivityLeaderboard(data) {
+            // Update quick stats
+            const rankValue = data.your_rank.toString();
+            document.getElementById('activityRankValue').textContent = rankValue;
+            document.getElementById('activityAuctionsValue').textContent = data.your_auctions;
+
+            // Update detailed stats
+            document.getElementById('activityRevenue').textContent = formatCurrency(data.your_revenue);
+            document.getElementById('activityRankChange').textContent = getRankChangeEmoji(data.rank_change) + ' Up ' + Math.abs(data.rank_change);
+
+            // Update next target
+            document.getElementById('activityNeedAuctions').textContent = data.auctions_to_top3 + ' more auctions';
+            document.getElementById('activityNeedRevenue').textContent = formatCurrency(data.revenue_to_top3) + ' more';
+            document.getElementById('activityProgressBar').style.width = data.progress_to_top3 + '%';
+
+            // Update top crops
+            if (data.top_crops && data.top_crops.length > 0) {
+                document.getElementById('activityTopCrops').innerHTML = data.top_crops.map(crop => `
+                    <div class="crop-item">
+                        <div class="crop-name">${crop.crop_name}</div>
+                        <div class="crop-count">${crop.count} auction${crop.count !== 1 ? 's' : ''}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Update motivation message
+            if (data.your_rank <= 3) {
+                document.getElementById('activityMotivation').textContent = '⭐ Amazing! You\'re in Top 3! Keep it up! 🚀';
+            } else if (data.your_rank <= 10) {
+                document.getElementById('activityMotivation').textContent = '🎯 You\'re in Top 10! Keep pushing to reach Top 3!';
+            } else if (data.auctions_to_top3 <= 10) {
+                document.getElementById('activityMotivation').textContent = '📈 You\'re getting close to Top 3! Just ' + data.auctions_to_top3 + ' more auctions!';
+            } else {
+                document.getElementById('activityMotivation').textContent = '🚀 You\'re doing great! Keep creating more auctions to climb the ranks!';
+            }
+
+            // Populate leaderboard table
+            const tbody = document.getElementById('activityLeaderboard');
+            tbody.innerHTML = data.leaderboard.map((farmer, index) => {
+                const isYourRow = farmer.is_you ? ' your-row' : '';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-default';
+                
+                return `
+                    <tr class="${isYourRow}">
+                        <td class="rank ${rankClass}">
+                            ${medal}${index + 1}
+                        </td>
+                        <td>
+                            <div class="farmer-name">
+                                <span>${farmer.farmer_name}</span>
+                                ${index < 3 ? '<span class="badge">🌟 Top ' + (index + 1) + '</span>' : ''}
+                                ${farmer.is_you ? '<span class="badge you-badge">👉 YOU</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="table-value">${farmer.total_auctions}</td>
+                        <td class="table-value">${formatCurrency(farmer.total_revenue)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load Rewards Leaderboard
+        async function loadRewardsLeaderboard() {
+            try {
+                const response = await fetch('/bidding/farmer/leaderboard/rewards');
+                if (!response.ok) throw new Error('Failed to load leaderboard');
+
+                const data = await response.json();
+                displayRewardsLeaderboard(data);
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                document.getElementById('rewardsLeaderboard').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="no-data">
+                            <div class="no-data-icon">⚠️</div>
+                            <div>Failed to load leaderboard</div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Display Rewards Leaderboard
+        function displayRewardsLeaderboard(data) {
+            // Update quick stats
+            document.getElementById('rewardsRankValue').textContent = data.your_rank;
+            document.getElementById('rewardsCoinsValue').textContent = formatCoinsShort(data.your_coins);
+
+            // Update detailed stats
+            document.getElementById('rewardsCoinsMonth').textContent = formatCoins(data.your_coins_this_month);
+            document.getElementById('rewardsRankChange').textContent = getRankChangeEmoji(data.rank_change) + ' Up ' + Math.abs(data.rank_change);
+
+            // Update next target
+            document.getElementById('rewardsNeedCoins').textContent = formatCoins(data.coins_to_top1);
+            document.getElementById('rewardsTimeToTop').textContent = data.weeks_to_top1 + ' week' + (data.weeks_to_top1 !== 1 ? 's' : '');
+            document.getElementById('rewardsProgressBar').style.width = data.progress_to_top1 + '%';
+
+            // Update earnings breakdown
+            if (data.earnings_breakdown && data.earnings_breakdown.length > 0) {
+                document.getElementById('rewardsEarnings').innerHTML = data.earnings_breakdown.map(source => `
+                    <div class="crop-item">
+                        <div class="crop-name">${source.source}</div>
+                        <div class="crop-count">${formatCoins(source.coins)}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Update motivation message
+            if (data.your_rank === 1) {
+                document.getElementById('rewardsMotivation').textContent = '👑 Congratulations! You\'re the Top Earner! Keep leading! 🏆';
+            } else if (data.your_rank <= 3) {
+                document.getElementById('rewardsMotivation').textContent = '⭐ Excellent! You\'re in Top 3 with great momentum. Keep using schemes for bonus coins!';
+            } else if (data.coins_to_top1 <= 1000) {
+                document.getElementById('rewardsMotivation').textContent = '🚀 You\'re very close to Top 1! Just ' + data.coins_to_top1 + ' more coins!';
+            } else {
+                document.getElementById('rewardsMotivation').textContent = '💪 Great earning momentum! Keep earning coins through auctions and schemes!';
+            }
+
+            // Populate leaderboard table
+            const tbody = document.getElementById('rewardsLeaderboard');
+            tbody.innerHTML = data.leaderboard.map((farmer, index) => {
+                const isYourRow = farmer.is_you ? ' your-row' : '';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-default';
+                
+                return `
+                    <tr class="${isYourRow}">
+                        <td class="rank ${rankClass}">
+                            ${medal}${index + 1}
+                        </td>
+                        <td>
+                            <div class="farmer-name">
+                                <span>${farmer.farmer_name}</span>
+                                ${index < 3 ? '<span class="badge">🌟 Top ' + (index + 1) + '</span>' : ''}
+                                ${farmer.is_you ? '<span class="badge you-badge">👉 YOU</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="table-value">${formatCoins(farmer.total_coins)}</td>
+                        <td class="table-value">${formatCoins(farmer.coins_this_month)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Helper functions
+        function formatCurrency(amount) {
+            if (!amount) return '₹0';
+            if (amount >= 1000000) {
+                return '₹' + (amount / 1000000).toFixed(1) + 'L';
+            } else if (amount >= 100000) {
+                return '₹' + (amount / 100000).toFixed(1) + 'L';
+            } else if (amount >= 1000) {
+                return '₹' + (amount / 1000).toFixed(1) + 'K';
+            }
+            return '₹' + amount;
+        }
+
+        function formatCoins(coins) {
+            if (!coins) return '0 coins';
+            return coins.toLocaleString('en-IN') + ' coins';
+        }
+
+        function formatCoinsShort(coins) {
+            if (!coins) return '0';
+            if (coins >= 1000) {
+                return (coins / 1000).toFixed(1) + 'K';
+            }
+            return coins.toLocaleString('en-IN');
+        }
+
+        function getRankChangeEmoji(change) {
+            if (change > 0) return '📈';
+            if (change < 0) return '📉';
+            return '➡️';
+        }
+
+        // Load initial data
+        window.addEventListener('load', function() {
+            loadActivityLeaderboard();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Management - TelhanSathi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-brand:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .add-offer-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .add-offer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .offers-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .offers-section h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .offers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .offers-table thead {
+            background: #f9f9f9;
+        }
+
+        .offers-table th {
+            padding: 12px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .offers-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .offers-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .offer-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .offer-icon {
+            font-size: 24px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1976d2;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .btn-toggle {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-toggle:hover {
+            background: #388e3c;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .color-picker-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-input {
+            width: 60px !important;
+            height: 40px !important;
+            padding: 4px !important;
+            cursor: pointer;
+            border: 2px solid #ddd !important;
+            border-radius: 5px !important;
+        }
+
+        .color-hex-input {
+            flex: 1 !important;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c00;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #0a0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0a0;
+        }
+
+        .no-offers {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .offers-table {
+                font-size: 12px;
+            }
+
+            .offers-table th,
+            .offers-table td {
+                padding: 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-brand" onclick="window.location.href='/admin/dashboard'">📱 TelhanSathi Admin</div>
+        <a href="{{ url_for('admin_auth.admin_dashboard') }}" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>🏪 Store Management</h1>
+            <button class="add-offer-btn" onclick="openAddModal()">+ Add Offer</button>
+        </div>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Offers</div>
+                <div class="stat-value">{{ stats.total_offers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Offers</div>
+                <div class="stat-value">{{ stats.active_offers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Coins Spent by Farmers</div>
+                <div class="stat-value">{{ stats.total_coins_spent }}</div>
+            </div>
+        </div>
+
+        <!-- Offers Table -->
+        <div class="offers-section">
+            <h2>Redemption Offers</h2>
+            
+            {% if offers %}
+                <table class="offers-table">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Coins</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offersTableBody">
+                        {% for offer in offers %}
+                            <tr data-offer-id="{{ offer.id }}">
+                                <td class="offer-icon">{{ offer.icon }}</td>
+                                <td class="offer-title">{{ offer.title }}</td>
+                                <td>{{ offer.category }}</td>
+                                <td><strong>{{ offer.coin_cost }}</strong></td>
+                                <td>{{ offer.actual_value }}</td>
+                                <td>
+                                    <span class="badge {% if offer.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+                                        {% if offer.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if offer.stock_limit %}
+                                        {{ offer.stock_redeemed }}/{{ offer.stock_limit }}
+                                    {% else %}
+                                        Unlimited
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-small btn-edit" onclick="editOffer('{{ offer.id }}')">Edit</button>
+                                        <button class="btn-small btn-toggle" onclick="toggleOffer('{{ offer.id }}')">Toggle</button>
+                                        <button class="btn-small btn-delete" onclick="deleteOffer('{{ offer.id }}')">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-offers">
+                    <p>No offers available. Create your first offer!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle">Add New Offer</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="offerForm" onsubmit="saveOffer(event)">
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Farm Inputs">Farm Inputs</option>
+                            <option value="Services">Services</option>
+                            <option value="Equipment">Equipment</option>
+                            <option value="Tech">Tech</option>
+                            <option value="VIP">VIP</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coin_cost">Coins Required *</label>
+                        <input type="number" id="coin_cost" name="coin_cost" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="actual_value">Actual Value *</label>
+                    <input type="text" id="actual_value" name="actual_value" placeholder="e.g., ₹500, Free, 30 Days" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="icon">Icon</label>
+                        <input type="text" id="icon" name="icon" placeholder="e.g., 🎁" value="🎁">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color">Color (Hex)</label>
+                        <div class="color-picker-container">
+                            <input type="color" id="colorPicker" class="color-picker-input" value="#388e3c" onchange="updateColorHex(this.value)">
+                            <input type="text" id="color" name="color" placeholder="#388e3c" value="#388e3c" class="color-hex-input" onchange="updateColorPicker(this.value)">
+                        </div>
+                        <div class="color-palette">
+                            <button type="button" class="color-option" style="background: #4caf50;" onclick="setColor('#4caf50')" title="Green"></button>
+                            <button type="button" class="color-option" style="background: #2196f3;" onclick="setColor('#2196f3')" title="Blue"></button>
+                            <button type="button" class="color-option" style="background: #ff9800;" onclick="setColor('#ff9800')" title="Orange"></button>
+                            <button type="button" class="color-option" style="background: #f44336;" onclick="setColor('#f44336')" title="Red"></button>
+                            <button type="button" class="color-option" style="background: #9c27b0;" onclick="setColor('#9c27b0')" title="Purple"></button>
+                            <button type="button" class="color-option" style="background: #00bcd4;" onclick="setColor('#00bcd4')" title="Cyan"></button>
+                            <button type="button" class="color-option" style="background: #673ab7;" onclick="setColor('#673ab7')" title="Deep Purple"></button>
+                            <button type="button" class="color-option" style="background: #e91e63;" onclick="setColor('#e91e63')" title="Pink"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stock_limit">Stock Limit (Optional)</label>
+                        <input type="number" id="stock_limit" name="stock_limit" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="validity_days">Validity (Days)</label>
+                        <input type="number" id="validity_days" name="validity_days" value="90" min="1">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Offer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentOfferId = null;
+
+        function updateColorHex(hex) {
+            document.getElementById('color').value = hex;
+        }
+
+        function updateColorPicker(hex) {
+            // Validate hex color
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                document.getElementById('colorPicker').value = hex;
+            }
+        }
+
+        function setColor(hex) {
+            document.getElementById('colorPicker').value = hex;
+            document.getElementById('color').value = hex;
+        }
+
+        function openAddModal() {
+            currentOfferId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Offer';
+            document.getElementById('offerForm').reset();
+            document.getElementById('colorPicker').value = '#388e3c';
+            document.getElementById('color').value = '#388e3c';
+            document.getElementById('offerModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('offerModal').classList.remove('active');
+            currentOfferId = null;
+        }
+
+        function editOffer(offerId) {
+            currentOfferId = offerId;
+            document.getElementById('modalTitle').textContent = 'Edit Offer';
+            
+            // Fetch offer details
+            fetch(`/admin/api/offers/${offerId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('description').value = data.description;
+                    document.getElementById('category').value = data.category;
+                    document.getElementById('coin_cost').value = data.coin_cost;
+                    document.getElementById('actual_value').value = data.actual_value;
+                    document.getElementById('icon').value = data.icon;
+                    document.getElementById('color').value = data.color;
+                    document.getElementById('colorPicker').value = data.color;
+                    document.getElementById('stock_limit').value = data.stock_limit || '';
+                    document.getElementById('validity_days').value = data.validity_days;
+                    document.getElementById('offerModal').classList.add('active');
+                })
+                .catch(err => alert('Error loading offer: ' + err));
+        }
+
+        function saveOffer(e) {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                coin_cost: document.getElementById('coin_cost').value,
+                actual_value: document.getElementById('actual_value').value,
+                icon: document.getElementById('icon').value,
+                color: document.getElementById('color').value,
+                stock_limit: document.getElementById('stock_limit').value || null,
+                validity_days: document.getElementById('validity_days').value,
+                is_active: true
+            };
+
+            const method = currentOfferId ? 'PUT' : 'POST';
+            const url = currentOfferId 
+                ? `/admin/api/offers/${currentOfferId}` 
+                : '/admin/api/offers';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    closeModal();
+                    location.reload();
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+        function deleteOffer(offerId) {
+            if (confirm('Are you sure you want to delete this offer?')) {
+                fetch(`/admin/api/offers/${offerId}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        location.reload();
+                    }
+                })
+                .catch(err => alert('Error: ' + err));
+            }
+        }
+
+        function toggleOffer(offerId) {
+            fetch(`/admin/api/offers/${offerId}/toggle`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    location.reload();
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('offerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'offerModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

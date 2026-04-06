@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>सूचना विवरण - TelhanSathi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            flex: 1;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #d1ecf1;
+            color: #17a2b8;
+            margin-bottom: 16px;
+        }
+
+        .notification-badge.scheme {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .notification-badge.deal {
+            background: #d1ecf1;
+            color: #17a2b8;
+        }
+
+        .notification-badge.price {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .notification-icon-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .notification-icon-large.success {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .notification-icon-large.warning {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+
+        .notification-icon-large.info {
+            background: #d1ecf1;
+            color: #17a2b8;
+        }
+
+        .notification-icon-large.error {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .notification-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .notification-time {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .notification-time span:first-child {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .notification-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #d1ecf1;
+            color: #17a2b8;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .notification-status.unread {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .notification-description {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-section-content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Action Button */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            margin-bottom: 16px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+        }
+
+        .footer button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-delete {
+            background: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #ffe5e5;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 420px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .notification-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="window.history.back()">←</button>
+            <h1>📬 सूचना</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content" id="notification-detail">
+            <div class="empty-state">
+                <div class="empty-state-icon">⏳</div>
+                <p>सूचना लोड हो रही है...</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <button class="btn-back" onclick="window.history.back()">← वापस</button>
+            <button class="btn-delete" onclick="deleteNotification()">हटाएं</button>
+        </div>
+    </div>
+
+    <script>
+        const notificationId = window.location.pathname.split('/').pop();
+        
+        // Get action link from query parameter if provided
+        const queryParams = new URLSearchParams(window.location.search);
+        const actionLinkFromQuery = queryParams.get('link');
+
+        // Get icon for notification type
+        function getNotificationIcon(type) {
+            const icons = {
+                'scheme_update': '📋',
+                'deal_alert': '🤝',
+                'price_alert': '💹',
+                'general_alert': '🔔',
+                'system_update': '⚙️'
+            };
+            return icons[type] || '🔔';
+        }
+
+        // Get color for notification type
+        function getNotificationColor(type) {
+            const colors = {
+                'scheme_update': 'success',
+                'deal_alert': 'info',
+                'price_alert': 'warning',
+                'general_alert': 'info',
+                'system_update': 'info'
+            };
+            return colors[type] || 'info';
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('hi-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Load notification
+        async function loadNotification() {
+            try {
+                const res = await fetch(`/notifications/api/detail/${notificationId}`);
+                if (!res.ok) {
+                    throw new Error('Notification not found');
+                }
+
+                const notif = await res.json();
+                displayNotification(notif);
+            } catch (err) {
+                console.error('Error loading notification:', err);
+                document.getElementById('notification-detail').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <p>त्रुटि: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display notification
+        function displayNotification(notif) {
+            const typeColor = getNotificationColor(notif.type);
+            const icon = getNotificationIcon(notif.type);
+            const formattedDate = formatDate(notif.createdAt);
+            const statusClass = notif.isRead ? '' : 'unread';
+            const statusText = notif.isRead ? 'पढ़ा गया' : 'अपढ़ा';
+
+            let html = `
+                <div class="notification-badge ${notif.relatedType}\">${notif.relatedType || notif.type}</div>
+                <div class="notification-icon-large ${typeColor}\">${icon}</div>
+                <h2 class="notification-title\">${escapeHtml(notif.title)}</h2>
+                
+                <div class="notification-meta\">
+                    <div class="notification-time\">
+                        <span>${formattedDate}</span>
+                        <span>आईडी: ${notif.id.substring(0, 8)}</span>
+                    </div>
+                    <span class="notification-status ${statusClass}\">${statusText}</span>
+                </div>
+
+                <div class="notification-description">
+                    ${escapeHtml(notif.description)}
+                </div>
+            `;
+
+            if (notif.relatedId || notif.relatedType) {
+                html += `
+                    <div class="info-section\">
+                        <div class="info-section-title\">विवरण</div>
+                        <div class="info-section-content\">
+                            ${notif.relatedType ? `<div class="info-row\"><span class="info-label\">प्रकार:</span><span class="info-value\">${notif.relatedType}</span></div>` : ''}
+                            ${notif.relatedId ? `<div class="info-row\"><span class="info-label\">संदर्भ आईडी:</span><span class="info-value\">${notif.relatedId.substring(0, 12)}</span></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (notif.actionLink) {
+                html += `
+                    <a href=\"${notif.actionLink}\" class=\"action-button\">
+                        विवरण देखें →
+                    </a>
+                `;
+            }
+
+            html += `
+                <div class="info-section\">
+                    <div class="info-section-title\">समयरेखा</div>
+                    <div class="info-section-content\">
+                        <div class="info-row\">
+                            <span class="info-label\">प्राप्त:</span>
+                            <span class="info-value\">${formattedDate}</span>
+                        </div>
+                        ${notif.expiresAt ? `<div class="info-row\"><span class="info-label\">समाप्त होता है:</span><span class="info-value\">${formatDate(notif.expiresAt)}</span></div>` : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('notification-detail').innerHTML = html;
+        }
+
+        // Delete notification
+        function deleteNotification() {
+            if (confirm('क्या आप इस सूचना को हटाना चाहते हैं?')) {
+                fetch(`/notifications/api/delete/${notificationId}`, { method: 'DELETE' })
+                    .then(res => {
+                        if (res.ok) {
+                            window.location.href = '/notifications/list';
+                        }
+                    })
+                    .catch(err => console.error('Error deleting notification:', err));
+            }
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load
+        loadNotification();
+    </script>
+</body>
+</html>
