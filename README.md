@@ -1,544 +1,204 @@
-# 🌾 Telhan Sathi - SIH 2025
+# Telhan Sathi 🌾
 
-**Problem Statement ID:** 1604 | **Theme:** Agriculture, FoodTech & Rural Development
+### Making Oilseed Farming Smarter, Safer, and More Profitable
 
-> **Making Oilseeds More Profitable Than Paddy.**
-> A comprehensive ecosystem combining AI, IoT, and Real-time Auction to de-risk oilseed farming and boost India's edible oil independence.
-
----
-
-## 🎯 Project Overview
-
-**Telhan Sathi** (तेलहन साथी) is a farmer-centric digital marketplace that empowers oilseed farmers with:
-- **Real-time Auctions (NILAMI)** - Direct buyer connections without middlemen
-- **AI-powered Profit Simulator** - ARIMA forecasting for ROI calculations
-- **Crop Economics Analytics** - Comprehensive profitability analysis
-- **IoT Integration** - Real-time field monitoring with weather alerts
-- **Government Subsidies Database** - Eligibility checks and applications
-- **Redemption Store** - Gamification through earn-and-redeem system
+**SIH 2025 | Problem Statement 1604 | Agriculture, FoodTech & Rural Development**
 
 ---
 
-## 👨‍🌾 FARMER-SIDE FEATURES (10 Major Modules)
+## Project Overview
 
-### 1. **Authentication & Onboarding**
-- Registration flow with OTP verification
-- Profile setup with farm details (location, crops, area)
-- Language selection and UI preferences
-
-### 2. **Dashboard & Home**
-- Personalized main interface
-- Quick access to all farmer modules
-- Recent activities and alerts
-
-### 3. **Auction Management (NILAMI)**
-- **Create Auctions**: List crops with quantity, reserve price, auction duration
-- **Edit Auctions**: Modify details before bidding starts
-- **Real-time Bidding**: Live bid tracking and updates
-- **Auction History**: Past auctions and winning bids
-
-### 4. **Bid Management**
-- Incoming bids with real-time notifications
-- Counter-offer negotiation system
-- Leaderboards for top buyers
-- Accept/reject bid interface
-
-### 5. **Communications**
-- Chat system with individual buyers
-- Message history and notifications
-- Bidding inquiries and Q&A
-
-### 6. **Profit Simulator** 🤖
-- **AI-Powered ARIMA Forecasting** for crop prices
-- Splitscreen comparison: "Paddy vs. Oilseed" ROI
-- 12-month profit projections
-- Scenario planning tools
-
-### 7. **Crop Economics**
-- Crop comparison matrices (yield, cost, profit)
-- 12-month profitability trends with charts
-- Detailed cost breakdowns
-- Market demand analysis
-
-### 8. **Weather & Field Monitoring** 📡
-- Real-time IoT sensor data (temperature, humidity, soil moisture)
-- Weather alerts and forecasts
-- Disease risk indicators
-- Automated irrigation recommendations
-
-### 9. **Subsidies & Benefits**
-- Government schemes database
-- Eligibility checkers
-- Application workflow
-- Subsidy tracking
-
-### 10. **Redemption Store** 🎁
-- Earn coins through successful auctions
-- Redeem products/services
-- Loyalty rewards program
-- Transaction history
+Telhan Sathi (तेलहन साथी) is a digital agri-platform connecting farmers and buyers through real-time auctions, market intelligence, and assisted decision support.
+It helps farmers move from uncertainty to better pricing outcomes with a practical, field-ready workflow.
 
 ---
 
-## 🛍️ BUYER-SIDE FEATURES
+## Key Features
 
-### 1. **Registration & Login**
-- Email/password authentication
-- OTP verification
-- Profile completion
+### Marketplace & Trading
+- **Real-time auctions (Nilami)** with live bidding updates
+- **Buyer-farmer direct connection** without middlemen dependency
+- **Bid management** with accept/reject and negotiation flow
+- **Auction tracking** for active, completed, and won bids
 
-### 2. **Dashboard**
-- Main buyer interface
-- Purchase history
-- Quick stats (active bids, won auctions)
+### Farmer Productivity
+- **Crop economics dashboard** for yield-cost-profit comparison
+- **Weather + field monitoring** with actionable farm alerts
+- **Subsidy discovery module** for scheme awareness and planning
+- **Redemption store** with coin-based engagement and rewards
 
-### 3. **Browse & Bid**
-- Search and filter auctions by crop, location, price range
-- Detailed auction information
-- Place bids with real-time updates
-- Counter-offer negotiation
+### Buyer Experience
+- **Auction discovery** with clear listing details
+- **Quick bidding flow** with real-time status visibility
+- **Direct chat with farmers** for faster deal closure
+- **Bid history and dashboard insights** for purchase planning
 
-### 4. **Bid Management**
-- Track active bids and negotiations
-- Bid history and status
-- Counter-offer responses
-
-### 5. **Saved Auctions**
-- Watchlist functionality
-- Price alerts
-- Auction reminders
-
-### 6. **Chat with Farmers**
-- Direct messaging
-- Clarification on crop details
-- Negotiation discussions
-
-### 7. **Account Management**
-- Profile updates
-- Purchase history
-- Saved preferences
+### Platform Foundation
+- **Role-based onboarding** (farmer/buyer/admin)
+- **OTP-enabled authentication flow**
+- **Socket-based real-time communication**
+- **Responsive web interface** for demo-friendly usage
 
 ---
 
-## 🤖 AI/ML FEATURES
+## AI / Smart Features
 
-### **ARIMA Time-Series Price Forecasting**
-- Analyzes historical oilseed prices
-- 12-month future price predictions
-- Confidence intervals and trend analysis
-- Dataset: Indian oilseeds historical prices (CSVs in `TelhanSathi/ml/datasets/`)
+- **AI-driven profitability guidance** integrated in product flows
+- **Conceptual ARIMA-based forecasting support** for price trend insights
+- **Smart recommendations** for crop choice and timing decisions
 
-### **Profitability Calculations & ROI**
-- Cost of cultivation tracker
-- Expected yield calculator
-- Revenue projections
-- ROI comparison (Oilseeds vs. Traditional crops)
-- Break-even analysis
-
-**Models Location**: `TelhanSathi/ml/`
-- `arima_price_forecaster.py` - Price forecasting engine
-- `profit_simulator_arima.py` - ROI calculations
-- `datasets/indian_oilseeds_prices.csv` - Historical data
+> Note: AI/ML assets are conceptually integrated. Heavy model and dataset artifacts are excluded from this lightweight repository version.
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
-| Layer         | Technology                                          |
-| ------------- | --------------------------------------------------- |
-| **Backend**   | Flask, SQLAlchemy, SQLite/PostgreSQL                |
-| **Frontend**  | HTML5, CSS3, JavaScript, Bootstrap                  |
-| **AI/ML**     | Python, Scikit-Learn, ARIMA, Pandas, NumPy          |
-| **Database**  | SQLite (Development), PostgreSQL (Production)       |
-| **IoT**       | ESP32, DHT11, Soil Moisture Sensors, MQTT           |
-| **Messaging** | Flask-SocketIO for real-time notifications          |
-| **Auth**      | Flask Sessions, OTP verification (Google/Gemini)   |
-| **APIs**      | Weather API, Google Translate, Google AI            |
-
----
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
-- Python 3.8+
-- pip/conda
-- Git
-
-### Backend Setup (Flask)
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/dhirajdurgade7758/TelhanSathi-SIH2025.git
-cd TelhanSathi-SIH2025/TelhanSathi
-
-# 2. Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Set up environment variables
-# Create .env file with:
-# SECRET_KEY=your-secret-key
-# DATABASE_URL=sqlite:///telhan_sathi.db
-# GOOGLE_API_KEY=your-google-api-key
-
-# 5. Initialize database
-python
->>> from app import app, db
->>> with app.app_context():
-...     db.create_all()
->>> exit()
-
-# 6. Run the application
-python app.py
-# Access at http://localhost:5000
-```
-
-### Key Modules Setup
-
-```bash
-# Profit Simulator & AI Models
-cd ml
-python arima_price_forecaster.py
-
-# Field Monitoring (IoT)
-# Configure MQTT broker settings in .env
-# Ensure ESP32 devices are connected to same network
-```
+| Layer | Stack |
+| --- | --- |
+| Backend | Flask, SQLAlchemy, Flask Blueprints |
+| Frontend | HTML5, CSS3, JavaScript, Bootstrap |
+| Database | SQLite (dev), PostgreSQL-ready |
+| Real-time | Flask-SocketIO |
+| AI/Smart Layer | Python-based integrated logic (lightweight repo mode) |
+| Integrations | Weather APIs, Translation APIs, IoT-ready endpoints |
+| Deployment | Render, Gunicorn/Werkzeug-compatible setup |
 
 ---
 
-## 📁 Project Structure
-
-```
-TelhanSathi-SIH2025/
-│
-├── README.md
-├── documents/
-│   └── screenshots/           # UI/UX Screenshots
-│
-└── TelhanSathi/              # Main Application
-    ├── app.py                # Flask app entry point
-    ├── models.py             # Database models
-    ├── models_marketplace_keep.py  # Market models
-    ├── extensions.py         # Flask extensions (db, migrate)
-    ├── utils.py              # Helper functions
-    ├── translations.py       # Multilingual support
-    ├── requirements.txt      # Python dependencies
-    │
-    ├── routes/               # Route handlers (Blueprints)
-    │   ├── auth.py          # Farmer authentication
-    │   ├── buyer_auth.py    # Buyer authentication
-    │   ├── onboarding.py    # Profile setup
-    │   ├── bidding.py       # Auction & bid management
-    │   ├── crop_economics.py # Crop analysis
-    │   ├── profit_simulator.py # AI profit calculator
-    │   ├── field_monitoring.py # IoT sensor data
-    │   ├── weather.py       # Weather integration
-    │   ├── subsidies.py     # Government schemes
-    │   ├── redemption_store.py # Coin redemption
-    │   ├── notifications.py # Real-time alerts
-    │   ├── sahayak.py       # Chat & support
-    │   └── admin.py         # Admin dashboard
-    │
-    ├── ml/                   # Machine Learning
-    │   ├── arima_price_forecaster.py    # ARIMA model
-    │   ├── profit_simulator_arima.py    # ROI calculations
-    │   ├── datasets/
-    │   │   └── indian_oilseeds_prices.csv
-    │   └── models/          # Saved ML models
-    │
-    ├── templates/           # HTML templates
-    │   ├── base.html       # Base template
-    │   ├── login.html
-    │   ├── buyer_login.html
-    │   ├── buyer_register.html
-    │   ├── dashboard.html  # Farmer dashboard
-    │   ├── buyer_dashboard.html
-    │   ├── farmer_auction_*.html  # Auction pages
-    │   ├── profit_simulator.html
-    │   ├── crop_economics.html
-    │   ├── field_monitoring.html
-    │   ├── weather.html
-    │   ├── subsidies_*.html
-    │   ├── redemption_store.html
-    │   ├── farmer_chats.html
-    │   ├── notifications_*.html
-    │   └── ...
-    │
-    ├── static/             # Static assets
-    │   ├── css/
-    │   │   └── onboarding.css
-    │   ├── js/
-    │   │   ├── chat.js     # Real-time chat
-    │   │   ├── iot_device.js  # IoT integration
-    │   │   └── onboarding.js
-    │   ├── img/            # Images & icons
-    │   └── uploads/        # User uploads
-    │       ├── auctions/   # Auction images
-    │       └── profile_pics/ # Profile pictures
-    │
-    ├── migrations/         # Database migrations
-    │   ├── alembic.ini
-    │   └── versions/       # Migration files
-    │
-    ├── instance/           # Instance folder (local)
-    ├── __pycache__/
-    └── scripts/            # Utility scripts
-```
-
----
-
-## 📸 FEATURE SCREENSHOTS
+## Screenshots
 
 ### Farmer Interface
 
-#### **Home Page**
+**Home Dashboard**
+Farmer landing page with quick actions and module access.
 ![Home Page](documents/screenshots/home%20page.jpeg)
 
-#### **Auction Dashboard - Farmer View**
-Manage and monitor all auctions created
+**Auction Dashboard**
+Manage live auctions, bids, and outcomes in one view.
 ![Bidding Dashboard Farmer](documents/screenshots/bidding%20dashboard%20farmer.jpeg)
 
-#### **View Auction Details**
-Detailed auction information and bid tracking
+**Auction Details**
+Track reserve price, bid timeline, and buyer activity.
 ![Auction Details Modal](documents/screenshots/bid%20details%20page%20farmer.jpeg)
 
-#### **Winning Bid Details**
-Transaction confirmation and buyer details
+**Winning Bid Summary**
+Clear closure details after successful auction completion.
 ![Winning Bid Details](documents/screenshots/winning%20bid%20details%20page%20farmer.jpeg)
 
-#### **Profit Simulator** 🤖
-AI-powered ROI calculator with ARIMA forecasting
+**Profit Simulator**
+Compare projected outcomes for oilseed vs alternative crops.
 ![Profit Simulator](documents/screenshots/profit%20simulator%20page%20farmer.jpeg)
 
-#### **Crop Economics Analysis**
-Detailed crop comparison and profitability trends
+**Crop Economics**
+Analyze crop-level cost, demand, and profitability trends.
 ![Crop Economics](documents/screenshots/crop%20economics%20page%20farmer.jpeg)
 
-#### **12-Month Profitability Trends**
-Extended analysis with historical and projected data
+**12-Month Trend View**
+Long-range crop economics perspective for planning decisions.
 ![Crop Economics Trends](documents/screenshots/detailed%20crop%20economics%20page%20with%2012%20months%20trend%20farmer.jpeg)
 
-#### **Government Subsidies & Schemes**
-Browse and apply for government benefits
+**Subsidies & Schemes**
+Explore relevant government support opportunities.
 ![Subsidies Page](documents/screenshots/schemes%20and%20subsides%20page%20farmer.jpeg)
 
-#### **Redemption Store** 🎁
-Earn and redeem coins for products/services
+**Redemption Store**
+Redeem earned coins for useful products and services.
 ![Redemption Store](documents/screenshots/redeemption%20store%20page%20farmer.jpeg)
 
-#### **Chat with Farmers** 💬
-Direct communication with buyers
+**Farmer Chat**
+Real-time communication for faster negotiation and trust.
 ![Chat with Farmer](documents/screenshots/chat%20with%20farmer%20page%20buyer.jpeg)
-
----
 
 ### Buyer Interface
 
-#### **Buyer Dashboard**
-Main interface with active bids and purchase history
+**Buyer Dashboard**
+Centralized bidding activity and purchase overview.
 ![Buyer Dashboard](documents/screenshots/bidding%20dashboard%20buyer.jpeg)
 
-#### **Browse & Place Bids**
-Search, filter, and bid on available auctions
+**Auction Exploration**
+Review listing details before placing bids.
 ![View Auction Details](documents/screenshots/view%20auction%20details%20modal%20buyer.jpeg)
 
-#### **My Bids Tracking**
-Monitor active bids and negotiations
+**My Bids**
+Track bid status, negotiation updates, and outcomes.
 ![My Bids Page](documents/screenshots/mybids%20page%20buyer.jpeg)
 
-#### **Chat with Farmers** 💬
-Real-time messaging with sellers
+**Buyer-Farmer Chat**
+Direct messaging streamlines discussion and conversion.
 ![Chat with Farmer Buyer](documents/screenshots/chat%20with%20farmer%20page%20buyer.jpeg)
 
 ---
 
-## 🚀 Key Features Deep Dive
+## Project Structure
 
-### **Real-time Auction System (NILAMI)**
-- ✅ Create auctions with reserve pricing
-- ✅ Live bidding with real-time updates
-- ✅ Counter-offer negotiations
-- ✅ Automated bid notifications
-- ✅ Transaction history
-
-### **AI-Powered Profit Simulator**
-- ✅ ARIMA time-series forecasting
-- ✅ 12-month price predictions
-- ✅ ROI comparison (Oilseeds vs. Paddy)
-- ✅ Break-even analysis
-- ✅ Cost tracking and projections
-
-### **Crop Economics Module**
-- ✅ Multi-crop comparison matrices
-- ✅ Profitability analysis by crop
-- ✅ Market demand visualization
-- ✅ Historical price data
-- ✅ Yield projections
-
-### **IoT Field Monitoring**
-- ✅ Real-time sensor data (temperature, humidity, soil moisture)
-- ✅ Weather integration and alerts
-- ✅ Disease risk indicators
-- ✅ Automated recommendations
-- ✅ Data visualization dashboard
-
-### **Subsidies & Government Schemes**
-- ✅ Comprehensive schemes database
-- ✅ Eligibility checker
-- ✅ Application workflow
-- ✅ Status tracking
-- ✅ Document management
-
-### **Redemption Store (Gamification)**
-- ✅ Earn coins per successful auction
-- ✅ Coin-based rewards system
-- ✅ Product/service catalog
-- ✅ Transaction history
-- ✅ Loyalty tier system
-
----
-
-## 🔄 User Workflows
-
-### **Farmer Workflow**
-```
-1. Register/Login → 2. Complete Onboarding → 3. Dashboard Access
-4. Create Auction → 5. Receive Bids → 6. Accept Best Offer
-7. Chat with Buyer → 8. Earn Coins → 9. Redeem Rewards
-```
-
-### **Buyer Workflow**
-```
-1. Register/Login → 2. Browse Auctions → 3. Filter & Search
-4. View Details → 5. Place Bid → 6. Negotiate Offer
-7. Win Auction → 8. Chat with Farmer → 9. Complete Transaction
-```
-
-### **Profit Planning Workflow**
-```
-1. Select Crop → 2. View Historical Data → 3. Run AI Forecasting
-4. Compare ROI (Oilseeds vs. Paddy) → 5. Analyze Crop Economics
-6. Check Subsidies → 7. Plan Next Season
+```text
+TelhanSathi-SIH2025/
+├── README.md
+├── documents/
+│   └── screenshots/
+└── TelhanSathi/
+    ├── app.py
+    ├── models.py
+    ├── routes/
+    ├── templates/
+    └── static/
 ```
 
 ---
 
-## 🔐 Security Features
+## Setup Instructions
 
-- ✅ Password hashing and salting
-- ✅ OTP-based verification
-- ✅ Session management with secure cookies
-- ✅ CSRF protection
-- ✅ SQL injection prevention (SQLAlchemy ORM)
-- ✅ XSS protection in templates
+### Prerequisites
+- Python 3.8+
+- pip
+- Git
 
----
+### Run Locally
 
-## 📊 Database Schema Overview
+```bash
+# 1) Clone
+git clone https://github.com/VishalGhuge111/TelhanSathi-SIH2025.git
+cd TelhanSathi-SIH2025/TelhanSathi
 
-**Key Models:**
-- `User` - Farmer/Buyer accounts with roles
-- `Auction` - Marketplace listings with timestamps
-- `Bid` - Bidding records with buyer-farmer links
-- `Chat` - Real-time messaging between users
-- `Crop` - Crop data for economics and forecasting
-- `IoTSensor` - Field monitoring sensor readings
-- `Subsidy` - Government scheme listings
-- `Coin` - Gamification currency and transactions
+# 2) Create and activate virtual environment (Windows)
+python -m venv venv
+venv\Scripts\activate
 
----
+# 3) Install dependencies
+pip install -r requirements.txt
 
-## 🚨 Current Status & Roadmap
+# 4) Set environment variables in .env
+# SECRET_KEY=your-secret-key
+# DATABASE_URL=sqlite:///telhan_sathi.db
+# GOOGLE_API_KEY=your-google-api-key
 
-### ✅ Completed
-- Core auction management system
-- Real-time bidding engine
-- AI profit simulator with ARIMA
-- Crop economics analytics
-- Chat system with Socket.IO
-- Government subsidies database
-- Redemption store backend
-- IoT sensor integration
-- Multi-language support
+# 5) Initialize database
+python init_db.py
 
-### 🔄 In Progress
-- Mobile app (React Native)
-- Enhanced analytics dashboard
-- Blockchain integration for buy-back guarantees
-- Voice-first interface (Boli-Se-Kheti)
-
-### 📋 Planned
-- Machine learning disease detection (Edge AI)
-- Equipment rental marketplace (Yantra Sathi)
-- Blockchain smart contracts
-- API documentation (Swagger)
-- Advanced data analytics
-
----
-
-## 👥 The Team - Algo Sapiens
-
-| Role | Member | Responsibility |
-|------|--------|-----------------|
-| **Backend Lead** | Dhiraj Durgade | Django/Flask architecture, database design, API development |
-| **Blockchain Dev** | Harsh | Smart contracts, Web3 integration |
-| **AI/ML Engineer** | Ujjwal | ARIMA models, profit calculations, forecasting |
-| **Frontend Dev** | Vishal | UI/UX, dashboard design |
-| **Frontend Dev** | Janhvi | Component development, responsive design |
-| **IoT Engineer** | Naman | ESP32 configuration, sensor integration |
-| **Mentor** | Nisarg Wath | Project guidance and support |
-
----
-
-## 📞 Contact & Support
-
-- **GitHub**: [TelhanSathi-SIH2025](https://github.com/dhirajdurgade7758/TelhanSathi-SIH2025)
-- **Owner**: Dhiraj Durgade
-- **Issue Reporting**: Use GitHub Issues for bugs and feature requests
-
----
-
-## 📄 License
-
-This project is developed for **Smart India Hackathon 2025** under Problem Statement 1604.
-
----
-
-## 🙏 Acknowledgments
-
-- **Smart India Hackathon** - Platform and support
-- **Indian Agricultural Ministry** - Problem statement and insights
-- **Agricultural Data Partners** - Historical crop price data
-- **Google Cloud** - APIs for translation and AI services
-- **Open Source Community** - Flask, SQLAlchemy, Scikit-Learn, and other libraries
-
----
-
-Built with ❤️ for Indian Farmers at **Smart India Hackathon 2025**
-**Telhan Sathi (तेलहन साथी) - Empowering Farmers, Enabling Prosperity** 🌾
-│   │   └── api/               # API Integration Service
-│   └── package.json
-│
-├── iot_firmware/              # NAMAN'S DOMAIN
-│   ├── src/                   # Arduino/ESP32 C++ Code
-│   ├── libraries/             # Sensor libraries
-│   └── schematic.png          # Circuit Diagram (for Judges to see)
-│
-├── blockchain/                # HARSH'S DOMAIN
-│   ├── contracts/             # Smart Contract (.sol)
-│   ├── tests/                 # Test scripts
-│   └── deploy.js              # Deployment scripts
-│
-├── docs/                      # DOCUMENTATION
-│   ├── screenshots/           # App Screenshots
-│   ├── diagrams/              # Architecture Diagrams
-│   └── user_manual.pdf
-│
-├── .gitignore
-└── README.md
+# 6) Start app
+python app.py
 ```
+
+Open: `http://localhost:5000`
+
+---
+
+## Team
+
+**Algo Sapiens**
+
+- **Dhiraj Durgade** - Backend architecture and core platform logic
+- **Harsh** - Blockchain integration concepts
+- **Ujjwal** - AI/ML strategy and forecasting logic
+- **Vishal** - Frontend experience and dashboard design
+- **Janhvi** - Frontend components and responsiveness
+- **Naman** - IoT integration support
+- **Nisarg Wath (Mentor)** - Technical guidance and review
+
+---
+
+## Vision
+
+Telhan Sathi aims to become the operating layer for profitable oilseed farming by combining transparent market access, actionable intelligence, and farmer-first digital workflows.
+
+**Built for SIH 2025. Designed for real rural impact.**
